@@ -1,0 +1,22 @@
+{
+  "name": "keymanagerproject",
+  "version": "1.0.0",
+  "description": "Broadcast ecryption",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/obarness/keyManagerProject.git"
+  },
+  "author": "Alik Geller & Omer Barness",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/obarness/keyManagerProject/issues"
+  },
+  "homepage": "https://github.com/obarness/keyManagerProject#readme",
+  "dependencies": {
+    "express": "^4.13.4"
+  }
+}
