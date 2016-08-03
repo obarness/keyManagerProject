@@ -1,10 +1,15 @@
-var express = require('express');
-var app = express();
+var fs = require('fs');
+var https = require('https');
+var app = require('express')();
+var options = {
+   key  : fs.readFileSync('server.key'),
+   cert : fs.readFileSync('server.crt')
+};
 
 app.get('/', function (req, res) {
-  res.send('<h1>Hello Ecrypted Omer!</h1>');
+   res.send('Easy Broadcast - Encryption Broadcasting');
 });
 
-app.listen(3000, function () {
-  console.log('Example app listening on port 3000!');
+https.createServer(options, app).listen(3000, function () {
+   console.log('Started!');
 });
