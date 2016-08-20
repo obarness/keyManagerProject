@@ -1,3 +1,7 @@
+
+//most include path to FFmpeg appliction on the fulent-ffmpeg module
+
+
 var dgram = require('dgram');
 var socket = dgram.createSocket('udp4');
 
