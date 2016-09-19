@@ -1,0 +1,35 @@
+<html>
+<head>
+    <title>easy broad</title>
+
+	<script src="/js/client.js"></script>
+	<script src="/js/gui.js"></script>
+  <script src="/js/vlcCtrl.js"></script>
+	<script src="/js/sendPacket.js"></script>
+	<script src="/js/receivePacket.js"></script>
+  <script src="/js/recieveDecrypted.js"></script>
+</head>
+<body onload="loaded();">
+
+
+<script>require('nw.gui').Window.get().showDevTools();</script>
+
+
+<input id="openVlc" type="button" value="openVlc" onclick="openVlc();" />
+<input id="send" type="button" value="send" onclick="send();" />
+<input id="receive" type="button" value="receive" onclick="receive();" />
+<input id="receiveDecrypted" type="button" value="receiveDecrypted" onclick="receiveDecrypted();" />
+
+
+
+
+
+
+<script>
+    function loaded(){
+    }
+</script>
+
+
+</body>
+</html>

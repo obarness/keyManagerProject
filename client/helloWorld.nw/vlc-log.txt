@@ -1,0 +1,3 @@
+﻿-- logger module started --
+core error: ES_OUT_SET_(GROUP_)PCR  is called too late (jitter of 71085 ms ignored)
+-- logger module stopped --

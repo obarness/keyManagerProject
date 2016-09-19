@@ -1,0 +1,19 @@
+{
+  "name": "helloWorld",
+  "version": "0.0.1",
+  "description": "A Hello Node webkit app ",
+  "main": "index.html",
+  "nodejs": true,
+  "window": {
+    "toolbar": true
+  },
+  "webkit": {
+    "plugin": true
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "vlc-control-node": "0.0.7"
+  }
+}
