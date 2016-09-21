@@ -41,7 +41,7 @@ struct bswabe_msk_s
 {
 	element_t g;			/*	G1	*/
 	element_t g_alpha;
-	element_t g_alpha_a1;
+	element_t g_alpha_a1;	// g^(alpha * a1)
 	element_t v;			/*	G1	*/
 	element_t v1;
 	element_t v2;
