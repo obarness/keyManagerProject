@@ -43,7 +43,7 @@ function receive(){
 		var rtpPacket;
 		var session = new RtpSession(6010);
 		session.setRemoteAddress(6000,"localhost");
-		var port = 5004;
+		var port = 5000;
 		var host = 'localhost';
 
 		socket.on('message', function (msg, info){
