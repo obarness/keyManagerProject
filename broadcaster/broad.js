@@ -17,7 +17,8 @@ var RtpPacket=require("./RtpPacket.js");
 //parameters
 
 var testmessage = "[hello broadcaster] pid: ";
-var address = '192.168.0.255'; //change for your LAN broacast IP !
+var address = '192.168.1.255'; //change for your LAN broacast IP !
+console.log("\n*********\nmake sure to change your LAN address\ntype 'ifconfig' for broadcast address\n*********\n");
 var port = 5000;
 var portinit = 5556;
 var host = '127.0.0.1';
@@ -35,14 +36,16 @@ socket2.on('listening', function () {
 socket2.on('message', function(msg, rinfo){
 	  var rtpPacket = new RtpPacket(msg);
 	  
+    socket.setBroadcast(true);
 	  socket.send(rtpPacket.getBuffer(), 
 	  0,
 	  rtpPacket.getBuffer().length,
 	  port,
-	  host,
+	  address,
 	  function(err){
 	    if (err) console.log(err);
 	  });   
+    
 });
  
 
