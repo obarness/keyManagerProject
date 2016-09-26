@@ -100,6 +100,9 @@ aes_128_cbc_decrypt( GByteArray* ct, element_t k )
   return pt;
 }
 
+/*
+ * open a file named file with the mode read.
+ */ 
 FILE*
 fopen_read_or_die( char* file )
 {
@@ -111,6 +114,9 @@ fopen_read_or_die( char* file )
 	return f;
 }
 
+/*
+ * open a file named file with the mode write.
+ */ 
 FILE*
 fopen_write_or_die( char* file )
 {
@@ -122,6 +128,9 @@ fopen_write_or_die( char* file )
 	return f;
 }
 
+/*
+ * read the content of the file "file" to an array of bytes.
+ */
 GByteArray*
 suck_file( char* file )
 {
@@ -173,6 +182,9 @@ suck_stdin()
 	return r;
 }
 
+/* 
+ * write the content of the byte array "b" to the file "file".
+ */
 void
 spit_file( char* file, GByteArray* b, int free )
 {

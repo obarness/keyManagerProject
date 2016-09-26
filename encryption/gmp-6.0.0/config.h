@@ -37,7 +37,7 @@ see https://www.gnu.org/licenses/.
 
 /* The gmp-mparam.h file (a string) the tune program should suggest updating.
    */
-#define GMP_MPARAM_H_SUGGEST "./mpn/x86_64/coreihwl/gmp-mparam.h"
+#define GMP_MPARAM_H_SUGGEST "./mpn/x86_64/coreisbr/gmp-mparam.h"
 
 /* Define to 1 if you have the `alarm' function. */
 #define HAVE_ALARM 1
@@ -614,7 +614,7 @@ see https://www.gnu.org/licenses/.
 
 /* Define to 1 if `lex' declares `yytext' as a `char *' by default, not a
    `char[]'. */
-#define YYTEXT_POINTER 1
+/* #undef YYTEXT_POINTER */
 
 /* Define to `__inline__' or `__inline' if that's what the C compiler
    calls it, or to nothing if 'inline' is not supported under any name.  */

@@ -18,4 +18,4 @@ this program.  If not, see https://www.gnu.org/licenses/.  */
 
 
 /* Define if GNU readline should be used. */
-#define WITH_READLINE 1
+#define WITH_READLINE 0
