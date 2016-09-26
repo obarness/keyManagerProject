@@ -207,7 +207,7 @@ bswabe_setup(signed long int n, bswabe_pub_t** pub, bswabe_msk_t** msk )
 	element_printf("pair:\t%B\n", 	(*pub)->pair);
 }
 
-bswabe_prv_t* bswabe_keygen( bswabe_pub_t* pub,	bswabe_msk_t* msk, long id_value )
+bswabe_prv_t* bswabe_keygen(bswabe_msk_t* msk, long id_value )
 {
 	/*	Declarations	*/
 	bswabe_prv_t* prv;			//pointer to private key
@@ -215,11 +215,25 @@ bswabe_prv_t* bswabe_keygen( bswabe_pub_t* pub,	bswabe_msk_t* msk, long id_value
 	/*	d_0	*/
 	element_t g_a;			/* G1 */
 	element_t g_b_2_t;		/* G1 */
+
 	/*	d_1	*/
 	element_t g_b_id;		/* G1 */
 	element_t g_mul_h;		/* G1 */
+
 	/*	d_2	*/
 	element_t t_minus;		/* Zp */
+
+
+	/*	d_3	*/
+
+	/*	d_4	*/
+
+	/*	d_5	*/
+
+	/*	d_6	*/
+
+	/*	d_7	*/
+
 	/*	e	*/
 	element_t g_ctr;		/* G1 */
 	/*	Local elements	*/
