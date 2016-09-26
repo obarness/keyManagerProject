@@ -106,10 +106,7 @@ bswabe_setup(signed long int n, bswabe_pub_t** pub, bswabe_msk_t** msk )
 	element_init_Zr((*msk)->beta,				(*pub)->p);
 	element_init_Zr((*msk)->a1,					(*pub)->p);
 	element_init_Zr((*msk)->a2,					(*pub)->p);
-	(*msk)->pub)->pub;
 
-	/*	local element initialization	*/
-	element_init_Zr(b_sqr,				(*pub)->p);
 
 	printf("libbswabe setup - Computing key elements\n");
 	/*	compute msk	*/
@@ -137,7 +134,7 @@ bswabe_setup(signed long int n, bswabe_pub_t** pub, bswabe_msk_t** msk )
 
 	element_t alpha_a1;
 	element_mul   	(alpha_a1,	(*msk)->alpha,			(*msk)->a1); 	//alpha * a1
-	element_pow_zn((*msk)->g_alpha_a1,			(*pub)->g, 		alpha_a1;	//g^(alpha*a1)
+	element_pow_zn((*msk)->g_alpha_a1,			(*pub)->g, 		alpha_a1);	//g^(alpha*a1)
 	element_set   ((*msk)->pub,			pub);
 
 	/*	compute pub	*/
@@ -151,7 +148,7 @@ bswabe_setup(signed long int n, bswabe_pub_t** pub, bswabe_msk_t** msk )
 	/* assign g_ba1 */
 	element_t ba1;
 	element_mul   	(ba1,	(*msk)->beta,			(*msk)->a1); 	//b*a1
-	element_pow_zn((*pub)->g_ba1,			(*pub)->g, 		ba1;	//g^ba1
+	element_pow_zn((*pub)->g_ba1,			(*pub)->g, 		ba1);	//g^ba1
 	/* assign g_ba2 */
 	element_t ba2;
 	element_mul   	(ba2,	(*msk)->beta,			(*msk)->a2); 	//b*a2
@@ -210,7 +207,7 @@ bswabe_setup(signed long int n, bswabe_pub_t** pub, bswabe_msk_t** msk )
 	element_printf("pair:\t%B\n", 	(*pub)->pair);
 }
 
-bswabe_prv_t* bswabe_keygen( bswabe_pub_t* pub,	bswabe_msk_t* msk, long id_value )
+bswabe_prv_t* bswabe_keygen(bswabe_msk_t* msk, long id_value )
 {
 	/*	Declarations	*/
 	bswabe_prv_t* prv;			//pointer to private key
@@ -218,11 +215,25 @@ bswabe_prv_t* bswabe_keygen( bswabe_pub_t* pub,	bswabe_msk_t* msk, long id_value
 	/*	d_0	*/
 	element_t g_a;			/* G1 */
 	element_t g_b_2_t;		/* G1 */
+
 	/*	d_1	*/
 	element_t g_b_id;		/* G1 */
 	element_t g_mul_h;		/* G1 */
+
 	/*	d_2	*/
 	element_t t_minus;		/* Zp */
+
+
+	/*	d_3	*/
+
+	/*	d_4	*/
+
+	/*	d_5	*/
+
+	/*	d_6	*/
+
+	/*	d_7	*/
+
 	/*	e	*/
 	element_t g_ctr;		/* G1 */
 	/*	Local elements	*/

@@ -71,10 +71,16 @@ bswabe_prv_comp_t;
  */
 struct bswabe_prv_s
 {
-	element_t d_0;		/* G1 */
+	
 	element_t d_1;		/* G1 */
 	element_t d_2;		/* G1 */
-	element_t e;		/* GT */
+	element_t d_3;		/* G1 */
+	element_t d_4;		/* G1 */
+	element_t d_5;		/* G1 */
+	element_t d_6;		/* G1 */
+	element_t d_7;		/* G1 */
+
+	
 };
 
 typedef struct

@@ -1,23 +1,38 @@
 /*
 	Include glib.h, pbc.h, and bswabe.h before including this file.
 */
+/*
+ * This header file hold all the algorithm's structures which inclued
+ * the keys and the cipher-text.
+ */
 
+/*
+ * The public key struct.
+ * PK = (g^b, (g^b)^2' h^b, e(g,g)^a)
+ */
 struct bswabe_pub_s
 {
-	char* pairing_desc;
-	pairing_t p;
-	element_t g;           /* G_1 */
-	element_t h;           /* G_1 */
-	element_t gp;          /* G_2 */
-	element_t g_hat_alpha; /* G_T */
+	char* pairing_desc;		//the string with the parameters to create the elliptic curve
+	pairing_t p;			//the struct with the description
+	element_t g;			/* G1 */
+	element_t g_b;          /* G1 */
+	element_t g_b_sqr;		/* G1 */
+	element_t h_b;			/* G1 */
+	element_t pair;			/* GT */
 };
 
-
-
+/*
+ * The master secret key struct
+ * MSK = (g, h, a, b, ctr)
+ * All the elements in this key are from the group Zp
+ */
 struct bswabe_msk_s
 {
-	element_t beta;    /* Z_r */
-	element_t g_alpha; /* G_2 */
+	element_t g;			/*	G1	*/
+	element_t h;			/*	G1	*/
+	element_t alpha;		/*	Zp */
+	element_t beta;			/* 	Zp */
+	element_t ctr;			/* 	Zp */
 };
 
 typedef struct
@@ -34,10 +49,15 @@ typedef struct
 }
 bswabe_prv_comp_t;
 
+/*
+ * The client's private key.
+ */
 struct bswabe_prv_s
 {
-	element_t d;   /* G_2 */
-	GArray* comps; /* bswabe_prv_comp_t's */
+	element_t d_0;		/* G1 */
+	element_t d_1;		/* G1 */
+	element_t d_2;		/* G1 */
+	element_t e;		/* GT */
 };
 
 typedef struct
@@ -68,9 +88,23 @@ typedef struct
 }
 bswabe_policy_t;
 
+/*
+ * This struct hold the part in the cipher-text the associates with the ID attribute.
+ */
+typedef struct
+{
+	element_t c_i1;	/* G1 */
+	element_t c_i2;	/* G1 */
+	element_t id;	/* Zp */
+}
+ct_attr;
+
+/*
+ * The cipher text which is encrypted with the revoke clients' IDs
+ */
 struct bswabe_cph_s
 {
-	element_t cs; /* G_T */
-	element_t c;  /* G_1 */
-	bswabe_policy_t* p;
+	element_t c_s;	/* GT */
+	element_t c_0;	/* G1 */
+	GPtrArray* attr;
 };
