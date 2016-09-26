@@ -36,7 +36,7 @@ typedef struct bswabe_cph_s bswabe_cph_t;
   later freed by calling bswabe_pub_free(*pub) and
   bswabe_msk_free(*msk).
 */
-void bswabe_setup( bswabe_pub_t** pub, bswabe_msk_t** msk );
+void bswabe_setup(signed long int n, bswabe_pub_t** pub, bswabe_msk_t** msk );
 
 /*
   Generate a private key with the given set of attributes. The final

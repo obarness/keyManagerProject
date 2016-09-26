@@ -106,10 +106,7 @@ bswabe_setup(signed long int n, bswabe_pub_t** pub, bswabe_msk_t** msk )
 	element_init_Zr((*msk)->beta,				(*pub)->p);
 	element_init_Zr((*msk)->a1,					(*pub)->p);
 	element_init_Zr((*msk)->a2,					(*pub)->p);
-	(*msk)->pub)->pub;
 
-	/*	local element initialization	*/
-	element_init_Zr(b_sqr,				(*pub)->p);
 
 	printf("libbswabe setup - Computing key elements\n");
 	/*	compute msk	*/
