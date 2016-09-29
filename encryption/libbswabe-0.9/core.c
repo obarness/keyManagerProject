@@ -65,7 +65,7 @@ element_from_string( element_t h, char* s )
 
 	free(r);
 }
-
+// -p pubkey -m masterkey
 void
 bswabe_setup( bswabe_pub_t** pub, bswabe_msk_t** msk )
 {
@@ -79,6 +79,17 @@ bswabe_setup( bswabe_pub_t** pub, bswabe_msk_t** msk )
 
 	printf("libbswabe setup - Initializing elements\n");
 	/*	public initialization	*/
+	
+	
+	element_t alpha_a1;
+	element_t ba1;
+	element_t ba2;
+	element_t v1_a1;
+	element_t v2_a2;
+	element_t a1_beta;
+	element_t alpha_a1_beta;
+	element_t g_alpha_a1_beta;
+	
 	element_init_G1((*pub)->g,			(*pub)->p);
 	element_init_G1((*pub)->g_b,			(*pub)->p);
 	element_init_G1((*pub)->g_a1,			(*pub)->p);
@@ -92,95 +103,123 @@ bswabe_setup( bswabe_pub_t** pub, bswabe_msk_t** msk )
 	element_init_G1((*pub)->w,			(*pub)->p);
 	element_init_G1((*pub)->h,			(*pub)->p);
 	element_init_GT((*pub)->pair,			(*pub)->p);
+	
+	element_init_Zr((*pub)->n,			(*pub)->p);
+	element_init_Zr(alpha_a1,			(*pub)->p);
+	element_init_Zr(ba1,				(*pub)->p);
+	element_init_Zr(ba2,				(*pub)->p);
+	element_init_G1(v1_a1,				(*pub)->p);
+	element_init_G1(v2_a2,				(*pub)->p);
+	element_init_Zr(a1_beta,			(*pub)->p);
+	element_init_Zr(alpha_a1_beta,			(*pub)->p);
+	element_init_G1(g_alpha_a1_beta,		(*pub)->p);
+
+	
+
 
 
 	/*	msk initialization	*/
 
 	element_init_G1((*msk)->g,				(*pub)->p);
 	element_init_G1((*msk)->g_alpha,			(*pub)->p);
-	element_init_Zr((*msk)->g_alpha_a1,			(*pub)->p);
-	element_init_Zr((*msk)->v,				(*pub)->p);
-	element_init_Zr((*msk)->v1,				(*pub)->p);
-	element_init_Zr((*msk)->v2,				(*pub)->p);
+	element_init_G1((*msk)->g_alpha_a1,			(*pub)->p);
+	element_init_G1((*msk)->v,				(*pub)->p);
+	element_init_G1((*msk)->v1,				(*pub)->p);
+	element_init_G1((*msk)->v2,				(*pub)->p);
 	element_init_Zr((*msk)->alpha,				(*pub)->p);
 	element_init_Zr((*msk)->beta,				(*pub)->p);
 	element_init_Zr((*msk)->a1,				(*pub)->p);
 	element_init_Zr((*msk)->a2,				(*pub)->p);
-
+	
+	
+	
+	
 
 	printf("libbswabe setup - Computing key elements\n");
 	/*	compute msk	*/
-
+        printf("111111112222\n");
 	//random group elements - msk
 	element_random((*msk)->g);
 	element_random((*msk)->v);
 	element_random((*msk)->v1);
 	element_random((*msk)->v2);
-
+	printf("1\n");
 	//random group elements - pub
 	element_random((*pub)->w);
 	element_random((*pub)->h);
-
+	printf("1\n");
 	// random numbers from Zp
 	element_random((*msk)->alpha);
 	element_random((*msk)->beta);
 	element_random((*msk)->a1);
 	element_random((*msk)->a2);
-
+	printf("1\n");
+	
+	
 	/* assign all msk fields */
-
-
-	element_pow_zn((*msk)->g_alpha,			(*pub)->g, 		(*msk)->alpha);	//g^b
-
-	element_t alpha_a1;
-	element_mul   	(alpha_a1,	(*msk)->alpha,			(*msk)->a1); 	//alpha * a1
-	element_pow_zn((*msk)->g_alpha_a1,			(*pub)->g, 		alpha_a1);	//g^(alpha*a1)
-	element_set   ((*msk)->pub,			pub);
-
+	printf("2\n");
+	element_pow_zn((*msk)->g_alpha,			(*pub)->g, 		(*msk)->alpha);	//g^alpha
+	printf("2\n");
+	
+	element_mul   	(alpha_a1,			(*msk)->alpha,		(*msk)->a1); 	//alpha * a1
+	printf("2\n");
+	element_pow_zn((*msk)->g_alpha_a1,		(*pub)->g, 		alpha_a1);	//g^(alpha*a1)
+	printf("2\n");
+	(*msk)->pub = pub;
+	printf("2\n");
+	
+	
 	/*	compute pub	*/
-
 	element_set   ((*pub)->g,			(*msk)->g); 
+	printf("3\n");
 	element_set_si((*pub)->n,			n);  
+	printf("3\n");
 	element_pow_zn((*pub)->g_b,			(*pub)->g, 		(*msk)->beta);	//g^b
-	element_pow_zn((*pub)->g_a1,		(*pub)->g, 		(*msk)->a1);	//g^a1
+	printf("3\n");
+	element_pow_zn((*pub)->g_a1,			(*pub)->g, 		(*msk)->a1);	//g^a1
+	printf("3\n");
 	element_pow_zn((*pub)->g_a2,			(*pub)->g, 		(*msk)->a2);	//g^a2
-
+	printf("3\n");
 	/* assign g_ba1 */
-	element_t ba1;
-	element_mul   	(ba1,	(*msk)->beta,			(*msk)->a1); 	//b*a1
-	element_pow_zn((*pub)->g_ba1,			(*pub)->g, 		ba1);	//g^ba1
+	
+	element_mul   	(ba1,	(*msk)->beta,		(*msk)->a1); 	//b*a1
+	element_pow_zn	((*pub)->g_ba1,			(*pub)->g, 		ba1);	//g^ba1
 	/* assign g_ba2 */
-	element_t ba2;
+	printf("3\n");
 	element_mul   	(ba2,	(*msk)->beta,			(*msk)->a2); 	//b*a2
 	element_pow_zn((*pub)->g_ba2,			(*pub)->g, 		ba2);	//g^ba2
 
 	/* assignment of tao1_b & tao1 */
-	element_t v1_a1;
-	element_init_Zr	(v1_a1,			(*pub)->p );
-	element_pow_zn	(v1_a1,			(*msk)->v1, 		(*msk)->a1);	//v1^a1
-	element_mul   	((*pub)->tao1,	(*msk)->v,			v1_a1); // tao1 = v * v^a1;
-	element_pow_zn((*pub)->tao1_b,			(*pub)->tao1, 		(*msk)->beta);	//tao1^b
+	printf("3\n");
+	
+	element_pow_zn	(v1_a1,				(*msk)->v1, 		(*msk)->a1);	//v1^a1
+	element_mul   	((*pub)->tao1,			(*msk)->v,		v1_a1); // tao1 = v * v^a1;
+	element_pow_zn	((*pub)->tao1_b,		(*pub)->tao1, 		(*msk)->beta);	//tao1^b
 
 	/* assignment of tao2_b & tao2 */
-	element_t v2_a2;
-	element_init_Zr	(v2_a2,			(*pub)->p );
-	element_pow_zn	(v2_a2,			(*msk)->v2, 		(*msk)->a2);	//v2^a2
-	element_mul   	((*pub)->tao2,	(*msk)->v,			v2_a2); // tao1 = v * v^a2;
+	
+	
+	printf("4\n");
+	element_pow_zn	(v2_a2,				(*msk)->v2, 		(*msk)->a2);	//v2^a2
+	printf("4\n");
+	element_mul   	((*pub)->tao2,			(*msk)->v,		v2_a2); // tao1 = v * v^a2;
+	printf("4\n");
 	element_pow_zn((*pub)->tao2_b,			(*pub)->tao2, 		(*msk)->beta);	//tao2^b
-
+	printf("4\n");
 	//create alpha * a1 * beta
-	element_t a1_beta;
-	element_mul   	(a1_beta,	(*msk)->a1,			(*msk)->beta); // tao1 = v * v^a1;
+	element_mul   	(a1_beta,			(*msk)->a1,		(*msk)->beta); // tao1 = v * v^a1;
+	printf("4\n");
 	//create g alpha*a1*beta
-	element_t alpha_a1_beta;
-	element_mul   	(alpha_a1_beta,	a1_beta,			(*msk)->alpha); // tao1 = v * v^a1;
-
-	element_t g_alpha_a1_beta;
-	element_pow_zn(g_alpha_a1_beta,			(*pub)->g, 		alpha_a1_beta);	//g^alpha_a1_beta
+	element_mul   	(alpha_a1_beta,			a1_beta,		(*msk)->alpha);                          // tao1 = v * v^a1;
+	printf("4\n");
+	element_pow_zn	(g_alpha_a1_beta,		(*pub)->g, 		alpha_a1_beta);	//g^alpha_a1_beta
+	
+	printf("5\n");
 	/* apply eliptic curve elements */
-	pairing_apply((*pub)->pair,			(*pub)->g,		alpha_a1_beta,	(*pub)->p);	//e(g,g)^alpha*a1*beta
-
+	//pairing_apply((*pub)->pair,			(*pub)->g,		alpha_a1_beta,		(*pub)->p);	//e(g,g)^alpha*a1*beta
 	pairing_apply((*pub)->pair,			(*msk)->g,		g_alpha_a1_beta,	(*pub)->p);	//e(g,g)^a
+	printf("5\n");
+	
 	//clear unneeded elements
 	element_clear(ba1);
 	element_clear(ba2);
