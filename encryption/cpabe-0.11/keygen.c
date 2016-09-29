@@ -131,7 +131,7 @@ main( int argc, char** argv )
 	msk = bswabe_msk_unserialize(pub, suck_file(msk_file), 1);
 
 	printf ("cpabe-keygen - Entering keygen on libbwabe");
-	prv = bswabe_keygen(msk, id_value);
+	prv = bswabe_keygen(&pub, &msk, id_value);
 	spit_file(out_file, bswabe_prv_serialize(prv), 1);
 
 	return 0;

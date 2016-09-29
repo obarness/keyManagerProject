@@ -49,7 +49,7 @@ struct bswabe_msk_s
 	element_t beta;			/* 	Zp */
 	element_t a1;
 	element_t a2;
-	bswabe_pub_t** pub;
+	
 };
 
 typedef struct

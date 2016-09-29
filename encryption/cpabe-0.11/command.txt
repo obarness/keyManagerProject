@@ -1,0 +1,4 @@
+
+cpabe-keygen -o sara_priv_key -p pubkey -m masterkey -a 100
+
+

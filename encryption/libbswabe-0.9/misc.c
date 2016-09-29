@@ -463,7 +463,7 @@ bswabe_pub_free( bswabe_pub_t* pub )
   
   
   
-	element_clear(pub->g	);
+	element_clear(pub->n);
 	element_clear(pub->g_b);
 	element_clear(pub->g_a1);
 	element_clear(pub->g_a2);
@@ -495,7 +495,6 @@ bswabe_msk_free( bswabe_msk_t* msk )
 	element_clear(msk->beta);
 	element_clear(msk->a1);
 	element_clear(msk->a2);        
-	bswabe_pub_free(msk->pub);
 	free(msk);
 }
 

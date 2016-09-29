@@ -42,7 +42,7 @@ bswabe_setup(bswabe_pub_t** pub, bswabe_msk_t** msk );
 /*
   Generate a private key with the given id.
 */
-bswabe_prv_t* bswabe_keygen( bswabe_msk_t* msk, long id_value );
+bswabe_prv_t* bswabe_keygen(bswabe_pub_t** pub, bswabe_msk_t** msk, long id_value );
 
 /*
   the encryption part picks a random exponent "s" from the group. next it updates the system's
