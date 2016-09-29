@@ -41,7 +41,7 @@ struct bswabe_msk_s
 {
 	element_t g;			/*	G1	*/
 	element_t g_alpha;
-	element_t g_alpha_a1;	// g^(alpha * a1)
+	element_t g_alpha_a1;	        // g^(alpha * a1)
 	element_t v;			/*	G1	*/
 	element_t v1;
 	element_t v2;
@@ -79,6 +79,7 @@ struct bswabe_prv_s
 	element_t d_5;		/* G1 */
 	element_t d_6;		/* G1 */
 	element_t d_7;		/* G1 */
+	element_t k;
 
 	
 };
@@ -125,9 +126,19 @@ ct_attr;
 /*
  * The cipher text which is encrypted with the revoke clients' IDs
  */
+
 struct bswabe_cph_s
 {
-	element_t c_s;	/* GT */
-	element_t c_0;	/* G1 */
+	element_t c_0;	/* GT */
+	element_t c_1;	/* G1 */
+	element_t c_2;
+	element_t c_3;
+	element_t c_4;
+	element_t c_5;
+	element_t c_6;
+	element_t c_7;
 	GPtrArray* attr;
+
+	/** delete this */
+	element_t c_s;
 };

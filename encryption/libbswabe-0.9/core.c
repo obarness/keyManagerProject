@@ -1,3 +1,4 @@
+ 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -64,13 +65,11 @@ element_from_string( element_t h, char* s )
 
 	free(r);
 }
-
+// -p pubkey -m masterkey
 void
 bswabe_setup( bswabe_pub_t** pub, bswabe_msk_t** msk )
 {
-	element_t g_a;		/* G1 */
-	element_t b_sqr;	/* Zp */
-
+	signed long int n=5; //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<meanwhile
 	/* initialize */
 	*pub = (bswabe_pub_t*) malloc(sizeof(bswabe_pub_t));
 	*msk = (bswabe_msk_t*) malloc(sizeof(bswabe_msk_t));
@@ -80,134 +79,349 @@ bswabe_setup( bswabe_pub_t** pub, bswabe_msk_t** msk )
 
 	printf("libbswabe setup - Initializing elements\n");
 	/*	public initialization	*/
+	
+	
+	element_t alpha_a1;
+	element_t ba1;
+	element_t ba2;
+	element_t v1_a1;
+	element_t v2_a2;
+	element_t a1_beta;
+	element_t alpha_a1_beta;
+	element_t g_alpha_a1_beta;
+	
 	element_init_G1((*pub)->g,			(*pub)->p);
-	element_init_G1((*pub)->g_b,		(*pub)->p);
-	element_init_G1((*pub)->g_b_sqr,	(*pub)->p);
-	element_init_G1((*pub)->h_b,		(*pub)->p);
-	element_init_GT((*pub)->pair,		(*pub)->p);
+	element_init_G1((*pub)->g_b,			(*pub)->p);
+	element_init_G1((*pub)->g_a1,			(*pub)->p);
+	element_init_G1((*pub)->g_a2,			(*pub)->p);
+	element_init_G1((*pub)->g_ba1,			(*pub)->p);
+	element_init_G1((*pub)->g_ba2,			(*pub)->p);
+	element_init_G1((*pub)->tao1,			(*pub)->p);
+	element_init_G1((*pub)->tao2,			(*pub)->p);
+	element_init_G1((*pub)->tao1_b,			(*pub)->p);
+	element_init_G1((*pub)->tao2_b,			(*pub)->p);
+	element_init_G1((*pub)->w,			(*pub)->p);
+	element_init_G1((*pub)->h,			(*pub)->p);
+	element_init_GT((*pub)->pair,			(*pub)->p);
+	
+	element_init_Zr((*pub)->n,			(*pub)->p);
+	element_init_Zr(alpha_a1,			(*pub)->p);
+	element_init_Zr(ba1,				(*pub)->p);
+	element_init_Zr(ba2,				(*pub)->p);
+	element_init_G1(v1_a1,				(*pub)->p);
+	element_init_G1(v2_a2,				(*pub)->p);
+	element_init_Zr(a1_beta,			(*pub)->p);
+	element_init_Zr(alpha_a1_beta,			(*pub)->p);
+	element_init_G1(g_alpha_a1_beta,		(*pub)->p);
+
+	
+
+
 
 	/*	msk initialization	*/
-	element_init_G1((*msk)->g,			(*pub)->p);
-	element_init_G1((*msk)->h,			(*pub)->p);
-	element_init_Zr((*msk)->alpha,		(*pub)->p);
-	element_init_Zr((*msk)->beta,		(*pub)->p);
-	element_init_Zr((*msk)->ctr,		(*pub)->p);
 
-	/*	local element initialization	*/
-	element_init_G1(g_a,				(*pub)->p);
-	element_init_Zr(b_sqr,				(*pub)->p);
+	element_init_G1((*msk)->g,				(*pub)->p);
+	element_init_G1((*msk)->g_alpha,			(*pub)->p);
+	element_init_G1((*msk)->g_alpha_a1,			(*pub)->p);
+	element_init_G1((*msk)->v,				(*pub)->p);
+	element_init_G1((*msk)->v1,				(*pub)->p);
+	element_init_G1((*msk)->v2,				(*pub)->p);
+	element_init_Zr((*msk)->alpha,				(*pub)->p);
+	element_init_Zr((*msk)->beta,				(*pub)->p);
+	element_init_Zr((*msk)->a1,				(*pub)->p);
+	element_init_Zr((*msk)->a2,				(*pub)->p);
+	
+	
+	
+	
 
 	printf("libbswabe setup - Computing key elements\n");
 	/*	compute msk	*/
+        printf("111111112222\n");
+	//random group elements - msk
 	element_random((*msk)->g);
-	element_random((*msk)->h);
+	element_random((*msk)->v);
+	element_random((*msk)->v1);
+	element_random((*msk)->v2);
+	printf("1\n");
+	//random group elements - pub
+	element_random((*pub)->w);
+	element_random((*pub)->h);
+	printf("1\n");
+	// random numbers from Zp
 	element_random((*msk)->alpha);
 	element_random((*msk)->beta);
-	element_random((*msk)->ctr);
-
+	element_random((*msk)->a1);
+	element_random((*msk)->a2);
+	printf("1\n");
+	
+	
+	/* assign all msk fields */
+	printf("2\n");
+	element_pow_zn((*msk)->g_alpha,			(*pub)->g, 		(*msk)->alpha);	//g^alpha
+	printf("2\n");
+	
+	element_mul   	(alpha_a1,			(*msk)->alpha,		(*msk)->a1); 	//alpha * a1
+	printf("2\n");
+	element_pow_zn((*msk)->g_alpha_a1,		(*pub)->g, 		alpha_a1);	//g^(alpha*a1)
+	printf("2\n");
+	(*msk)->pub = pub;
+	printf("2\n");
+	
+	
 	/*	compute pub	*/
-	element_set   ((*pub)->g,			(*msk)->g);
-	element_pow_zn((*pub)->g_b,			(*msk)->g, 		(*msk)->beta);	//g^b
-	element_square(b_sqr,				(*msk)->beta);					//b^2
-	element_pow_zn((*pub)->g_b_sqr,		(*pub)->g,		b_sqr);			//g^b^2
-	element_pow_zn((*pub)->h_b,			(*msk)->h,		(*msk)->beta);	//h^b
-	element_pow_zn(g_a,					(*msk)->g, 		(*msk)->alpha);	//g^a
-	pairing_apply((*pub)->pair,			(*msk)->g,		g_a,	(*pub)->p);	//e(g,g)^a
+	element_set   ((*pub)->g,			(*msk)->g); 
+	printf("3\n");
+	element_set_si((*pub)->n,			n);  
+	printf("3\n");
+	element_pow_zn((*pub)->g_b,			(*pub)->g, 		(*msk)->beta);	//g^b
+	printf("3\n");
+	element_pow_zn((*pub)->g_a1,			(*pub)->g, 		(*msk)->a1);	//g^a1
+	printf("3\n");
+	element_pow_zn((*pub)->g_a2,			(*pub)->g, 		(*msk)->a2);	//g^a2
+	printf("3\n");
+	/* assign g_ba1 */
+	
+	element_mul   	(ba1,	(*msk)->beta,		(*msk)->a1); 	//b*a1
+	element_pow_zn	((*pub)->g_ba1,			(*pub)->g, 		ba1);	//g^ba1
+	/* assign g_ba2 */
+	printf("3\n");
+	element_mul   	(ba2,	(*msk)->beta,			(*msk)->a2); 	//b*a2
+	element_pow_zn((*pub)->g_ba2,			(*pub)->g, 		ba2);	//g^ba2
 
+	/* assignment of tao1_b & tao1 */
+	printf("3\n");
+	
+	element_pow_zn	(v1_a1,				(*msk)->v1, 		(*msk)->a1);	//v1^a1
+	element_mul   	((*pub)->tao1,			(*msk)->v,		v1_a1); // tao1 = v * v^a1;
+	element_pow_zn	((*pub)->tao1_b,		(*pub)->tao1, 		(*msk)->beta);	//tao1^b
+
+	/* assignment of tao2_b & tao2 */
+	
+	
+	printf("4\n");
+	element_pow_zn	(v2_a2,				(*msk)->v2, 		(*msk)->a2);	//v2^a2
+	printf("4\n");
+	element_mul   	((*pub)->tao2,			(*msk)->v,		v2_a2); // tao1 = v * v^a2;
+	printf("4\n");
+	element_pow_zn((*pub)->tao2_b,			(*pub)->tao2, 		(*msk)->beta);	//tao2^b
+	printf("4\n");
+	//create alpha * a1 * beta
+	element_mul   	(a1_beta,			(*msk)->a1,		(*msk)->beta); // tao1 = v * v^a1;
+	printf("4\n");
+	//create g alpha*a1*beta
+	element_mul   	(alpha_a1_beta,			a1_beta,		(*msk)->alpha);                          // tao1 = v * v^a1;
+	printf("4\n");
+	element_pow_zn	(g_alpha_a1_beta,		(*pub)->g, 		alpha_a1_beta);	//g^alpha_a1_beta
+	
+	printf("5\n");
+	/* apply eliptic curve elements */
+	//pairing_apply((*pub)->pair,			(*pub)->g,		alpha_a1_beta,		(*pub)->p);	//e(g,g)^alpha*a1*beta
+	pairing_apply((*pub)->pair,			(*msk)->g,		g_alpha_a1_beta,	(*pub)->p);	//e(g,g)^a
+	printf("5\n");
+	
 	//clear unneeded elements
-	element_clear(g_a);
-	element_clear(b_sqr);
+	element_clear(ba1);
+	element_clear(ba2);
+	element_clear(v1_a1);
+	element_clear(v2_a2);
+	element_clear(a1_beta);
+	element_clear(alpha_a1_beta);
+	element_clear(g_alpha_a1_beta);
+	element_clear(alpha_a1);
 
+	
 	printf ("libbswabe setup - Print elements for debugging\n");
 	printf("Print MSK:\n");
 	element_printf("g:\t%B\n", 		(*msk)->g);
-	element_printf("h:\t%B\n", 		(*msk)->h);
-	element_printf("alpha:\t%B\n", 	(*msk)->alpha);
-	element_printf("beta:\t%B\n", 	(*msk)->beta);
-	element_printf("CTR:\t%B\n", 	(*msk)->ctr);
+	element_printf("g_alpha:\t%B\n", 	(*msk)->g_alpha);
+	element_printf("g_alpha_a1:\t%B\n", 	(*msk)->g_alpha_a1);
+	element_printf("v:\t%B\n", 		(*msk)->v);
+	element_printf("v1:\t%B\n", 		(*msk)->v1);
+	element_printf("v2:\t%B\n", 		(*msk)->v2);
+	element_printf("alpha:\t%B\n", 		(*msk)->alpha);
+	element_printf("beta:\t%B\n", 		(*msk)->beta);
+	element_printf("a1:\t%B\n", 		(*msk)->a1);
+	element_printf("a2:\t%B\n", 		(*msk)->a2);
 	printf("\nPrint PK:\n");
 	element_printf("g:\t%B\n", 		(*pub)->g);
-	element_printf("g_b:\t%B\n", 	(*pub)->g_b);
-	element_printf("g_b_sqr:%B\n",	(*pub)->g_b_sqr);
-	element_printf("h_b:\t%B\n", 	(*pub)->h_b);
-	element_printf("pair:\t%B\n", 	(*pub)->pair);
+	element_printf("g_b:\t%B\n", 		(*pub)->g_b);
+	element_printf("g_a1:%B\n", 		(*pub)->g_a1);
+	element_printf("g_a2:\t%B\n", 		(*pub)->g_a2);
+	element_printf("g_ba1:\t%B\n", 		(*pub)->g_ba1);
+	element_printf("g_ba2:\t%B\n", 		(*pub)->g_ba2);
+	element_printf("tao1:\t%B\n", 		(*pub)->tao1);
+	element_printf("tao2:\t%B\n", 		(*pub)->tao2);
+	element_printf("w:\t%B\n", 		(*pub)->w);
+	element_printf("h:\t%B\n", 		(*pub)->h);
+	element_printf("pair:\t%B\n", 		(*pub)->pair);
+	
 }
 
-bswabe_prv_t* bswabe_keygen( bswabe_pub_t* pub,	bswabe_msk_t* msk, long id_value )
+bswabe_prv_t* bswabe_keygen(bswabe_msk_t* msk, long id_value)
 {
 	/*	Declarations	*/
 	bswabe_prv_t* prv;			//pointer to private key
-
-	/*	d_0	*/
-	element_t g_a;			/* G1 */
-	element_t g_b_2_t;		/* G1 */
+        bswabe_pub_t** pub;
+	*pub = (bswabe_pub_t*) malloc(sizeof(bswabe_pub_t));
+	pub = msk->pub;
+	
 	/*	d_1	*/
-	element_t g_b_id;		/* G1 */
-	element_t g_mul_h;		/* G1 */
+	element_t g_alpha_a1;			/* G1 */
+	element_t v_d;		     		/* G1 */
 	/*	d_2	*/
-	element_t t_minus;		/* Zp */
-	/*	e	*/
-	element_t g_ctr;		/* G1 */
+	element_t g_minusalpha;		
+	element_t v1_d;
+	element_t g_z1;
+	/*	d_3	*/
+	element_t g_b_minusz1;	
+	/*	d_4	*/
+	element_t v2_d;
+	element_t g_z2;	
+	/*	d_5	*/
+	element_t g_b_minusz2;
+	/*	d_6	*/
+	element_t g_d2_b;
+	/*	d_7	*/
+	element_t g_d1;
+	/*	K	*/
+	element_t w_id_h_d1;
+	
 	/*	Local elements	*/
-	element_t t;			/* Zp */
 	element_t id;			/* Zp */
+	element_t d;			
+	element_t d1;			/* Zp */
+	element_t d2;			/* Zp */	
+	element_t z1;			/* Zp */
+	element_t z2;			/* Zp */
+	element_t minusapha;
+	element_t minusz1;
+	element_t minusz2;
 
 	printf ("libbswabe keygen - Initializing elements\n");
 	/* initialize */
 	prv = (bswabe_prv_t*) malloc(sizeof(bswabe_prv_t));		//private key allocation
 
 	/* key element initialization	*/
-	element_init_G1	(prv->d_0,	pub->p);
-	element_init_G1	(prv->d_1,	pub->p);
-	element_init_G1	(prv->d_2,	pub->p);
-	element_init_GT	(prv->e, 	pub->p);
+	element_init_G1	(prv->d_1,	(*pub)->p);
+	element_init_G1	(prv->d_2,	(*pub)->p);
+	element_init_G1	(prv->d_3,	(*pub)->p);
+	element_init_G1	(prv->d_4,	(*pub)->p);
+	element_init_G1	(prv->d_5,	(*pub)->p);
+	element_init_G1	(prv->d_6,	(*pub)->p);
+	element_init_G1	(prv->d_7,	(*pub)->p);
+	element_init_G1	(prv->k,	(*pub)->p);
 	/*	local element initialization */
-	element_init_Zr	(id,			pub->p);
-	element_init_Zr	(t,			pub->p);
-	/* d_0 element initialization	*/
-	element_init_G1	(g_a,		pub->p);
-	element_init_G1	(g_b_2_t,	pub->p);
+	element_init_Zr	(id,		(*pub)->p);
+	element_init_Zr	(d1,		(*pub)->p);
+	element_init_Zr	(d2,		(*pub)->p);
+	element_init_Zr	(z1,		(*pub)->p);
+	element_init_Zr	(z2,		(*pub)->p);
 	/* d_1 element initialization	*/
-	element_init_G1	(g_b_id, 	pub->p);
-	element_init_G1	(g_mul_h, 	pub->p);
+	element_init_G1	(g_alpha_a1,	(*pub)->p);
+	element_init_G1	(v_d,		(*pub)->p);
 	/* d_2 element initialization	*/
-	element_init_Zr	(t_minus,	pub->p);
-	/* e element initialization	*/
-	element_init_G1	(g_ctr,		pub->p);
+	element_init_G1	(g_minusalpha, 	(*pub)->p);
+	element_init_G1	(v1_d, 	 	(*pub)->p);
+	element_init_G1	(g_z1, 		(*pub)->p);
+	/* d_3 element initialization	*/
+	element_init_G1	(g_b_minusz1,	(*pub)->p);
+	/* d_4 element initialization	*/
+	element_init_G1	(v2_d,		(*pub)->p);
+	element_init_G1	(g_z2,		(*pub)->p);
+	/* d_5 element initialization	*/
+	element_init_G1	(g_b_minusz2,	(*pub)->p);
+	/* d_6 element initialization	*/
+	element_init_G1	(g_d2_b,	(*pub)->p);
+	/* d_7 element initialization	*/
+	element_init_G1	(g_d1,		(*pub)->p);
+	/* k element initialization	*/
+	element_init_G1	(w_id_h_d1,	(*pub)->p);
 
+	
+	
 	printf ("libbswabe keygen - Computing key elements\n");
 	/*	compute	*/
 	element_set_si 	(id, 		id_value);
-	element_random	(t);
-	/*	d_0	compute	*/
-	element_pow_zn	(g_a,		msk->g,			msk->alpha);		//g^a
-	element_pow_zn	(g_b_2_t, 	pub->g_b_sqr, 	t);					//g^(t*b^2)
-	element_mul   	(prv->d_0,	g_a,			g_b_2_t);			//D0 = g^a * g^(t*b^2)
+	element_random	(d1);
+	element_random	(d2);
+	element_random	(z1);
+	element_random	(z2);
+	element_add(d,			d1,			d2);
+	
 	/*	d_1	compute	*/
-	element_pow_zn	(g_b_id,	pub->g_b,		id);
-	element_mul   	(g_mul_h,	g_b_id,			msk->h);
-	element_pow_zn	(prv->d_1,	g_mul_h,		t);					//D1 = (g^(b*ID) * h)^t
+	element_pow_zn	(v_d,		msk->v,			d);			//v^d
+	element_mul   	(prv->d_1,	msk->g_alpha_a1,	v_d);			//D1 = (g^alpha*a1)*(v^d)
+	
 	/*	d_2	compute	*/
-	element_neg   	(t_minus,	t);
-	element_pow_zn	(prv->d_2,	msk->g,			t_minus);			//D2 = g^(-t)
-	/*	e compute	*/
-	element_pow_zn	(g_ctr,		msk->g,			msk->ctr);
-	pairing_apply 	(prv->e,	g_ctr,			g_b_2_t,	pub->p);//E = e(g,g)^(CTR*t*b^2)
+	element_neg   	(minusapha,	msk->alpha);
+	element_pow_zn	(g_minusalpha,	msk->g,			minusapha);
+	element_pow_zn	(v1_d,		msk->v1,		d);			  
+	element_pow_zn	(g_z1,		msk->g,			z1);
+	element_mul     (prv->d_2,	g_z1,			v1_d);
+	element_mul     (prv->d_2,	prv->d_2,		g_minusalpha);		//D2 = (g^-alpha)*(v1^d)*(g^z1)
+	
+	/*	d_3	compute	*/
+	element_neg   	(minusz1,	z1);
+	element_pow_zn	(g_b_minusz1,	(*pub)->g_b,		minusz1);		
+	element_set     (prv->d_3,	g_b_minusz1);					//D3 = (g^b)^-z1
+	/*	d_4	compute	*/
+	element_pow_zn	(v2_d,		msk->v2,		d);
+	element_pow_zn	(g_z2,		msk->g,			z1);
+	element_mul     (prv->d_4,	g_z2,			v2_d);			//D4 = (v2^d)*(g^z2)
+	/*	d_5	compute	*/
+	element_neg   	(minusz2,	z2);
+	element_pow_zn	(g_b_minusz2,	(*pub)->g_b,		minusz2);		
+	element_set     (prv->d_5,	g_b_minusz1);					//D5 = (g^b)^-z2
+	/*	d_6	compute	*/
+	element_pow_zn	(g_d2_b,	(*pub)->g_b,		d2);		
+	element_set     (prv->d_6,	g_d2_b);					//D6 = (g^b*d2
+	/*	d_7	compute	*/
+	element_pow_zn	(g_d1,		(*pub)->g,		d1);		
+	element_set     (prv->d_7,	g_d1);						//D7 = (g^d1)
+	/*	K	compute	*/
+	element_pow_zn	(w_id_h_d1,	(*pub)->w,		id);	
+	element_mul     (w_id_h_d1,	w_id_h_d1,		(*pub)->h);		
+	element_pow_zn	(prv->k,	w_id_h_d1,		d1);			//K = (h*w^id)^d1
+	
+
+	
+	
 	/*	clear unneeded elements	*/
-	element_clear	(g_a);
-	element_clear	(g_b_2_t);
-	element_clear	(g_b_id);
-	element_clear	(g_mul_h);
-	element_clear	(t_minus);
-	element_clear	(g_ctr);
-	element_clear	(t);
-	element_clear	(id);
+	element_clear (g_alpha_a1);			
+	element_clear (v_d);		     		
+	element_clear (g_minusalpha);		
+	element_clear (v1_d);
+	element_clear (g_z1);
+	element_clear (g_b_minusz1); 
+	element_clear (v2_d);
+	element_clear (g_z2);
+	element_clear (g_b_minusz2);
+        element_clear (g_d2_b);
+	element_clear (g_d1);
+	element_clear (w_id_h_d1);
+	element_clear (id);			
+	element_clear (d);			
+	element_clear (d1);		
+	element_clear (d2);			
+	element_clear (z1);			
+	element_clear (z2);		
+	element_clear (minusapha);
+	element_clear (minusz1);
+	element_clear (minusz2);
+	
+	
+	
 
 	printf("\nPrint SK:\n");
-	element_printf("D0:\t%B\n", prv->d_0);
 	element_printf("D1:\t%B\n", prv->d_1);
 	element_printf("D2:\t%B\n", prv->d_2);
-	element_printf("E:\t%B\n", 	prv->e);
+	element_printf("D3:\t%B\n", prv->d_3);
+	element_printf("D4:\t%B\n", prv->d_4);
+	element_printf("D5:\t%B\n", prv->d_5);
+	element_printf("D6:\t%B\n", prv->d_6);
+	element_printf("D7:\t%B\n", prv->d_7);
+	element_printf("K:\t%B\n",  prv->k);
 
 	return prv;
 }
@@ -397,10 +611,11 @@ fill_policy( bswabe_policy_t* p, bswabe_pub_t* pub, element_t e )
  * This function creates the last part in the CT that depends on the number of revoke clients.
  * It takes the string with all the ids from the input, divides them and create the proper elements.
  * It also breaks down the random exponents S to r parts, when r is the number of ids, such that S1+...Sr = S.
- */
+ */ 
+
 void
 setId ( bswabe_pub_t* pub, char* rawAttrString, element_t s, GPtrArray * root)
-{
+{/*
 	printf("\nsetId - the input string:\t%s\n", rawAttrString);
 	element_printf("S:\t%B\n", s);
 	char** idArray;
@@ -430,12 +645,12 @@ setId ( bswabe_pub_t* pub, char* rawAttrString, element_t s, GPtrArray * root)
 		ct_attr* p;									//a pointer to the new ct_attr struct that will be build
 		p = (ct_attr*) malloc(sizeof(ct_attr));		//allocate the size of the new part of the CT
 
-		/*	initialize */
+		//initialize 
 		element_init_G1(p->c_i1,	pub->p);
 		element_init_G1(p->c_i2,	pub->p);
 		element_init_Zr(p->id,		pub->p);
 
-		/*	compute	*/
+		//compute
 		element_set_si (p->id,		atoi(stringId));//set an id element from string
 		element_printf("\nRevoke id %i:\t%B\n", counter, p->id);
 
@@ -460,8 +675,8 @@ setId ( bswabe_pub_t* pub, char* rawAttrString, element_t s, GPtrArray * root)
 			element_add    (s_i_sum,	s_i_sum,	s_i);
 			element_printf("Si sum. counter %i:\t%B\n", counter, s_i_sum);
 		}
-		element_t g_b_2_id;		/* G1 */
-		element_t g_mul_h;		/* G1 */
+		element_t g_b_2_id;		// G1 
+		element_t g_mul_h;		// G1 
 
 		element_init_G1(g_b_2_id,	pub->p);
 		element_init_G1(g_mul_h,	pub->p);
@@ -481,76 +696,78 @@ setId ( bswabe_pub_t* pub, char* rawAttrString, element_t s, GPtrArray * root)
 
 	element_clear(s_i);
 	element_clear(s_i_sum);
+*/
 }
 
 /*
  * the encryption function first of all encrypts the message M but also updates the
  * master key's current state CTR.
  */
+
 bswabe_cph_t*
 bswabe_enc(bswabe_pub_t* pub, bswabe_msk_t* msk, unsigned char* msg, char* inputIdString)
 {
-	printf("\nlibbswabe enc - Revoke ids: %s\n",inputIdString);
-	bswabe_cph_t* cph;
-
-	element_t s;		/* Zp */	//the random exponent
-	element_t m;		/* GT */	//the message M
-	element_t cs_pair;	/* GT */
-
-	/* initialize */
-	cph = (bswabe_cph_t*) malloc(sizeof(bswabe_cph_t));
-
-	element_init_GT	(m, 		pub->p);
-	element_init_Zr	(s, 		pub->p);
-	/* init C~ */
-	element_init_GT	(cs_pair,	pub->p);
-	element_init_GT	(cph->c_s, 	pub->p);
-	/* init C0 */
-	element_init_G1	(cph->c_0,  pub->p);
-
-	/* convert message */
-	printf("string before:\t%s\n", 	msg);
-	element_from_bytes(m, 		msg);						//convert the file's content to an element
-
-	/* preform update */
-	element_random	(s);
-	element_printf("S:\t%B\n",s);
-	element_add   	(msk->ctr,	s,			msk->ctr);	//update the new state new CTR = s2
-	element_printf("CTR:\t%B\n",msk->ctr);
-
-	/* compute C~ */
-	element_pow_zn	(cs_pair,	pub->pair,	msk->ctr);
-	element_mul   	(cph->c_s,	cs_pair,	m);		//c~ = e(g,g)^(a*S2)*M
-	element_printf("c_s:\t%B\n",cph->c_s);
-	/*	compute c_0	*/
-	element_pow_zn	(cph->c_0,	msk->g,		msk->ctr);
-	element_printf("c_0:\t%B\n",cph->c_0);
-
-	/*	compute attribute elements	*/
-	cph->attr = g_ptr_array_new();		//initialize attr as a new array
-	setId(pub ,inputIdString, s , cph->attr);
-
-	/* debug */
-	printf("debugging - the attribute array has id's number: %d \n", cph->attr->len);
-	printf("print CT:\n");
-	element_printf("C~:\t%B\n", 		cph->c_s);
-	element_printf("C0:\t%B\n", 		cph->c_0);
-	int i;
-	for (i = 0 ; i < cph->attr->len ; i++)
-	{
-		ct_attr * ctAtt = (ct_attr*) g_ptr_array_index(cph->attr, i);
-		printf("printing group element number: %d\n",i);
-		element_printf("id %i:\t%B\n", i+1, ctAtt->id);
-		element_printf("C%i1:\t%B\n", i+1, ctAtt->c_i1);
-		element_printf("C%i2:\t%B\n", i+1, ctAtt->c_i2);
-	}
-
-	element_clear(s);
-	element_clear(m);
-
-	printf("libbswabe-enc - Returning to cpabe-enc\n");
-	return cph;
-//	return NULL;
+// 	printf("\nlibbswabe enc - Revoke ids: %s\n",inputIdString);
+// 	bswabe_cph_t* cph;
+// 
+// 	element_t s;		/* Zp */	//the random exponent
+// 	element_t m;		/* GT */	//the message M
+// 	element_t cs_pair;	/* GT */
+// 
+// 	/* initialize */
+// 	cph = (bswabe_cph_t*) malloc(sizeof(bswabe_cph_t));
+// 
+// 	element_init_GT	(m, 		pub->p);
+// 	element_init_Zr	(s, 		pub->p);
+// 	/* init C~ */
+// 	element_init_GT	(cs_pair,	pub->p);
+// 	element_init_GT	(cph->c_s, 	pub->p);
+// 	/* init C0 */
+// 	element_init_G1	(cph->c_0,  pub->p);
+// 
+// 	/* convert message */
+// 	printf("string before:\t%s\n", 	msg);
+// 	element_from_bytes(m, 		msg);						//convert the file's content to an element
+// 
+// 	/* preform update */
+// 	element_random	(s);
+// 	element_printf("S:\t%B\n",s);
+// 	element_add   	(msk->ctr,	s,			msk->ctr);	//update the new state new CTR = s2
+// 	element_printf("CTR:\t%B\n",msk->ctr);
+// 
+// 	/* compute C~ */
+// 	element_pow_zn	(cs_pair,	pub->pair,	msk->ctr);
+// 	element_mul   	(cph->c_s,	cs_pair,	m);		//c~ = e(g,g)^(a*S2)*M
+// 	element_printf("c_s:\t%B\n",cph->c_s);
+// 	/*	compute c_0	*/
+// 	element_pow_zn	(cph->c_0,	msk->g,		msk->ctr);
+// 	element_printf("c_0:\t%B\n",cph->c_0);
+// 
+// 	/*	compute attribute elements	*/
+// 	cph->attr = g_ptr_array_new();		//initialize attr as a new array
+// 	setId(pub ,inputIdString, s , cph->attr);
+// 
+// 	/* debug */
+// 	printf("debugging - the attribute array has id's number: %d \n", cph->attr->len);
+// 	printf("print CT:\n");
+// 	element_printf("C~:\t%B\n", 		cph->c_s);
+// 	element_printf("C0:\t%B\n", 		cph->c_0);
+// 	int i;
+// 	for (i = 0 ; i < cph->attr->len ; i++)
+// 	{
+// 		ct_attr * ctAtt = (ct_attr*) g_ptr_array_index(cph->attr, i);
+// 		printf("printing group element number: %d\n",i);
+// 		element_printf("id %i:\t%B\n", i+1, ctAtt->id);
+// 		element_printf("C%i1:\t%B\n", i+1, ctAtt->c_i1);
+// 		element_printf("C%i2:\t%B\n", i+1, ctAtt->c_i2);
+// 	}
+// 
+// 	element_clear(s);
+// 	element_clear(m);
+// 
+// 	printf("libbswabe-enc - Returning to cpabe-enc\n");
+// 	return cph;
+	return NULL;
 }
 
 void
@@ -924,122 +1141,124 @@ dec_flatten( element_t r, bswabe_policy_t* p, bswabe_prv_t* prv, bswabe_pub_t* p
  * The decryption part of the algorithm which cipher the original message and alsom perform an update in
  * the client's state E in it's secret key.
  */
+
 char*
 bswabe_dec( bswabe_pub_t* pub, bswabe_prv_t* prv, bswabe_cph_t* cph, long id_value)
 {
-	int i = 0;
-
-	element_t numerator;		/* GT */
-	element_t denominator;		/* GT */
-//	element_t update;			/* GT */
-	element_t c_1_temp;			/* G1 */
-	element_t c_2_temp;			/* G1 */
-	element_t c_1_mul;			/* G1 */
-	element_t c_2_mul;			/* G1 */
-	element_t a;				/* GT */
-	element_t a_1;				/* GT */
-	element_t a_2;				/* GT */
-	element_t id;				/* Zp */
-	element_t idInvert;			/* Zp */
-	element_t msg;				/* GT */
-
-	ct_attr* temp;
 	char* message = 0;
-
-	/* initialization */
-
-	element_init_GT(numerator,		pub->p);
-	element_init_GT(denominator,	pub->p);
-//	element_init_GT(update,			pub->p);
-	element_init_G1(c_1_temp,		pub->p);
-	element_init_G1(c_2_temp,		pub->p);
-	element_init_G1(c_1_mul,		pub->p);
-	element_init_G1(c_2_mul,		pub->p);
-	element_init_GT(a,				pub->p);
-	element_init_GT(a_1,			pub->p);
-	element_init_GT(a_2,			pub->p);
-	element_init_Zr(id,				pub->p);
-	element_init_Zr(idInvert,		pub->p);
-	element_init_GT(msg,			pub->p);
-
-	/*	checking the ids	*/
-	element_set_si(id,				id_value);
-
-	for (i = 0; i < cph->attr->len; i++)
-	{
-		temp = (ct_attr*) g_ptr_array_index(cph->attr, i);
-		element_printf("libbswabe-dec - Compairing between\nclient id:\t%B\nrevoke id:\t%B\n",id, temp->id);
-		if (element_cmp(id, temp->id) == 0)
-		{
-//			perror("The ids match. the algorithm can't decrypted\n");
-			return 0;
-		}
-		else
-		{
-			printf("ids doesn't match.\t CONTINUE\n");
-		}
-	}
-	temp = NULL;
-	i = 0;
-
-	/*	computing	*/
-	//computing the element A = A1 * A2
-	for (i = 0; i < cph->attr->len; i++)
-	{
-		temp = (ct_attr*) g_ptr_array_index(cph->attr, i);
-		element_t idSub;	/* Zp */
-		element_init_Zr(idSub, 		pub->p);
-		element_sub   (idSub,		id,			temp->id);
-		element_printf("Id sub:\t%B\n", idSub);
-		element_invert(idInvert,	idSub);
-		element_printf("Id invert:\t%B\n", idInvert);
-		element_clear(idSub);
-
-		if (i == 0)
-		{
-			printf("Calculating element %d\n", i+1);
-			// calc C1
-			element_pow_zn(c_1_mul,		temp->c_i1,		idInvert);
-			element_printf("C%i1:\t%B\n",i+1, c_1_mul);
-			// calc C2
-			element_pow_zn(c_2_mul,		temp->c_i2,		idInvert);
-			element_printf("C%i2:\t%B\n",i+1, c_2_mul);
-		}
-		else
-		{
-			printf("Calculating element %d\n", i+1);
-			// calc C1
-			element_pow_zn(c_1_temp,	temp->c_i1,		idInvert);
-			element_printf("C%i1:\t%B\n",i+1, c_1_temp);
-			element_mul   (c_1_mul,		c_1_mul,		c_1_temp);
-			element_printf("C%i1 mul:\t%B\n",i+1, c_1_mul);
-			// calc C2
-			element_pow_zn(c_2_temp,	temp->c_i2,		idInvert);
-			element_printf("C%i2:\t%B\n",i+1, c_2_temp);
-			element_mul   (c_2_mul,		c_2_mul,		c_2_temp);
-			element_printf("C%i2 mul:%B\n",i+1, c_2_mul);
-		}
-	}
-	printf("doing pairing\n");
-	pairing_apply(a_1,			prv->d_1,		c_1_mul,	pub->p);
-	element_printf("A1:\t%B\n",a_1);
-	pairing_apply(a_2,			prv->d_2,		c_2_mul,	pub->p);
-	element_printf("A2:\t%B\n",a_2);
-	element_mul  (a,			a_1,			a_2);		//A = A1 * A2
-	element_printf("A:\t%B\n",a);
-	element_printf("libbswabe-dec - element A:\n%B\n", a);
-
-	element_mul(prv->e, 		prv->e, 		a);			//E <- E * A the state update
-	element_printf("SK state:\t%B", prv->e);
-
-	element_mul(numerator,		cph->c_s,		prv->e);
-	pairing_apply(denominator,	cph->c_0,		prv->d_0,	pub->p);
-
-	element_div(msg,			numerator, 		denominator);
-
-	message = malloc(element_length_in_bytes(msg));
-	element_to_bytes(message, msg);
-	printf("the message is:\t\t%s\n", message);
+// 	int i = 0;
+// 
+// 	element_t numerator;		/* GT */
+// 	element_t denominator;		/* GT */
+// //	element_t update;			/* GT */
+// 	element_t c_1_temp;			/* G1 */
+// 	element_t c_2_temp;			/* G1 */
+// 	element_t c_1_mul;			/* G1 */
+// 	element_t c_2_mul;			/* G1 */
+// 	element_t a;				/* GT */
+// 	element_t a_1;				/* GT */
+// 	element_t a_2;				/* GT */
+// 	element_t id;				/* Zp */
+// 	element_t idInvert;			/* Zp */
+// 	element_t msg;				/* GT */
+// 
+// 	ct_attr* temp;
+// 	
+// 
+// 	/* initialization */
+// 
+// 	element_init_GT(numerator,		pub->p);
+// 	element_init_GT(denominator,	pub->p);
+// //	element_init_GT(update,			pub->p);
+// 	element_init_G1(c_1_temp,		pub->p);
+// 	element_init_G1(c_2_temp,		pub->p);
+// 	element_init_G1(c_1_mul,		pub->p);
+// 	element_init_G1(c_2_mul,		pub->p);
+// 	element_init_GT(a,				pub->p);
+// 	element_init_GT(a_1,			pub->p);
+// 	element_init_GT(a_2,			pub->p);
+// 	element_init_Zr(id,				pub->p);
+// 	element_init_Zr(idInvert,		pub->p);
+// 	element_init_GT(msg,			pub->p);
+// 
+// 	/*	checking the ids	*/
+// 	element_set_si(id,				id_value);
+// 
+// 	for (i = 0; i < cph->attr->len; i++)
+// 	{
+// 		temp = (ct_attr*) g_ptr_array_index(cph->attr, i);
+// 		element_printf("libbswabe-dec - Compairing between\nclient id:\t%B\nrevoke id:\t%B\n",id, temp->id);
+// 		if (element_cmp(id, temp->id) == 0)
+// 		{
+// //			perror("The ids match. the algorithm can't decrypted\n");
+// 			return 0;
+// 		}
+// 		else
+// 		{
+// 			printf("ids doesn't match.\t CONTINUE\n");
+// 		}
+// 	}
+// 	temp = NULL;
+// 	i = 0;
+// 
+// 	/*	computing	*/
+// 	//computing the element A = A1 * A2
+// 	for (i = 0; i < cph->attr->len; i++)
+// 	{
+// 		temp = (ct_attr*) g_ptr_array_index(cph->attr, i);
+// 		element_t idSub;	/* Zp */
+// 		element_init_Zr(idSub, 		pub->p);
+// 		element_sub   (idSub,		id,			temp->id);
+// 		element_printf("Id sub:\t%B\n", idSub);
+// 		element_invert(idInvert,	idSub);
+// 		element_printf("Id invert:\t%B\n", idInvert);
+// 		element_clear(idSub);
+// 
+// 		if (i == 0)
+// 		{
+// 			printf("Calculating element %d\n", i+1);
+// 			// calc C1
+// 			element_pow_zn(c_1_mul,		temp->c_i1,		idInvert);
+// 			element_printf("C%i1:\t%B\n",i+1, c_1_mul);
+// 			// calc C2
+// 			element_pow_zn(c_2_mul,		temp->c_i2,		idInvert);
+// 			element_printf("C%i2:\t%B\n",i+1, c_2_mul);
+// 		}
+// 		else
+// 		{
+// 			printf("Calculating element %d\n", i+1);
+// 			// calc C1
+// 			element_pow_zn(c_1_temp,	temp->c_i1,		idInvert);
+// 			element_printf("C%i1:\t%B\n",i+1, c_1_temp);
+// 			element_mul   (c_1_mul,		c_1_mul,		c_1_temp);
+// 			element_printf("C%i1 mul:\t%B\n",i+1, c_1_mul);
+// 			// calc C2
+// 			element_pow_zn(c_2_temp,	temp->c_i2,		idInvert);
+// 			element_printf("C%i2:\t%B\n",i+1, c_2_temp);
+// 			element_mul   (c_2_mul,		c_2_mul,		c_2_temp);
+// 			element_printf("C%i2 mul:%B\n",i+1, c_2_mul);
+// 		}
+// 	}
+// 	printf("doing pairing\n");
+// 	pairing_apply(a_1,			prv->d_1,		c_1_mul,	pub->p);
+// 	element_printf("A1:\t%B\n",a_1);
+// 	pairing_apply(a_2,			prv->d_2,		c_2_mul,	pub->p);
+// 	element_printf("A2:\t%B\n",a_2);
+// 	element_mul  (a,			a_1,			a_2);		//A = A1 * A2
+// 	element_printf("A:\t%B\n",a);
+// 	element_printf("libbswabe-dec - element A:\n%B\n", a);
+// 
+// 	element_mul(prv->e, 		prv->e, 		a);			//E <- E * A the state update
+// 	element_printf("SK state:\t%B", prv->e);
+// 
+// 	element_mul(numerator,		cph->c_s,		prv->e);
+// 	pairing_apply(denominator,	cph->c_0,		prv->d_0,	pub->p);
+// 
+// 	element_div(msg,			numerator, 		denominator);
+// 
+// 	message = malloc(element_length_in_bytes(msg));
+// 	element_to_bytes(message, msg);
+// 	printf("the message is:\t\t%s\n", message);
 
 	return message;
 }

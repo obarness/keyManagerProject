@@ -1,3 +1,4 @@
+ 
 /*
 	Include glib.h, pbc.h, and bswabe.h before including this file.
 */
@@ -14,11 +15,21 @@ struct bswabe_pub_s
 {
 	char* pairing_desc;		//the string with the parameters to create the elliptic curve
 	pairing_t p;			//the struct with the description
-	element_t g;			/* G1 */
-	element_t g_b;          /* G1 */
-	element_t g_b_sqr;		/* G1 */
-	element_t h_b;			/* G1 */
+	element_t g;
+	element_t n;
+	element_t g_b;			/* G1 */
+	element_t g_a1;          /* G1 */
+	element_t g_a2;		/* G1 */
+	element_t g_ba1;			/* G1 */
+	element_t g_ba2;			
+	element_t tao1;
+	element_t tao2;
+	element_t tao1_b;
+	element_t tao2_b;
+	element_t w;
+	element_t h;
 	element_t pair;			/* GT */
+
 };
 
 /*
@@ -29,10 +40,16 @@ struct bswabe_pub_s
 struct bswabe_msk_s
 {
 	element_t g;			/*	G1	*/
-	element_t h;			/*	G1	*/
+	element_t g_alpha;
+	element_t g_alpha_a1;	        // g^(alpha * a1)
+	element_t v;			/*	G1	*/
+	element_t v1;
+	element_t v2;
 	element_t alpha;		/*	Zp */
 	element_t beta;			/* 	Zp */
-	element_t ctr;			/* 	Zp */
+	element_t a1;
+	element_t a2;
+	bswabe_pub_t** pub;
 };
 
 typedef struct
@@ -54,10 +71,17 @@ bswabe_prv_comp_t;
  */
 struct bswabe_prv_s
 {
-	element_t d_0;		/* G1 */
+	
 	element_t d_1;		/* G1 */
 	element_t d_2;		/* G1 */
-	element_t e;		/* GT */
+	element_t d_3;		/* G1 */
+	element_t d_4;		/* G1 */
+	element_t d_5;		/* G1 */
+	element_t d_6;		/* G1 */
+	element_t d_7;		/* G1 */
+	element_t k;
+
+	
 };
 
 typedef struct
@@ -102,9 +126,19 @@ ct_attr;
 /*
  * The cipher text which is encrypted with the revoke clients' IDs
  */
+
 struct bswabe_cph_s
 {
-	element_t c_s;	/* GT */
-	element_t c_0;	/* G1 */
+	element_t c_0;	/* GT */
+	element_t c_1;	/* G1 */
+	element_t c_2;
+	element_t c_3;
+	element_t c_4;
+	element_t c_5;
+	element_t c_6;
+	element_t c_7;
 	GPtrArray* attr;
+
+	/* temporary */
+	element_t c_s;
 };
