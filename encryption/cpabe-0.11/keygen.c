@@ -105,24 +105,6 @@ parse_args( int argc, char** argv )
 			}
 		}
 	}
-
-	/**** DEBUG */
-  	if(!msk_file){
-  		printf("no msk file\n");
-  	}
-  	if(!pub_file){
-  		printf("no pub_file\n");
-  	}
-  	if(!out_file){
-  		printf("no out_file\n");
-  	}
-  	if(id_value == 0){
-  		printf("id_value == 0\n");
-  	}
-
-
-
-
 	if( !msk_file || !pub_file || !out_file || (id_value == 0))
 	{
 		printf("cpabe-keygen - One of the files weren't initiated\n");
@@ -146,16 +128,10 @@ main( int argc, char** argv )
 
 	printf ("cpabe-keygen - Constructing the public keys");
 	pub = bswabe_pub_unserialize(suck_file(pub_file), 1);
-	printf ("public key initialized\n");
-	printf ("initializing master secret key\n");
 	msk = bswabe_msk_unserialize(pub, suck_file(msk_file), 1);
-	printf ("msk initizlized successfuly\n");
 
-	printf("test on keygen\n");
-	printf ("cpabe-keygen - Entering keygen on libbwabe\n");
-	printf("test2 on keygen\n");
-
-	prv = bswabe_keygen( msk, id_value);
+	printf ("cpabe-keygen - Entering keygen on libbwabe");
+	prv = bswabe_keygen(&pub, &msk, id_value);
 	spit_file(out_file, bswabe_prv_serialize(prv), 1);
 
 	return 0;

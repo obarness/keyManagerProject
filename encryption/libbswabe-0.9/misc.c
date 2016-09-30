@@ -145,7 +145,7 @@ bswabe_pub_unserialize( GByteArray* b, int free )
 	element_init_G1(pub->h,				pub->p);
 	element_init_GT(pub->pair,			pub->p);
 
-
+	
 	unserialize_element(b, &offset,		pub->g);
 	unserialize_element(b, &offset,		pub->g_b);
 	unserialize_element(b, &offset,		pub->g_a1);
@@ -186,6 +186,7 @@ bswabe_msk_serialize( bswabe_msk_t* msk )
 	GByteArray* b;
 	b = g_byte_array_new();
 
+	
 	serialize_element(b,	msk->g);
 	serialize_element(b,	msk->g_alpha);
 	serialize_element(b,	msk->g_alpha_a1);
@@ -196,26 +197,7 @@ bswabe_msk_serialize( bswabe_msk_t* msk )
 	serialize_element(b,	msk->beta);
 	serialize_element(b,	msk->a1);
 	serialize_element(b,	msk->a2);
-
-	
-	bswabe_pub_t* pub = *(msk->pub);
-
-	serialize_string (b, pub->pairing_desc);
-	serialize_element(b, pub->g	);
-	serialize_element(b, pub->g_b	);
-	serialize_element(b, pub->g_a1	);
-	serialize_element(b, pub->g_a2	);
-	serialize_element(b, pub->g_ba1	);
-	serialize_element(b, pub->g_ba2	);
-	serialize_element(b, pub->tao1	);
-	serialize_element(b, pub->tao2	);
-	serialize_element(b, pub->tao1_b);
-	serialize_element(b, pub->tao2_b);
-	serialize_element(b, pub->w	);
-	serialize_element(b, pub->h	);
-	serialize_element(b, pub->pair	);
-
-	
+	//issue with PK <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 	
 
 	return b;
@@ -230,35 +212,32 @@ bswabe_msk_unserialize( bswabe_pub_t* pub, GByteArray* b, int free )
 	msk = (bswabe_msk_t*) malloc(sizeof(bswabe_msk_t));
 	offset = 0;
 
-	printf("initizlizing all elements...\n");
+	
 	element_init_G1(msk->g,					pub->p);
-	element_init_G1(msk->g_alpha,			pub->p);
-	element_init_G1(msk->g_alpha_a1,		pub->p);
-	element_init_G1(msk->v,				 	pub->p);
-	element_init_G1(msk->v1,				pub->p);
-	element_init_G1(msk->v2,				pub->p);
+	element_init_G1(msk->g_alpha,				pub->p);
+	element_init_Zr(msk->g_alpha_a1,			pub->p);
+	element_init_Zr(msk->v,				 	pub->p);
+	element_init_Zr(msk->v1,				pub->p);
+	element_init_Zr(msk->v2,				pub->p);
 	element_init_Zr(msk->alpha,				pub->p);
 	element_init_Zr(msk->beta,				pub->p);
 	element_init_Zr(msk->a1,				pub->p);
 	element_init_Zr(msk->a2,				pub->p);
 	//issue with PK <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-	printf("done\n");
-	printf("unserializing elements...\n");
-
-
-	unserialize_element(b, &offset,		msk->g);
-	unserialize_element(b, &offset,		msk->g_alpha);
-	unserialize_element(b, &offset,		msk->g_alpha_a1);
-	unserialize_element(b, &offset,		msk->v);
-	unserialize_element(b, &offset,		msk->v1);
-	unserialize_element(b, &offset,		msk->v2);
-	unserialize_element(b, &offset,		msk->alpha);
-	unserialize_element(b, &offset,		msk->beta);
-	unserialize_element(b, &offset,		msk->a1);
-	unserialize_element(b, &offset,		msk->a2);
-	printf("done\n");
 	
-	msk->pub = &pub;
+	
+	
+	unserialize_element(b, &offset,	msk->g);
+	unserialize_element(b, &offset,	msk->g_alpha);
+	unserialize_element(b, &offset,	msk->g_alpha_a1);
+	unserialize_element(b, &offset,	msk->v);
+	unserialize_element(b, &offset,	msk->v1);
+	unserialize_element(b, &offset,	msk->v2);
+	unserialize_element(b, &offset,	msk->alpha);
+	unserialize_element(b, &offset,	msk->beta);
+	unserialize_element(b, &offset,	msk->a1);
+	unserialize_element(b, &offset,	msk->a2);
+
 
 	if( free )
 	{
@@ -484,7 +463,7 @@ bswabe_pub_free( bswabe_pub_t* pub )
   
   
   
-	element_clear(pub->g	);
+	element_clear(pub->n);
 	element_clear(pub->g_b);
 	element_clear(pub->g_a1);
 	element_clear(pub->g_a2);
@@ -516,7 +495,6 @@ bswabe_msk_free( bswabe_msk_t* msk )
 	element_clear(msk->beta);
 	element_clear(msk->a1);
 	element_clear(msk->a2);        
-	bswabe_pub_free(msk->pub);
 	free(msk);
 }
 

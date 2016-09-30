@@ -49,7 +49,7 @@ struct bswabe_msk_s
 	element_t beta;			/* 	Zp */
 	element_t a1;
 	element_t a2;
-	bswabe_pub_t** pub;
+	
 };
 
 typedef struct
@@ -126,19 +126,9 @@ ct_attr;
 /*
  * The cipher text which is encrypted with the revoke clients' IDs
  */
-
 struct bswabe_cph_s
 {
-	element_t c_0;	/* GT */
-	element_t c_1;	/* G1 */
-	element_t c_2;
-	element_t c_3;
-	element_t c_4;
-	element_t c_5;
-	element_t c_6;
-	element_t c_7;
+	element_t c_s;	/* GT */
+	element_t c_0;	/* G1 */
 	GPtrArray* attr;
-
-	/* temporary */
-	element_t c_s;
 };
