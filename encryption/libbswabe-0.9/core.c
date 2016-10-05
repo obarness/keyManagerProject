@@ -597,91 +597,91 @@ fill_policy( bswabe_policy_t* p, bswabe_pub_t* pub, element_t e )
  * It also breaks down the random exponents S to r parts, when r is the number of ids, such that S1+...Sr = S.
  */ 
 
-void
-setId ( bswabe_pub_t* pub, char* rawAttrString, element_t s, GPtrArray * root)
-{/*
-	printf("\nsetId - the input string:\t%s\n", rawAttrString);
-	element_printf("S:\t%B\n", s);
-	char** idArray;
-	char** currentId;
-	char* stringId;
-
-	element_t s_i;		//Si is a part from the exponent S
-	element_t s_i_sum;	//the sum of r-1 Si		in total S1+...+Sr = S
-
-	idArray = g_strsplit(rawAttrString, " ", 0);	//split the whole rawAttrString string with the delimiter " "
-	currentId = idArray;
-
-	element_init_Zr(s_i, 		pub->p);
-	element_init_Zr(s_i_sum, 	pub->p);
-
-	element_set0(s_i_sum);		//initialize the s sum to 0
-	element_printf("initial sum:\t%B\n", s_i_sum);
-
-	int counter = 0;
-
-	while (*currentId)								//while there is still ids left
-	{
-		counter++;									//only for debug printing
-
-		stringId = *(currentId++);					//get the current individual id
-
-		ct_attr* p;									//a pointer to the new ct_attr struct that will be build
-		p = (ct_attr*) malloc(sizeof(ct_attr));		//allocate the size of the new part of the CT
-
-		//initialize 
-		element_init_G1(p->c_i1,	pub->p);
-		element_init_G1(p->c_i2,	pub->p);
-		element_init_Zr(p->id,		pub->p);
-
-		//compute
-		element_set_si (p->id,		atoi(stringId));//set an id element from string
-		element_printf("\nRevoke id %i:\t%B\n", counter, p->id);
-
-		printf("setId - creating the struct with the ID's\n");
-		if (*(currentId) == NULL )					//if this is the last id we need to calculate Sr
-		{
-			if (counter == 1)						//this means that the first id is the only id and that S doesn't need to be divided
-			{
-				element_set(s_i,	s);				//set Si to be S
-				element_printf("S1. counter %i:\t%B\n", counter, s_i);
-			}
-			else
-			{
-				element_sub(s_i,	s,		s_i_sum);	//to create the r part do Sr = S - sum(Si) mod p
-				element_printf("Sr. counter %i:\t%B\n", counter, s_i);
-			}
-		}
-		else
-		{
-			element_random (s_i);
-			element_printf("Si. counter %i:\t%B\n", counter, s_i);
-			element_add    (s_i_sum,	s_i_sum,	s_i);
-			element_printf("Si sum. counter %i:\t%B\n", counter, s_i_sum);
-		}
-		element_t g_b_2_id;		// G1 
-		element_t g_mul_h;		// G1 
-
-		element_init_G1(g_b_2_id,	pub->p);
-		element_init_G1(g_mul_h,	pub->p);
-
-		element_pow_zn(p->c_i1,		pub->g_b,		s_i);		//c1 = g^(b*s_i)
-		element_printf("C%i1:\t%B\n",counter, p->c_i1);
-		element_pow_zn(g_b_2_id, 	pub->g_b_sqr,	p->id);
-		element_mul   (g_mul_h,		g_b_2_id, 		pub->h_b);
-		element_pow_zn(p->c_i2,		g_mul_h,		s_i);		//c2 = (g^(id*b^2) * h^b)^s_i
-		element_printf("C%i2:\t%B\n",counter, p->c_i2);
-		element_clear(g_b_2_id);
-		element_clear(g_mul_h);
-
-		g_ptr_array_add(root,p);								//after the part of the CT was constructed it's added to the pointer array
-		printf("New root length is: %d\n", root->len);
-	}
-
-	element_clear(s_i);
-	element_clear(s_i_sum);
-*/
-}
+// void
+// setId ( bswabe_pub_t* pub, char* rawAttrString, element_t s, GPtrArray * root)
+// {
+// 	printf("\nsetId - the input string:\t%s\n", rawAttrString);
+// 	element_printf("S:\t%B\n", s);
+// 	char** idArray;
+// 	char** currentId;
+// 	char* stringId;
+// 
+// 	element_t s_i;		//Si is a part from the exponent S
+// 	element_t s_i_sum;	//the sum of r-1 Si		in total S1+...+Sr = S
+// 
+// 	idArray = g_strsplit(rawAttrString, " ", 0);	//split the whole rawAttrString string with the delimiter " "
+// 	currentId = idArray;
+// 
+// 	element_init_Zr(s_i, 		pub->p);
+// 	element_init_Zr(s_i_sum, 	pub->p);
+// 
+// 	element_set0(s_i_sum);		//initialize the s sum to 0
+// 	element_printf("initial sum:\t%B\n", s_i_sum);
+// 
+// 	int counter = 0;
+// 
+// 	while (*currentId)								//while there is still ids left
+// 	{
+// 		counter++;									//only for debug printing
+// 
+// 		stringId = *(currentId++);					//get the current individual id
+// 
+// 		ct_attr* p;									//a pointer to the new ct_attr struct that will be build
+// 		p = (ct_attr*) malloc(sizeof(ct_attr));		//allocate the size of the new part of the CT
+// 
+// 		//initialize 
+// 		element_init_G1(p->c_i1,	pub->p);
+// 		element_init_G1(p->c_i2,	pub->p);
+// 		element_init_Zr(p->id,		pub->p);
+// 
+// 		//compute
+// 		element_set_si (p->id,		atoi(stringId));//set an id element from string
+// 		element_printf("\nRevoke id %i:\t%B\n", counter, p->id);
+// 
+// 		printf("setId - creating the struct with the ID's\n");
+// 		if (*(currentId) == NULL )					//if this is the last id we need to calculate Sr
+// 		{
+// 			if (counter == 1)						//this means that the first id is the only id and that S doesn't need to be divided
+// 			{
+// 				element_set(s_i,	s);				//set Si to be S
+// 				element_printf("S1. counter %i:\t%B\n", counter, s_i);
+// 			}
+// 			else
+// 			{
+// 				element_sub(s_i,	s,		s_i_sum);	//to create the r part do Sr = S - sum(Si) mod p
+// 				element_printf("Sr. counter %i:\t%B\n", counter, s_i);
+// 			}
+// 		}
+// 		else
+// 		{
+// 			element_random (s_i);
+// 			element_printf("Si. counter %i:\t%B\n", counter, s_i);
+// 			element_add    (s_i_sum,	s_i_sum,	s_i);
+// 			element_printf("Si sum. counter %i:\t%B\n", counter, s_i_sum);
+// 		}
+// 		element_t g_b_2_id;		// G1 
+// 		element_t g_mul_h;		// G1 
+// 
+// 		element_init_G1(g_b_2_id,	pub->p);
+// 		element_init_G1(g_mul_h,	pub->p);
+// 
+// 		element_pow_zn(p->c_i1,		pub->g_b,		s_i);		//c1 = g^(b*s_i)
+// 		element_printf("C%i1:\t%B\n",counter, p->c_i1);
+// 		element_pow_zn(g_b_2_id, 	pub->g_b_sqr,	p->id);
+// 		element_mul   (g_mul_h,		g_b_2_id, 		pub->h_b);
+// 		element_pow_zn(p->c_i2,		g_mul_h,		s_i);		//c2 = (g^(id*b^2) * h^b)^s_i
+// 		element_printf("C%i2:\t%B\n",counter, p->c_i2);
+// 		element_clear(g_b_2_id);
+// 		element_clear(g_mul_h);
+// 
+// 		g_ptr_array_add(root,p);								//after the part of the CT was constructed it's added to the pointer array
+// 		printf("New root length is: %d\n", root->len);
+// 	}
+// 
+// 	element_clear(s_i);
+// 	element_clear(s_i_sum);
+// 
+// }
 
 /*
  * the encryption function first of all encrypts the message M but also updates the
@@ -707,7 +707,7 @@ bswabe_enc(bswabe_pub_t* pub, bswabe_msk_t* msk, unsigned char* msg, char* input
 // 	element_init_GT	(cs_pair,	pub->p);
 // 	element_init_GT	(cph->c_s, 	pub->p);
 // 	/* init C0 */
-// 	element_init_G1	(cph->c_0,  pub->p);
+// 	element_init_G1	(cph->c_0,  	pub->p);
 // 
 // 	/* convert message */
 // 	printf("string before:\t%s\n", 	msg);
@@ -1130,108 +1130,132 @@ char*
 bswabe_dec( bswabe_pub_t* pub, bswabe_prv_t* prv, bswabe_cph_t* cph, long id_value)
 {
 	char* message = 0;
-// 	int i = 0;
-// 
-// 	element_t numerator;		/* GT */
-// 	element_t denominator;		/* GT */
-// //	element_t update;			/* GT */
-// 	element_t c_1_temp;			/* G1 */
-// 	element_t c_2_temp;			/* G1 */
-// 	element_t c_1_mul;			/* G1 */
-// 	element_t c_2_mul;			/* G1 */
-// 	element_t a;				/* GT */
-// 	element_t a_1;				/* GT */
-// 	element_t a_2;				/* GT */
-// 	element_t id;				/* Zp */
-// 	element_t idInvert;			/* Zp */
-// 	element_t msg;				/* GT */
-// 
-// 	ct_attr* temp;
-// 	
-// 
-// 	/* initialization */
-// 
-// 	element_init_GT(numerator,		pub->p);
-// 	element_init_GT(denominator,	pub->p);
-// //	element_init_GT(update,			pub->p);
-// 	element_init_G1(c_1_temp,		pub->p);
-// 	element_init_G1(c_2_temp,		pub->p);
-// 	element_init_G1(c_1_mul,		pub->p);
-// 	element_init_G1(c_2_mul,		pub->p);
-// 	element_init_GT(a,				pub->p);
-// 	element_init_GT(a_1,			pub->p);
-// 	element_init_GT(a_2,			pub->p);
-// 	element_init_Zr(id,				pub->p);
-// 	element_init_Zr(idInvert,		pub->p);
-// 	element_init_GT(msg,			pub->p);
-// 
-// 	/*	checking the ids	*/
-// 	element_set_si(id,				id_value);
-// 
-// 	for (i = 0; i < cph->attr->len; i++)
-// 	{
-// 		temp = (ct_attr*) g_ptr_array_index(cph->attr, i);
-// 		element_printf("libbswabe-dec - Compairing between\nclient id:\t%B\nrevoke id:\t%B\n",id, temp->id);
-// 		if (element_cmp(id, temp->id) == 0)
-// 		{
-// //			perror("The ids match. the algorithm can't decrypted\n");
-// 			return 0;
-// 		}
-// 		else
-// 		{
-// 			printf("ids doesn't match.\t CONTINUE\n");
-// 		}
-// 	}
-// 	temp = NULL;
-// 	i = 0;
-// 
-// 	/*	computing	*/
-// 	//computing the element A = A1 * A2
-// 	for (i = 0; i < cph->attr->len; i++)
-// 	{
-// 		temp = (ct_attr*) g_ptr_array_index(cph->attr, i);
-// 		element_t idSub;	/* Zp */
-// 		element_init_Zr(idSub, 		pub->p);
-// 		element_sub   (idSub,		id,			temp->id);
-// 		element_printf("Id sub:\t%B\n", idSub);
-// 		element_invert(idInvert,	idSub);
-// 		element_printf("Id invert:\t%B\n", idInvert);
-// 		element_clear(idSub);
-// 
-// 		if (i == 0)
-// 		{
-// 			printf("Calculating element %d\n", i+1);
-// 			// calc C1
-// 			element_pow_zn(c_1_mul,		temp->c_i1,		idInvert);
-// 			element_printf("C%i1:\t%B\n",i+1, c_1_mul);
-// 			// calc C2
-// 			element_pow_zn(c_2_mul,		temp->c_i2,		idInvert);
-// 			element_printf("C%i2:\t%B\n",i+1, c_2_mul);
-// 		}
-// 		else
-// 		{
-// 			printf("Calculating element %d\n", i+1);
-// 			// calc C1
-// 			element_pow_zn(c_1_temp,	temp->c_i1,		idInvert);
-// 			element_printf("C%i1:\t%B\n",i+1, c_1_temp);
-// 			element_mul   (c_1_mul,		c_1_mul,		c_1_temp);
-// 			element_printf("C%i1 mul:\t%B\n",i+1, c_1_mul);
-// 			// calc C2
-// 			element_pow_zn(c_2_temp,	temp->c_i2,		idInvert);
-// 			element_printf("C%i2:\t%B\n",i+1, c_2_temp);
-// 			element_mul   (c_2_mul,		c_2_mul,		c_2_temp);
-// 			element_printf("C%i2 mul:%B\n",i+1, c_2_mul);
-// 		}
-// 	}
-// 	printf("doing pairing\n");
-// 	pairing_apply(a_1,			prv->d_1,		c_1_mul,	pub->p);
-// 	element_printf("A1:\t%B\n",a_1);
-// 	pairing_apply(a_2,			prv->d_2,		c_2_mul,	pub->p);
-// 	element_printf("A2:\t%B\n",a_2);
-// 	element_mul  (a,			a_1,			a_2);		//A = A1 * A2
-// 	element_printf("A:\t%B\n",a);
-// 	element_printf("libbswabe-dec - element A:\n%B\n", a);
-// 
+	int i = 0;
+	ct_attr* temp;
+	
+	
+	element_t numerator;			/* GT */
+	element_t denominator;			/* GT */
+//	element_t update;			/* GT */
+	element_t c_1_temp;			/* G1 */
+	element_t c_2_temp;			/* G1 */
+	element_t c_1_mul;			/* G1 */
+	element_t c_2_mul;			/* G1 */
+	element_t a;				/* GT */
+	element_t a_1;				/* GT */
+	element_t a_11;
+	element_t a_12;
+	element_t a_13;
+	element_t a_14;
+	element_t a_15;
+	element_t a_2;				/* GT */
+	element_t a_21;				
+	element_t a_3;				/* GT */
+	element_t a_4;				/* GT */
+	element_t id;				/* Zp */
+	element_t idInvert;			/* Zp */
+	element_t msg;				/* GT */
+
+
+	/* initialization */
+	element_init_GT(numerator,			pub->p);
+	element_init_GT(denominator,			pub->p);
+//	element_init_GT(update,				pub->p);
+	element_init_G1(c_1_temp,			pub->p);
+	element_init_G1(c_2_temp,			pub->p);
+	element_init_G1(c_1_mul,			pub->p);
+	element_init_G1(c_2_mul,			pub->p);
+	element_init_GT(a,				pub->p);
+	element_init_GT(a_1,				pub->p);
+	element_init_GT(a_11,				pub->p);
+	element_init_GT(a_12,				pub->p);
+	element_init_GT(a_13,				pub->p);
+	element_init_GT(a_14,				pub->p);
+	element_init_GT(a_15,				pub->p);
+	element_init_GT(a_2,				pub->p);
+	element_init_GT(a_21,				pub->p);
+	element_init_GT(a_3,				pub->p);
+	element_init_GT(a_4,				pub->p);
+	element_init_Zr(id,				pub->p);
+	element_init_Zr(idInvert,			pub->p);
+	element_init_GT(msg,				pub->p);
+
+	/*	checking the ids	*/
+	element_set_si(id,				id_value);
+
+	for (i = 0; i < cph->attr->len; i++)
+	{
+		temp = (ct_attr*) g_ptr_array_index(cph->attr, i);
+		element_printf("libbswabe-dec - Compairing between\nclient id:\t%B\nrevoke id:\t%B\n",id, temp->id);
+		if (element_cmp(id, temp->id) == 0)
+		{
+			return 0;
+		}
+		else
+		{
+			printf("ids doesn't match.\t CONTINUE\n");
+		}
+	}
+	
+	
+	//Calculate A1	
+	pairing_apply(a_11,			prv->d_1,		cph->c_1,	pub->p);
+	pairing_apply(a_12,			prv->d_2,		cph->c_2,	pub->p);
+	pairing_apply(a_13,			prv->d_3,		cph->c_3,	pub->p);
+	pairing_apply(a_14,			prv->d_4,		cph->c_4,	pub->p);
+	pairing_apply(a_15,			prv->d_5,		cph->c_5,	pub->p);	
+	element_mul  (a_1,			a_11,			a_12);
+	element_mul  (a_1,			a_1,			a_13);
+	element_mul  (a_1,			a_1,			a_14);
+	element_mul  (a_1,			a_1,			a_15);
+	//Calculate A2
+	pairing_apply(a_2,			prv->d_6,		cph->c_6,	pub->p);
+	pairing_apply(a_21,			prv->d_7,		cph->c_7,	pub->p);
+	element_mul  (a_2,			a_2,			a_21);
+	//Calculate A3
+	element_div(a_3,			a_1, 			a_2);
+	
+	
+	
+	temp = NULL;
+	i = 0;
+
+	//Calculate A4 
+	for (i = 0; i < cph->attr->len; i++)
+	{
+		temp = (ct_attr*) g_ptr_array_index(cph->attr, i);
+		element_t idSub;	/* Zp */
+		element_init_Zr(idSub, 		pub->p);
+		element_sub    (idSub,		id,			temp->id);
+		element_printf ("Id sub:\t%B\n", idSub);
+		element_invert (idInvert,	idSub);
+		element_printf ("Id invert:\t%B\n", idInvert);
+		element_clear  (idSub);
+
+	
+		
+		printf("Calculating element %d\n", i+1);
+		element_t a_4temp;				/* GT */
+		element_t a_4temp2;				/* GT */
+		element_init_GT(idSub, 		pub->p);
+		element_init_GT(idSub, 		pub->p);
+		
+		pairing_apply (a_4temp,		temp->c_i1,		prv->k,		pub->p);
+		pairing_apply (a_4temp2,	temp->c_i2,		prv->d_7,	pub->p);
+		element_div   (a_4temp,		a_4temp,		a_4temp2);
+		element_pow_zn(a_4temp,		a_4temp,		idInvert);
+		element_mul   (a_4,		a_4,			a_4temp);
+		element_clear (a_4temp);
+		element_clear (a_4temp2);
+			
+		
+	}
+	
+	
+	element_div   (a,			a_3,			a_4);
+	element_div   (msg,			cph->c_0,		a);
+	
+
 // 	element_mul(prv->e, 		prv->e, 		a);			//E <- E * A the state update
 // 	element_printf("SK state:\t%B", prv->e);
 // 
@@ -1239,10 +1263,10 @@ bswabe_dec( bswabe_pub_t* pub, bswabe_prv_t* prv, bswabe_cph_t* cph, long id_val
 // 	pairing_apply(denominator,	cph->c_0,		prv->d_0,	pub->p);
 // 
 // 	element_div(msg,			numerator, 		denominator);
-// 
-// 	message = malloc(element_length_in_bytes(msg));
-// 	element_to_bytes(message, msg);
-// 	printf("the message is:\t\t%s\n", message);
+
+	message = malloc(element_length_in_bytes(msg));
+	element_to_bytes(message, msg);
+	printf("The message is:\t\t%s\n", message);
 
 	return message;
 }
