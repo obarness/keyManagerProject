@@ -668,10 +668,11 @@ setId ( bswabe_pub_t* pub, char* rawAttrString, element_t s, GPtrArray * root, e
 		g_ptr_array_add(root,p);								//after the part of the CT was constructed it's added to the pointer array
 		printf("New root length is: %d\n", root->len);
 	}
-
+	printf("set_id is clearing elements before returning...\n");
 	element_clear(t_i);
-
+	printf("trying to set negative t\n");
 	element_set(*neg_t,	t_i_sum);
+	printf("done\n");
 	element_clear(t_i_sum);
 
 }
@@ -718,24 +719,36 @@ bswabe_enc(bswabe_pub_t* pub, bswabe_msk_t* msk, unsigned char* msg, char* input
 	element_printf("S:\t%B\n",s);
 
 /***** c_0 *****/
-	element_init_GT	(cph->c_0, 	pub->p);
+	printf("creating element c_0...\n");
 
+	element_init_GT	(cph->c_0, 	pub->p);
 	element_t alpha_a1_beta;
+	element_t g_alpha_a1_beta;
+	element_init_G1	(g_alpha_a1_beta, 	pub->p);
+	element_init_Zr	(alpha_a1_beta, 	pub->p);
+
 	element_mul		(alpha_a1_beta,		msk->alpha,			msk->a1);    //alpha * a1
 	element_mul		(alpha_a1_beta,		alpha_a1_beta,		msk->beta);  //(alpha*a1) * beta
-	pairing_apply	(cph->c_0,		msk->g,		alpha_a1_beta, 	pub->p); //apply pairing
+	element_pow_zn	(g_alpha_a1_beta,   msk->g,		alpha_a1_beta);
+	printf("pairing_apply	(cph->c_0,		msk->g,		alpha_a1_beta, 	pub->p);\n");
+	pairing_apply	(cph->c_0,		msk->g,		g_alpha_a1_beta, 	pub->p); //apply pairing
+	printf("element_pow_zn	(cph->c_0,	cph->c_0,	s2);\n");
 	element_pow_zn	(cph->c_0,	cph->c_0,	s2);						 //apply power
+	printf("element_mul   	(cph->c_0,	cph->c_0,	m);\n");
 	element_mul   	(cph->c_0,	cph->c_0,	m);							//multiply
 
 	element_clear(alpha_a1_beta);
 
+	printf("done\n");
 /***** c_1 *****/
+	printf("creating element c_1...\n");
 	element_init_G1	(cph->c_1,  			pub->p);
 	element_set     (cph->c_1,			   msk->g);
 	element_pow_zn	(cph->c_1, cph->c_1, msk->beta);
 	element_pow_zn	(cph->c_1, cph->c_1, 		s);
-
+	printf("done\n");
 /***** c2 *****/
+	printf("creating element c_2...\n");
 	element_t b_a1;
 	element_init_Zr (b_a1,					  pub->p);
 	element_mul		(b_a1, 		msk->beta,   msk->a1);
@@ -746,14 +759,16 @@ bswabe_enc(bswabe_pub_t* pub, bswabe_msk_t* msk, unsigned char* msg, char* input
 	element_pow_zn	(cph->c_2, cph->c_2, 		s1);
 
 	element_clear(b_a1);
-
+	printf("done\n");
 /***** c3 *****/
+	printf("creating element c_3...\n");
 	element_init_G1	(cph->c_3,  			pub->p);
 	element_set     (cph->c_3,			   msk->g);
 	element_pow_zn	(cph->c_3, cph->c_3, 		b_a1);
 	element_pow_zn	(cph->c_3, cph->c_3, 		s1);
-
+	printf("done\n");
 /***** c4 *****/
+	printf("creating element c_4...\n");
 	element_t b_a2;
 	element_init_Zr (b_a2,					  pub->p);
 	element_mul		(b_a2, 		msk->beta,   msk->a2);
@@ -764,14 +779,16 @@ bswabe_enc(bswabe_pub_t* pub, bswabe_msk_t* msk, unsigned char* msg, char* input
 	element_pow_zn	(cph->c_4, cph->c_4, 		s2);
 
 	element_clear(b_a2);
-
+	printf("done\n");
 /***** c5 *****/
+	printf("creating element c_5...\n");
 	element_init_G1	(cph->c_5,  			pub->p);
 	element_set     (cph->c_5,			   msk->g);
 	element_pow_zn	(cph->c_5, cph->c_5, 		msk->a2);
 	element_pow_zn	(cph->c_5, cph->c_5, 		s2);
-
+	printf("done\n");
 /***** c6 *****/
+	printf("creating element c_6...\n");
 	element_init_G1	(cph->c_6,  			pub->p);
 
 	element_t tao1_s1;
@@ -784,15 +801,15 @@ bswabe_enc(bswabe_pub_t* pub, bswabe_msk_t* msk, unsigned char* msg, char* input
 
 	element_clear(tao1_s1);
 	element_clear(tao2_s2);
-
+	printf("done\n");
 /***** c_7 *****/
-
+	printf("creating element c_7...\n");
 	cph->attr = g_ptr_array_new();		//initialize attr as a new array
+
+	element_init_Zr	(neg_t,  					pub->p);
 	(setId(pub ,inputIdString, s , cph->attr, &neg_t));
 	element_neg(neg_t, neg_t);
 	
-
-
 	element_init_G1	(cph->c_7,  			pub->p);
 
 	element_t tao1_beta_s1;
@@ -821,7 +838,7 @@ bswabe_enc(bswabe_pub_t* pub, bswabe_msk_t* msk, unsigned char* msg, char* input
 	element_clear(tao2_beta_s2);
 	element_clear(w_neg_t);
 	element_clear(neg_t);
-
+	printf("done\n");
 
 
 	
