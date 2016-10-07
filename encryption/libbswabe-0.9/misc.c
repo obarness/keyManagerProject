@@ -424,9 +424,14 @@ bswabe_cph_serialize( bswabe_cph_t* cph )
 {
 	GByteArray* b;
 	b = g_byte_array_new();
-
-	serialize_element(b, 	cph->c_s);
 	serialize_element(b, 	cph->c_0);
+	serialize_element(b, 	cph->c_1);
+	serialize_element(b, 	cph->c_2);
+	serialize_element(b, 	cph->c_3);
+	serialize_element(b, 	cph->c_4);
+	serialize_element(b, 	cph->c_5);
+	serialize_element(b, 	cph->c_6);
+	serialize_element(b, 	cph->c_7);
 	serialize_attr   (b, 	cph->attr);
 
 	return b;
@@ -441,13 +446,32 @@ bswabe_cph_unserialize( bswabe_pub_t* pub, GByteArray* b, int free )
 	cph = (bswabe_cph_t*) malloc(sizeof(bswabe_cph_t));
 	offset = 0;
 
-	element_init_GT(cph->c_s, 	pub->p);
-	element_init_G1(cph->c_0,  	pub->p);
-	unserialize_element(b, &offset, cph->c_s);
+	element_init_GT(cph->c_0, 	pub->p);
+	element_init_G1(cph->c_1,  	pub->p);
+	element_init_G1(cph->c_2,  	pub->p);
+	element_init_G1(cph->c_3,  	pub->p);
+	element_init_G1(cph->c_4,  	pub->p);
+	element_init_G1(cph->c_5,  	pub->p);
+	element_init_G1(cph->c_6,  	pub->p);
+	element_init_G1(cph->c_7,  	pub->p);
+
 	unserialize_element(b, &offset, cph->c_0);
+	unserialize_element(b, &offset, cph->c_1);
+	unserialize_element(b, &offset, cph->c_2);
+	unserialize_element(b, &offset, cph->c_3);
+	unserialize_element(b, &offset, cph->c_4);
+	unserialize_element(b, &offset, cph->c_5);
+	unserialize_element(b, &offset, cph->c_6);
+	unserialize_element(b, &offset, cph->c_7);
 	printf("\nPrinting CT after reconstruction:\n");
-	element_printf("C~:\t%B\n", 		cph->c_s);
-	element_printf("C0:\t%B\n", 		cph->c_0);
+	element_printf("C~:\t%B\n", 		cph->c_0);
+	element_printf("C~:\t%B\n", 		cph->c_1);
+	element_printf("C~:\t%B\n", 		cph->c_2);
+	element_printf("C~:\t%B\n", 		cph->c_3);
+	element_printf("C~:\t%B\n", 		cph->c_4);
+	element_printf("C~:\t%B\n", 		cph->c_5);
+	element_printf("C~:\t%B\n", 		cph->c_6);
+	element_printf("C~:\t%B\n", 		cph->c_7);
 	cph->attr = unserialize_attr(pub, b, &offset);
 
 	if( free )
@@ -550,8 +574,15 @@ free_attr (GPtrArray* p)
 void
 bswabe_cph_free( bswabe_cph_t* cph )
 {
-	element_clear(cph->c_s);
 	element_clear(cph->c_0);
+	element_clear(cph->c_1);
+	element_clear(cph->c_2);
+	element_clear(cph->c_3);
+	element_clear(cph->c_4);
+	element_clear(cph->c_5);
+	element_clear(cph->c_6);
+	element_clear(cph->c_7);
+
 	free_attr(cph->attr);
 	g_ptr_array_free(cph->attr, 1);
 }

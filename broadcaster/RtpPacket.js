@@ -198,7 +198,7 @@ RtpPacket.prototype.setSSRC = function (val) {
 };
 
 RtpPacket.prototype.getPayload = function () {
-    return (this._bufpkt.slice(this.getHeaderLength(), this._bufpkt.length));
+    return new Buffer(this._bufpkt.slice(this.getHeaderLength(), this._bufpkt.length));
 };
 RtpPacket.prototype.setPayload = function (val) {
     if (Buffer.isBuffer(val) && val.length <= 512) {

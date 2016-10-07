@@ -7,11 +7,11 @@ var dgram = require('dgram');
 var dgram2 = require('dgram');
 var socket = dgram.createSocket('udp4');
 var socket2 = dgram2.createSocket('udp4');
-
-
+var crypto = require('crypto');
 
 
 var RtpPacket=require("./RtpPacket.js");
+
 
 
 //parameters
@@ -22,6 +22,12 @@ var port = 5000;
 var portinit = 5556;
 var host = '127.0.0.1';
 
+//aes encryption
+
+var sharedKey = crypto.randomBytes(16); 
+var initializationVector = crypto.randomBytes(16); 
+var cipher;
+
 
 
 //server
@@ -31,9 +37,19 @@ socket2.on('listening', function () {
     console.log('RTP Server listening on ' + address.address + ":" + address.port);
 });
 
-
+var encrypted;
 socket2.on('message', function(msg, rinfo){
+	  
+  
 	  var rtpPacket = new RtpPacket(msg);
+	  encrypted = new Buffer(rtpPacket.getPayload.length);
+	  rtpPacket.getPayload.copy(encrypted,rtpPacket.getPayload.length);
+	  
+	  cipher = crypto.Cipheriv('aes-128-cbc', sharedKey, initializationVector);	
+	  encrypted += cipher.update(encrypted);
+	  encrypted += cipher.final();
+	  
+	  rtpPacket.setPayload(encrypted);
 	  
 	  socket.send(rtpPacket.getBuffer(), 
 	  0,

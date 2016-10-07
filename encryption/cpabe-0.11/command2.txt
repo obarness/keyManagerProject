@@ -1,0 +1,8 @@
+YEAHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH 
+cpabe-enc -p pubkey -m masterkey -i command.txt -a 100
+
+
+cpabe-keygen -o john_priv_key_200 -p pubkey -m masterkey -a 200
+
+
+cpabe-dec -p pubkey -c john_priv_key_200_200 -i command.txt.cpabe -a 200
