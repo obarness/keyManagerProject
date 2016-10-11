@@ -33,8 +33,8 @@ function receive(){
 		//var gui = require('..nw.gui');
 		//var win = gui.Window.get();
 		//gui.Window.open('https://github.com');
-		var RtpSession=require("rtp-rtcp").RtpSession;
-		var RtpPacket=require("rtp-rtcp").RtpPacket;
+		
+		var RtpPacket=require("./RtpPacket.js");
 		var dgram = require('dgram');
 		var socket = dgram.createSocket('udp4');
 		var dgram2 = require('dgram');
