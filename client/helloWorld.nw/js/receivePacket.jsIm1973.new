@@ -37,20 +37,16 @@ function receive(){
 		var RtpPacket=require("rtp-rtcp").RtpPacket;
 		var dgram = require('dgram');
 		var socket = dgram.createSocket('udp4');
-		var dgram2 = require('dgram');
-		var socket2 = dgram2.createSocket('udp4');
 		var crypto = require('crypto');
-		var Buffer = require('buffer').Buffer;
 		var sharedKey =	new Buffer('a2674254abf859ea720e210016b13ad2','hex');			
-		//var initializationVector = new Buffer('82b81f7c58c004dd0bdcd233b5a18ab7','hex');
-		
-		
+		var initializationVector = new Buffer('82b81f7c58c004dd0bdcd233b5a18ab7','hex');
+
+		var rtpPacket;
 		//var session = new RtpSession(6000);
 		//session.setRemoteAddress(6000,"localhost");
 		var port = 5000;
 		var host = '127.0.0.1';
-		socket.bind(port);
-		socket2.bind(9998);
+
 		socket.on('message', function (msg, info){
 			console.log('received a message');
         //	console.log('message recieved by client: ' + msg.toString() );
@@ -59,25 +55,14 @@ function receive(){
         	//const decryptedMsg = new Buffer( decryptMsg(msg,sk) )
         	//forward(decryptedMsg,session);
         	var rtpPacket = new RtpPacket(msg);
-		
-		var decrypted;
-		var decipher = crypto.createDecipher('aes-128-ctr', sharedKey),
-		decrypted = Buffer.concat([decipher.update(rtpPacket.getPayload()) , decipher.final()]);
-
-		
-		var decryptedpay = new Buffer(decrypted);
-		//console.log('Decrypt Payload length :'+ decryptedpay.length);
-		rtpPacket.setPayload(decryptedpay);
-		
-		socket2.send(rtpPacket.getBuffer(), 
-		0,
-		rtpPacket.getBuffer().length,
-		6000,
-		host,
-		function(err){
-		  //console.log('Send RTP Packet');
-		  if (err) console.log(err);
-		}); 
+// 		var payload = new Buffer(rtpPacket.getPayload());  
+// 		
+// 		var decipher = crypto.createDecipheriv('aes-128-cbc', sharedKey, initializationVector),
+// 		payload = decipher.update(payload);
+// 		payload += decipher.final();
+// 		var decpayload = new Buffer(payload);
+// 		rtpPacket.setPayload(decpayload);
+		socket.send(rtpPacket.getBuffer(),6000,host);
         	//forward(rtpPacket.getBuffer(),session);
 		});
 
@@ -87,7 +72,7 @@ function receive(){
 		console.log("listening on :" + address.address + ":" + address.port);
 		});
 
-		
+		socket.bind(port);
 };
 
 

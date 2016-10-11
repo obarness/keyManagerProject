@@ -8,8 +8,7 @@ var dgram2 = require('dgram');
 var socket = dgram.createSocket('udp4');
 var socket2 = dgram2.createSocket('udp4');
 var crypto = require('crypto');
-
-
+var Buffer = require('buffer').Buffer;
 var RtpPacket=require("./RtpPacket.js");
 
 
@@ -24,32 +23,62 @@ var host = '127.0.0.1';
 
 //aes encryption
 
-var sharedKey = crypto.randomBytes(16); 
-var initializationVector = crypto.randomBytes(16); 
-var cipher;
+var sharedKey =	new Buffer('a2674254abf859ea720e210016b13ad2','hex');					//crypto.randomBytes(16); 
+//var initializationVector = new Buffer('82b81f7c58c004dd0bdcd233b5a18ab7','hex');			//crypto.randomBytes(16); 
+var cipher2;
+
+var text = new Buffer("Hello this is the words that will be given to you by the Lord of CryptoNight");
+cipher2 = crypto.createCipher('aes-128-ctr', sharedKey);
+var decoded  = Buffer.concat([cipher2.update(text), cipher2.final()]);
+console.log('Encrypted text: ' + decoded.toString());
+var decipher2 = crypto.createDecipher('aes-128-ctr', sharedKey);
+var decrypted = Buffer.concat([decipher2.update(decoded) , decipher2.final()]);
+var dectext = new Buffer(decrypted);
+console.log('Decrypted text: ' + decrypted.toString());
+console.log('Buffer.compare: ' + areBuffersEqual(text,dectext));
 
 
+var wstream = fs.createWriteStream('packetlog.txt');
+wstream.on('finish', function () {
+  console.log('file has been written');
+  wstream.end();
+});
 
 //server
-
 socket2.on('listening', function () {
     var address = socket2.address();
     console.log('RTP Server listening on ' + address.address + ":" + address.port);
 });
 
-var encrypted;
+
 socket2.on('message', function(msg, rinfo){
 	  
   
 	  var rtpPacket = new RtpPacket(msg);
-	  encrypted = new Buffer(rtpPacket.getPayload.length);
-	  rtpPacket.getPayload.copy(encrypted,rtpPacket.getPayload.length);
+	  var encrypted;
+	  //console.log('Unencrypted payload lentgh ' + encrypted.length);
+	  //wstream.write("Origin packet Sequnce Number: " + rtpPacket.getSeqNumber() + "\n");
+	  //wstream.write(rtpPacket.getPayload());
+	  var cipher = crypto.createCipher('aes-128-ctr', sharedKey);
+	  encrypted = Buffer.concat([cipher.update(rtpPacket.getPayload()), cipher.final()]);
+
 	  
-	  cipher = crypto.Cipheriv('aes-128-cbc', sharedKey, initializationVector);	
-	  encrypted += cipher.update(encrypted);
-	  encrypted += cipher.final();
+	  var encryptedpay = new Buffer(encrypted);
+	  //console.log('Encrypted payload lentgh ' + encryptedpay.length);
+	  rtpPacket.setPayload(encryptedpay);
 	  
-	  rtpPacket.setPayload(encrypted);
+	  
+// 	  var decrypted;
+// 	  var decipher = crypto.createDecipher('aes-128-ctr', sharedKey),
+// 	  decrypted = Buffer.concat([decipher.update(rtpPacket.getPayload()) , decipher.final()]);
+// 
+// 	  
+// 	  decrypted = new Buffer(decrypted);
+// 	  rtpPacket.setPayload(decrypted);
+	  //wstream.write("Encrypted packet Sequnce Number: " + rtpPacket.getSeqNumber() + "\n");
+	  //wstream.write(rtpPacket.getPayload());
+	  
+
 	  
 	  socket.send(rtpPacket.getBuffer(), 
 	  0,
@@ -66,24 +95,18 @@ socket.bind(9999);
 socket2.bind(portinit); 
 
 
-
-
-
-function sendmessage (){
-  socket.send(new Buffer(testmessage), 
-    0,
-    testmessage.length,
-    port,
-    address,
-    function(err){
-      if (err) console.log(err);
-
-      console.log("Message sent");
-    })
-};
-
-
-
+function areBuffersEqual(bufA, bufB) {
+    var len = bufA.length;
+    if (len !== bufB.length) {
+        return false;
+    }
+    for (var i = 0; i < len; i++) {
+        if (bufA.readUInt8(i) !== bufB.readUInt8(i)) {
+            return false;
+        }
+    }
+    return true;
+}
 
 
 
@@ -91,7 +114,6 @@ function sendmessage (){
 
 
 //RTP creation with FFmpeg
-
 var proc = ffmpeg('SampleVideo.mp4').native()
   
   .videoCodec('mpeg2video')

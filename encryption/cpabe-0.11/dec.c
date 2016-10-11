@@ -229,7 +229,7 @@ main( int argc, char** argv )
 	}
 	else
 	{
-		printf("the decrypted message is:\t%s\n", msg);
+		printf("the decrypted message is:\t%x\n", msg);
 		writeToFile(out_file, msg);
 		
 		spit_file(prv_file, bswabe_prv_serialize(prv), 1);

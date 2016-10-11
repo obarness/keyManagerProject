@@ -1241,7 +1241,7 @@ bswabe_dec( bswabe_pub_t* pub, bswabe_prv_t* prv, bswabe_cph_t* cph, long id_val
 {
 	char* message = 0;
 	int i = 0;
-	ct_attr* temp = malloc(sizeof(ct_attr));
+	ct_attr* temp;
 	
 	
 	element_t numerator;			/* GT */
@@ -1342,27 +1342,19 @@ bswabe_dec( bswabe_pub_t* pub, bswabe_prv_t* prv, bswabe_cph_t* cph, long id_val
 		element_printf ("Id invert:\t%B\n", 	idInvert);
 		
 
-	        //testing
-		element_printf ("TEMP->c_i1:\t%B\n", 	temp->c_i1);
-		element_printf ("TEMP->c_i2:\t%B\n", 	temp->c_i2);
-		element_printf ("PRV->k:\t%B\n", 	prv->k);
+
 		
 		printf("Calculating element %d\n", i+1);
 		element_t a_4temp;				/* GT */
 		element_t a_4temp2;				/* GT */
 		element_init_GT(a_4temp, 	pub->p);
 		element_init_GT(a_4temp2, 	pub->p);
-		printf("1\n");
 		pairing_apply (a_4temp,		prv->k,		 	temp->c_i1,		pub->p);
-		printf("1\n");
-		pairing_apply (a_4temp2,	temp->c_i2,		prv->d_7,	pub->p);
-		printf("1\n");
+		pairing_apply (a_4temp2,	temp->c_i2,		prv->d_7,		pub->p);
 		element_div   (a_4temp,		a_4temp,		a_4temp2);
-		printf("1\n");
 		element_pow_zn(a_4temp,		a_4temp,		idInvert);
-		printf("1\n");
 		element_mul   (a_4,		a_4,			a_4temp);
-		printf("1\n");
+		
 		element_clear (a_4temp);
 		element_clear (a_4temp2);
 		element_clear (idSub);
