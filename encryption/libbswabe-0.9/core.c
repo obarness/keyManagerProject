@@ -126,6 +126,7 @@ bswabe_setup( bswabe_pub_t** pub, bswabe_msk_t** msk )
 	element_init_G1((*msk)->v,				(*pub)->p);
 	element_init_G1((*msk)->v1,				(*pub)->p);
 	element_init_G1((*msk)->v2,				(*pub)->p);
+
 	element_init_Zr((*msk)->alpha,				(*pub)->p);
 	element_init_Zr((*msk)->beta,				(*pub)->p);
 	element_init_Zr((*msk)->a1,				(*pub)->p);
@@ -181,13 +182,11 @@ bswabe_setup( bswabe_pub_t** pub, bswabe_msk_t** msk )
 	/* assignment of tao2_b & tao2 */
 	
 	element_pow_zn	(v2_a2,				(*msk)->v2, 		(*msk)->a2);	//v2^a2
-	
 	element_mul   	((*pub)->tao2,			(*msk)->v,		v2_a2); // tao1 = v * v^a2;
-	
 	element_pow_zn((*pub)->tao2_b,			(*pub)->tao2, 		(*msk)->beta);	//tao2^b
 	
 	//create alpha * a1 * beta
-	element_mul   	(a1_beta,			(*msk)->a1,		(*msk)->beta); // tao1 = v * v^a1;
+	element_mul   	(a1_beta,			(*msk)->a1,		(*msk)->beta);
 	
 	//create g alpha*a1*beta
 	element_mul   	(alpha_a1_beta,			a1_beta,		(*msk)->alpha);                          // tao1 = v * v^a1;
@@ -196,9 +195,9 @@ bswabe_setup( bswabe_pub_t** pub, bswabe_msk_t** msk )
 	
 	
 	/* apply eliptic curve elements */
-	
+	//pairing_apply((*pub)->pair,			(*pub)->g,		alpha_a1_beta,		(*pub)->p);	//e(g,g)^alpha*a1*beta
 	pairing_apply((*pub)->pair,			(*msk)->g,		g_alpha_a1_beta,	(*pub)->p);	//e(g,g)^alpha_a1_beta
-	
+
 	
 	//clear unneeded elements
 	element_clear(ba1);
@@ -350,7 +349,7 @@ bswabe_prv_t* bswabe_keygen(bswabe_pub_t** pub, bswabe_msk_t** msk, long id_valu
 	
 	/*	d_4	compute	*/
 	element_pow_zn	(v2_d,		(*msk)->v2,		d);
-	element_pow_zn	(g_z2,		(*msk)->g,			z1);
+	element_pow_zn	(g_z2,		(*msk)->g,			z2);
 	element_mul     (prv->d_4,	g_z2,			v2_d);			//D4 = (v2^d)*(g^z2)
 	
 	/*	d_5	compute	*/
@@ -358,8 +357,8 @@ bswabe_prv_t* bswabe_keygen(bswabe_pub_t** pub, bswabe_msk_t** msk, long id_valu
 	element_pow_zn	(g_b_minusz2,	(*pub)->g_b,		minusz2);		
 	element_set     (prv->d_5,	g_b_minusz1);					//D5 = (g^b)^-z2
 	/*	d_6	compute	*/
-	element_pow_zn	(g_d2_b,	(*pub)->g_b,		d2);		
-	element_set     (prv->d_6,	g_d2_b);					//D6 = (g^b*d2
+	element_mul		(prv->d_6,	(*msk)->beta	,d2)
+	element_pow_zn	(prv->d_6,	(*pub)->g,		prv->d_6);		
 	/*	d_7	compute	*/
 	element_pow_zn	(g_d1,		(*pub)->g,		d1);		
 	element_set     (prv->d_7,	g_d1);						//D7 = (g^d1)
@@ -1123,7 +1122,6 @@ dec_node_merge( element_t exp, bswabe_policy_t* p, bswabe_prv_t* prv, bswabe_pub
 void
 dec_merge( element_t r, bswabe_policy_t* p, bswabe_prv_t* prv, bswabe_pub_t* pub )
 {
-	int i;
 	element_t one;
 	element_t s;
 
@@ -1239,120 +1237,143 @@ dec_flatten( element_t r, bswabe_policy_t* p, bswabe_prv_t* prv, bswabe_pub_t* p
 char*
 bswabe_dec( bswabe_pub_t* pub, bswabe_prv_t* prv, bswabe_cph_t* cph, long id_value)
 {
-	char* message = 0;
-// 	int i = 0;
-// 
-// 	element_t numerator;		/* GT */
-// 	element_t denominator;		/* GT */
-// //	element_t update;			/* GT */
-// 	element_t c_1_temp;			/* G1 */
-// 	element_t c_2_temp;			/* G1 */
-// 	element_t c_1_mul;			/* G1 */
-// 	element_t c_2_mul;			/* G1 */
-// 	element_t a;				/* GT */
-// 	element_t a_1;				/* GT */
-// 	element_t a_2;				/* GT */
-// 	element_t id;				/* Zp */
-// 	element_t idInvert;			/* Zp */
-// 	element_t msg;				/* GT */
-// 
-// 	ct_attr* temp;
-// 	
-// 
-// 	/* initialization */
-// 
-// 	element_init_GT(numerator,		pub->p);
-// 	element_init_GT(denominator,	pub->p);
-// //	element_init_GT(update,			pub->p);
-// 	element_init_G1(c_1_temp,		pub->p);
-// 	element_init_G1(c_2_temp,		pub->p);
-// 	element_init_G1(c_1_mul,		pub->p);
-// 	element_init_G1(c_2_mul,		pub->p);
-// 	element_init_GT(a,				pub->p);
-// 	element_init_GT(a_1,			pub->p);
-// 	element_init_GT(a_2,			pub->p);
-// 	element_init_Zr(id,				pub->p);
-// 	element_init_Zr(idInvert,		pub->p);
-// 	element_init_GT(msg,			pub->p);
-// 
-// 	/*	checking the ids	*/
-// 	element_set_si(id,				id_value);
-// 
-// 	for (i = 0; i < cph->attr->len; i++)
-// 	{
-// 		temp = (ct_attr*) g_ptr_array_index(cph->attr, i);
-// 		element_printf("libbswabe-dec - Compairing between\nclient id:\t%B\nrevoke id:\t%B\n",id, temp->id);
-// 		if (element_cmp(id, temp->id) == 0)
-// 		{
-// //			perror("The ids match. the algorithm can't decrypted\n");
-// 			return 0;
-// 		}
-// 		else
-// 		{
-// 			printf("ids doesn't match.\t CONTINUE\n");
-// 		}
-// 	}
-// 	temp = NULL;
-// 	i = 0;
-// 
-// 	/*	computing	*/
-// 	//computing the element A = A1 * A2
-// 	for (i = 0; i < cph->attr->len; i++)
-// 	{
-// 		temp = (ct_attr*) g_ptr_array_index(cph->attr, i);
-// 		element_t idSub;	/* Zp */
-// 		element_init_Zr(idSub, 		pub->p);
-// 		element_sub   (idSub,		id,			temp->id);
-// 		element_printf("Id sub:\t%B\n", idSub);
-// 		element_invert(idInvert,	idSub);
-// 		element_printf("Id invert:\t%B\n", idInvert);
-// 		element_clear(idSub);
-// 
-// 		if (i == 0)
-// 		{
-// 			printf("Calculating element %d\n", i+1);
-// 			// calc C1
-// 			element_pow_zn(c_1_mul,		temp->c_i1,		idInvert);
-// 			element_printf("C%i1:\t%B\n",i+1, c_1_mul);
-// 			// calc C2
-// 			element_pow_zn(c_2_mul,		temp->c_i2,		idInvert);
-// 			element_printf("C%i2:\t%B\n",i+1, c_2_mul);
-// 		}
-// 		else
-// 		{
-// 			printf("Calculating element %d\n", i+1);
-// 			// calc C1
-// 			element_pow_zn(c_1_temp,	temp->c_i1,		idInvert);
-// 			element_printf("C%i1:\t%B\n",i+1, c_1_temp);
-// 			element_mul   (c_1_mul,		c_1_mul,		c_1_temp);
-// 			element_printf("C%i1 mul:\t%B\n",i+1, c_1_mul);
-// 			// calc C2
-// 			element_pow_zn(c_2_temp,	temp->c_i2,		idInvert);
-// 			element_printf("C%i2:\t%B\n",i+1, c_2_temp);
-// 			element_mul   (c_2_mul,		c_2_mul,		c_2_temp);
-// 			element_printf("C%i2 mul:%B\n",i+1, c_2_mul);
-// 		}
-// 	}
-// 	printf("doing pairing\n");
-// 	pairing_apply(a_1,			prv->d_1,		c_1_mul,	pub->p);
-// 	element_printf("A1:\t%B\n",a_1);
-// 	pairing_apply(a_2,			prv->d_2,		c_2_mul,	pub->p);
-// 	element_printf("A2:\t%B\n",a_2);
-// 	element_mul  (a,			a_1,			a_2);		//A = A1 * A2
-// 	element_printf("A:\t%B\n",a);
-// 	element_printf("libbswabe-dec - element A:\n%B\n", a);
-// 
+	unsigned char* message = 0;
+	int i = 0;
+	ct_attr* temp;
+	
+	
+	element_t numerator;			/* GT */
+	element_t denominator;			/* GT */
+//	element_t update;			/* GT */
+	element_t c_1_temp;			/* G1 */
+	element_t c_2_temp;			/* G1 */
+	element_t c_1_mul;			/* G1 */
+	element_t c_2_mul;			/* G1 */
+	element_t a;				/* GT */
+	element_t a_1;				/* GT */
+	element_t a_11;
+	element_t a_12;
+	element_t a_13;
+	element_t a_14;
+	element_t a_15;
+	element_t a_2;				/* GT */
+	element_t a_21;				
+	element_t a_3;				/* GT */
+	element_t a_4;				/* GT */
+	element_t id;				/* Zp */
+	element_t msg;				/* GT */
+
+
+	/* initialization */
+	element_init_GT(numerator,			pub->p);
+	element_init_GT(denominator,			pub->p);
+//	element_init_GT(update,				pub->p);
+	element_init_G1(c_1_temp,			pub->p);
+	element_init_G1(c_2_temp,			pub->p);
+	element_init_G1(c_1_mul,			pub->p);
+	element_init_G1(c_2_mul,			pub->p);
+	element_init_GT(a,				pub->p);
+	element_init_GT(a_1,				pub->p);
+	element_init_GT(a_11,				pub->p);
+	element_init_GT(a_12,				pub->p);
+	element_init_GT(a_13,				pub->p);
+	element_init_GT(a_14,				pub->p);
+	element_init_GT(a_15,				pub->p);
+	element_init_GT(a_2,				pub->p);
+	element_init_GT(a_21,				pub->p);
+	element_init_GT(a_3,				pub->p);
+	element_init_GT(a_4,				pub->p);
+	element_init_Zr(id,				pub->p);
+	element_init_GT(msg,				pub->p);
+
+	/*	checking the ids	*/
+	element_set_si(id,				id_value);
+
+	for (i = 0; i < cph->attr->len; i++)
+	{
+		temp = (ct_attr*) g_ptr_array_index(cph->attr, i);
+		element_printf("libbswabe-dec - Compairing between\nclient id:\t%B\nrevoke id:\t%B\n",id, temp->id);
+		if (element_cmp(id, temp->id) == 0)
+		{
+			return 0;
+		}
+		else
+		{
+			printf("ids doesn't match.\t CONTINUE\n");
+		}
+	}
+	
+	
+	//Calculate A1	
+	pairing_apply(a_11,			prv->d_1,		cph->c_1,	pub->p);
+	pairing_apply(a_12,			prv->d_2,		cph->c_2,	pub->p);
+	pairing_apply(a_13,			prv->d_3,		cph->c_3,	pub->p);
+	pairing_apply(a_14,			prv->d_4,		cph->c_4,	pub->p);
+	pairing_apply(a_15,			prv->d_5,		cph->c_5,	pub->p);	
+	element_mul  (a_1,			a_11,			a_12);
+	element_mul  (a_1,			a_1,			a_13);
+	element_mul  (a_1,			a_1,			a_14);
+	element_mul  (a_1,			a_1,			a_15);
+	//Calculate A2
+	pairing_apply(a_2,			prv->d_6,		cph->c_6,	pub->p);
+	pairing_apply(a_21,			prv->d_7,		cph->c_7,	pub->p);
+	element_mul  (a_2,			a_2,			a_21);
+	//Calculate A3
+	element_div(a_3,			a_1, 			a_2);
+	
+	
+	
+	temp = NULL;
+	i = 0;
+
+	//Calculate A4 
+	for (i = 0; i < cph->attr->len; i++)
+	{
+		temp = (ct_attr*) g_ptr_array_index(cph->attr, i);
+		element_t idSub;					/* Zp */
+		element_t idInvert;					/* Zp */
+		element_init_Zr(idSub, 			pub->p);
+		element_init_Zr(idInvert,		pub->p);
+		element_sub    (idSub,			id,			temp->id);
+		element_printf ("Id sub:\t%B\n", 	idSub);
+		element_invert (idInvert,		idSub);
+		element_printf ("Id invert:\t%B\n", 	idInvert);
+		
+
+
+		
+		printf("Calculating element %d\n", i+1);
+		element_t a_4temp;				/* GT */
+		element_t a_4temp2;				/* GT */
+		element_init_GT(a_4temp, 	pub->p);
+		element_init_GT(a_4temp2, 	pub->p);
+		pairing_apply (a_4temp,		prv->k,		 	temp->c_i1,		pub->p);
+		pairing_apply (a_4temp2,	temp->c_i2,		prv->d_7,		pub->p);
+		element_div   (a_4temp,		a_4temp,		a_4temp2);
+		element_pow_zn(a_4temp,		a_4temp,		idInvert);
+		element_mul   (a_4,		a_4,			a_4temp);
+		
+		element_clear (a_4temp);
+		element_clear (a_4temp2);
+		element_clear (idSub);
+		element_clear (idInvert);
+			
+		
+	}
+	
+	
+	element_div   (a,			a_3,			a_4);
+	element_div   (msg,			cph->c_0,		a);
+	
+
 // 	element_mul(prv->e, 		prv->e, 		a);			//E <- E * A the state update
 // 	element_printf("SK state:\t%B", prv->e);
-// 
-// 	element_mul(numerator,		cph->c_s,		prv->e);
-// 	pairing_apply(denominator,	cph->c_0,		prv->d_0,	pub->p);
-// 
-// 	element_div(msg,			numerator, 		denominator);
-// 
-// 	message = malloc(element_length_in_bytes(msg));
-// 	element_to_bytes(message, msg);
-// 	printf("the message is:\t\t%s\n", message);
 
-	return message;
+
+	message =(unsigned char*) malloc(element_length_in_bytes(msg));
+	element_to_bytes(message, msg);
+	printf("The message is:\t\t%s\n", message);
+
+	char* signed_message = (char*) message;
+	return signed_message;
 }

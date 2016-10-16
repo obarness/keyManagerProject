@@ -90,9 +90,9 @@ main( int argc, char** argv )
 	printf ("cpabe-setup - About to enter setup on libbswabe\n");
 	bswabe_setup(&pub, &msk);
 
-	printf ("cpabe-setup - Writing keys to files\n");
+	printf ("cpabe-setup - Trying to write keys to files\n");
 	spit_file(pub_file, bswabe_pub_serialize(pub), 1);
 	spit_file(msk_file, bswabe_msk_serialize(msk), 1);
-
+	printf ("cpabe-setup - Finished Writing keys to files\n");
 	return 0;
 }

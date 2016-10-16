@@ -4,6 +4,7 @@
 #include <glib.h>
 #include <pbc.h>
 #include <pbc_random.h>
+#include <math.h>
 
 #include "bswabe.h"
 #include "common.h"
@@ -180,14 +181,14 @@ void writeToFile(char* file_name, char* message)
 		exit(1);
 	}
 
-	printf("size %d\n", strlen(message));
+	printf("size %d\n", (int)strlen(message));
 	int newNum=0;
 	int expo = 2;
 
 	for (j=0; j< (int)strlen(message); j++)
 	{
 		//		printf("the current char: %c\n", elementString[j]);
-		newNum = newNum + ((int)message[j] - 48) *pow10(expo) ;
+		newNum = newNum + ((int)message[j] - 48) *pow(10,expo) ;
 		if (expo == 0)
 		{
 			printf("%d", newNum);

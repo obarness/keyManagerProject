@@ -7,10 +7,14 @@
 #include <glib.h>
 #include <pbc.h>
 #include <pbc_random.h>
+#include <math.h>
 
 #include "bswabe.h"
 #include "common.h"
 #include "policy_lang.h"
+
+
+
 
 
 char* usage =
@@ -160,11 +164,11 @@ unsigned char* readFromFile (char* file_name)
 	printf ("cpabe-enc -The file's name is: %s\n", file_name);
 	FILE *f;
 	GByteArray* byteArray;		//the dynamic array that will hold the file's content
-	char* fileContentString;	//the string after conversion
+	unsigned char* fileContentString;	//the string after conversion
 
 	int num;					//the char red from the file
 	int temp;					//for number conversion
-	char *c;					//the char after conversion
+	guint8 c;					//the char after conversion
 
 	int i = 0;
 	byteArray = g_byte_array_new();
@@ -182,21 +186,21 @@ unsigned char* readFromFile (char* file_name)
 		printf("%d", num);
 		for (i = 2; i>=0; i--)
 		{
-			temp = num/pow(10, i);        
+			temp = num/pow(10,i);        
 
 			//			printf ("the current digit is: %d\t", temp);
 			num = (int) (num % (int)pow(10, i));
-			c = (char) (temp+48); 	//convert from digit to char form of the digit. 1 -> '1'
+			c = (guint8) (temp+48); 	//convert from digit to char form of the digit. 1 -> '1'
 			//			printf("the char is: %c\n", c);
 			g_byte_array_append(byteArray, &c, 1);	//add the digit to the dinamic array
 		}
 		num = fgetc(f);
 	};
 	fclose(f);
-	c = '\0';
+	c = 0;
 	g_byte_array_append(byteArray, &c, 1);
 //	printf("\ndinamic array size: %d\n", byteArray->len);
-	fileContentString = malloc (sizeof(char)*byteArray->len);	//allocate the string in mem
+	fileContentString = (unsigned char*)malloc (sizeof(char)*byteArray->len);	//allocate the string in mem
 
 	printf("\nbyteArray:\t\t%s\n", byteArray->data);
 	memcpy(fileContentString, byteArray->data, byteArray->len);	//copy the dynamic array's content to the string
@@ -243,6 +247,8 @@ main( int argc, char** argv )
 		}
 	}
 	free(fileString);
+
+	printf ("cpabe-enc - encryption is done\n");
 
 	return 0;
 }
