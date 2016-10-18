@@ -69,7 +69,7 @@ element_from_string( element_t h, char* s )
 void
 bswabe_setup( bswabe_pub_t** pub, bswabe_msk_t** msk )
 {
-	signed long int n=5; //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<meanwhile
+	signed long int n=1; //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<meanwhile
 	/* initialize */
 	*pub = (bswabe_pub_t*) malloc(sizeof(bswabe_pub_t));
 	*msk = (bswabe_msk_t*) malloc(sizeof(bswabe_msk_t));
@@ -615,14 +615,12 @@ setId ( bswabe_pub_t* pub, char* rawAttrString, element_t s, GPtrArray * root, e
 	element_init_Zr(t_i_sum, 	pub->p);
 
 	element_set0(t_i_sum);		//initialize the s sum to 0
-	element_printf("initial sum:\t%B\n", t_i_sum);
 
 	int counter = 0;
 
 	while (*currentId)								//while there is still ids left
 	{
 		
-
 		counter++;									//only for debug printing
 
 		stringId = *(currentId++);					//get the current individual id
@@ -641,18 +639,12 @@ setId ( bswabe_pub_t* pub, char* rawAttrString, element_t s, GPtrArray * root, e
 
 		printf("setId - creating the struct with the ID's\n");
 
-		element_t t_i;		//Si is a part from the exponent S
+		element_t t_i;		//ti is a part from the exponent t
 		element_init_Zr(t_i, 		pub->p);
 		element_random (t_i);
-		element_printf("Si. counter %i:\t%B\n", counter, t_i);
 		element_add    (t_i_sum,	t_i_sum,	t_i);
-		element_printf("Si sum. counter %i:\t%B\n", counter, t_i_sum);
 		
-		element_t g_t_i;		// G1 
-		element_t w_id_h;		// G1 
 
-		element_init_G1(g_t_i,	pub->p);
-		element_init_G1(w_id_h,	pub->p);
 
 		/***** C i,1 *****/
 		element_pow_zn(p->c_i1,		pub->g,		t_i);		
@@ -664,18 +656,11 @@ setId ( bswabe_pub_t* pub, char* rawAttrString, element_t s, GPtrArray * root, e
 		element_pow_zn(p->c_i2,		p->c_i2,		t_i);
 		element_printf("C%i2:\t%B\n",counter, p->c_i2);
 
-
-
-		element_clear(g_t_i);
-		element_clear(w_id_h);
 		element_clear(t_i);
 
 		g_ptr_array_add(root,p);								//after the part of the CT was constructed it's added to the pointer array
-		printf("New root length is: %d\n", root->len);
 	}
-	printf("set_id is clearing elements before returning...\n");
-	
-	printf("trying to set negative t\n");
+
 	element_set(*neg_t,	t_i_sum);
 	printf("done\n");
 	element_clear(t_i_sum);
@@ -756,7 +741,7 @@ bswabe_enc(bswabe_pub_t* pub, bswabe_msk_t* msk, unsigned char* msg, char* input
 	printf("creating element c_3...\n");
 	element_init_G1	(cph->c_3,  			pub->p);
 	element_set     (cph->c_3,			   msk->g);
-	element_pow_zn	(cph->c_3, cph->c_3, 		b_a1);
+	element_pow_zn	(cph->c_3, cph->c_3, 		msk->a1);
 	element_pow_zn	(cph->c_3, cph->c_3, 		s1);
 	printf("done\n");
 /***** c4 *****/
@@ -799,7 +784,7 @@ bswabe_enc(bswabe_pub_t* pub, bswabe_msk_t* msk, unsigned char* msg, char* input
 	cph->attr = g_ptr_array_new();		//initialize attr as a new array
 
 	element_init_Zr	(neg_t,  					pub->p);
-	(setId(pub ,inputIdString, s , cph->attr, &neg_t));
+	setId(pub ,inputIdString, s , cph->attr, &neg_t);
 	element_neg(neg_t, neg_t);
 	
 	element_init_G1	(cph->c_7,  			pub->p);
@@ -1319,6 +1304,7 @@ bswabe_dec( bswabe_pub_t* pub, bswabe_prv_t* prv, bswabe_cph_t* cph, long id_val
 	temp = NULL;
 	i = 0;
 
+
 	//Calculate A4 
 	for (i = 0; i < cph->attr->len; i++)
 	{
@@ -1332,15 +1318,14 @@ bswabe_dec( bswabe_pub_t* pub, bswabe_prv_t* prv, bswabe_cph_t* cph, long id_val
 		element_invert (idInvert,		idSub);
 		element_printf ("Id invert:\t%B\n", 	idInvert);
 		
-
-
-		
 		printf("Calculating element %d\n", i+1);
 		element_t a_4temp;				/* GT */
 		element_t a_4temp2;				/* GT */
 		element_init_GT(a_4temp, 	pub->p);
 		element_init_GT(a_4temp2, 	pub->p);
-		pairing_apply (a_4temp,		prv->k,		 	temp->c_i1,		pub->p);
+		element_printf ("prv->k:\t%B\n", 	prv->k);
+		element_printf ("temp->c_i1:\t%B\n", 	temp->c_i1);
+		pairing_apply (a_4temp,		prv->k,			temp->c_i1,				 			pub->p);
 		pairing_apply (a_4temp2,	temp->c_i2,		prv->d_7,		pub->p);
 		element_div   (a_4temp,		a_4temp,		a_4temp2);
 		element_pow_zn(a_4temp,		a_4temp,		idInvert);
