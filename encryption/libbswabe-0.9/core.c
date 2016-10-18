@@ -357,7 +357,7 @@ bswabe_prv_t* bswabe_keygen(bswabe_pub_t** pub, bswabe_msk_t** msk, long id_valu
 	element_pow_zn	(g_b_minusz2,	(*pub)->g_b,		minusz2);		
 	element_set     (prv->d_5,	g_b_minusz1);					//D5 = (g^b)^-z2
 	/*	d_6	compute	*/
-	element_mul		(prv->d_6,	(*msk)->beta	,d2)
+	element_mul		(prv->d_6,	(*msk)->beta	,d2);
 	element_pow_zn	(prv->d_6,	(*pub)->g,		prv->d_6);		
 	/*	d_7	compute	*/
 	element_pow_zn	(g_d1,		(*pub)->g,		d1);		
@@ -605,13 +605,13 @@ setId ( bswabe_pub_t* pub, char* rawAttrString, element_t s, GPtrArray * root, e
 	char** currentId;
 	char* stringId;
 
-	element_t t_i;		//Si is a part from the exponent S
+	
 	element_t t_i_sum;	//the sum of r-1 Si		in total S1+...+Sr = S
 
 	idArray = g_strsplit(rawAttrString, " ", 0);	//split the whole rawAttrString string with the delimiter " "
 	currentId = idArray;
 
-	element_init_Zr(t_i, 		pub->p);
+	
 	element_init_Zr(t_i_sum, 	pub->p);
 
 	element_set0(t_i_sum);		//initialize the s sum to 0
@@ -621,6 +621,8 @@ setId ( bswabe_pub_t* pub, char* rawAttrString, element_t s, GPtrArray * root, e
 
 	while (*currentId)								//while there is still ids left
 	{
+		
+
 		counter++;									//only for debug printing
 
 		stringId = *(currentId++);					//get the current individual id
@@ -639,6 +641,8 @@ setId ( bswabe_pub_t* pub, char* rawAttrString, element_t s, GPtrArray * root, e
 
 		printf("setId - creating the struct with the ID's\n");
 
+		element_t t_i;		//Si is a part from the exponent S
+		element_init_Zr(t_i, 		pub->p);
 		element_random (t_i);
 		element_printf("Si. counter %i:\t%B\n", counter, t_i);
 		element_add    (t_i_sum,	t_i_sum,	t_i);
@@ -661,14 +665,16 @@ setId ( bswabe_pub_t* pub, char* rawAttrString, element_t s, GPtrArray * root, e
 		element_printf("C%i2:\t%B\n",counter, p->c_i2);
 
 
+
 		element_clear(g_t_i);
 		element_clear(w_id_h);
+		element_clear(t_i);
 
 		g_ptr_array_add(root,p);								//after the part of the CT was constructed it's added to the pointer array
 		printf("New root length is: %d\n", root->len);
 	}
 	printf("set_id is clearing elements before returning...\n");
-	element_clear(t_i);
+	
 	printf("trying to set negative t\n");
 	element_set(*neg_t,	t_i_sum);
 	printf("done\n");
@@ -721,22 +727,9 @@ bswabe_enc(bswabe_pub_t* pub, bswabe_msk_t* msk, unsigned char* msg, char* input
 	printf("creating element c_0...\n");
 
 	element_init_GT	(cph->c_0, 	pub->p);
-	element_t alpha_a1_beta;
-	element_t g_alpha_a1_beta;
-	element_init_G1	(g_alpha_a1_beta, 	pub->p);
-	element_init_Zr	(alpha_a1_beta, 	pub->p);
-
-	element_mul		(alpha_a1_beta,		msk->alpha,			msk->a1);    //alpha * a1
-	element_mul		(alpha_a1_beta,		alpha_a1_beta,		msk->beta);  //(alpha*a1) * beta
-	element_pow_zn	(g_alpha_a1_beta,   msk->g,		alpha_a1_beta);
-	printf("pairing_apply	(cph->c_0,		msk->g,		alpha_a1_beta, 	pub->p);\n");
-	pairing_apply	(cph->c_0,		msk->g,		g_alpha_a1_beta, 	pub->p); //apply pairing
-	printf("element_pow_zn	(cph->c_0,	cph->c_0,	s2);\n");
-	element_pow_zn	(cph->c_0,	cph->c_0,	s2);						 //apply power
-	printf("element_mul   	(cph->c_0,	cph->c_0,	m);\n");
-	element_mul   	(cph->c_0,	cph->c_0,	m);							//multiply
-
-	element_clear(alpha_a1_beta);
+	element_pow_zn	(cph->c_0,	pub->pair,	s2);
+	element_mul   	(cph->c_0,	cph->c_0,	m);		//c~ = e(g,g)^(a*S2)*M
+	element_printf("c_s:\t%B\n",cph->c_0);
 
 	printf("done\n");
 /***** c_1 *****/
