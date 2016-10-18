@@ -102,6 +102,7 @@ bswabe_pub_serialize( bswabe_pub_t* pub )
 	
 	
 	serialize_string (b, pub->pairing_desc);
+
 	serialize_element(b, pub->g	);
 	serialize_element(b, pub->n	);
 	serialize_element(b, pub->g_b	);
@@ -218,10 +219,10 @@ bswabe_msk_unserialize( bswabe_pub_t* pub, GByteArray* b, int free )
 	
 	element_init_G1(msk->g,					pub->p);
 	element_init_G1(msk->g_alpha,				pub->p);
-	element_init_Zr(msk->g_alpha_a1,			pub->p);
-	element_init_Zr(msk->v,				 	pub->p);
-	element_init_Zr(msk->v1,				pub->p);
-	element_init_Zr(msk->v2,				pub->p);
+	element_init_G1(msk->g_alpha_a1,			pub->p);
+	element_init_G1(msk->v,				 	pub->p);
+	element_init_G1(msk->v1,				pub->p);
+	element_init_G1(msk->v2,				pub->p);
 	element_init_Zr(msk->alpha,				pub->p);
 	element_init_Zr(msk->beta,				pub->p);
 	element_init_Zr(msk->a1,				pub->p);
@@ -467,14 +468,15 @@ bswabe_cph_unserialize( bswabe_pub_t* pub, GByteArray* b, int free )
 	unserialize_element(b, &offset, cph->c_6);
 	unserialize_element(b, &offset, cph->c_7);
 	printf("\nPrinting CT after reconstruction:\n");
-	element_printf("C~:\t%B\n", 		cph->c_0);
-	element_printf("C~:\t%B\n", 		cph->c_1);
-	element_printf("C~:\t%B\n", 		cph->c_2);
-	element_printf("C~:\t%B\n", 		cph->c_3);
-	element_printf("C~:\t%B\n", 		cph->c_4);
-	element_printf("C~:\t%B\n", 		cph->c_5);
-	element_printf("C~:\t%B\n", 		cph->c_6);
-	element_printf("C~:\t%B\n", 		cph->c_7);
+	element_printf("c_0:\t%B\n", 		cph->c_0);
+	element_printf("c_1:\t%B\n", 		cph->c_1);
+	element_printf("c_2:\t%B\n", 		cph->c_2);
+	element_printf("c_3:\t%B\n", 		cph->c_3);
+	element_printf("c_4:\t%B\n", 		cph->c_4);
+	element_printf("c_5:\t%B\n", 		cph->c_5);
+	element_printf("c_6:\t%B\n", 		cph->c_6);
+	element_printf("c_7:\t%B\n", 		cph->c_7);
+
 	cph->attr = unserialize_attr(pub, b, &offset);
 
 	if( free )
