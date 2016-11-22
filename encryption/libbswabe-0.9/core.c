@@ -126,6 +126,7 @@ bswabe_setup( bswabe_pub_t** pub, bswabe_msk_t** msk )
 	element_init_G1((*msk)->v,				(*pub)->p);
 	element_init_G1((*msk)->v1,				(*pub)->p);
 	element_init_G1((*msk)->v2,				(*pub)->p);
+
 	element_init_Zr((*msk)->alpha,				(*pub)->p);
 	element_init_Zr((*msk)->beta,				(*pub)->p);
 	element_init_Zr((*msk)->a1,				(*pub)->p);
@@ -155,9 +156,9 @@ bswabe_setup( bswabe_pub_t** pub, bswabe_msk_t** msk )
 	element_random((*msk)->a2);
 	
 	/* assign all msk fields */
-	element_pow_zn((*msk)->g_alpha,			(*pub)->g, 		(*msk)->alpha);	//g^alpha
+	element_pow_zn((*msk)->g_alpha,			(*msk)->g, 		(*msk)->alpha);	//g^alpha
 	element_mul   	(alpha_a1,			(*msk)->alpha,		(*msk)->a1); 	//alpha * a1
-	element_pow_zn((*msk)->g_alpha_a1,		(*pub)->g, 		alpha_a1);	//g^(alpha*a1)	
+	element_pow_zn((*msk)->g_alpha_a1,		(*msk)->g, 		alpha_a1);	//g^(alpha*a1)	
 			
 	/*	compute pub	*/
 	element_set   ((*pub)->g,			(*msk)->g); 
@@ -167,10 +168,10 @@ bswabe_setup( bswabe_pub_t** pub, bswabe_msk_t** msk )
 	element_pow_zn((*pub)->g_a2,			(*pub)->g, 		(*msk)->a2);	//g^a2
 	
 	/* assign g_ba1 */
-	element_mul   	(ba1,	(*msk)->beta,		(*msk)->a1); 	//b*a1
+	element_mul   	(ba1,				(*msk)->beta,		(*msk)->a1); 	//b*a1
 	element_pow_zn	((*pub)->g_ba1,			(*pub)->g, 		ba1);	//g^ba1
 	/* assign g_ba2 */
-	element_mul   	(ba2,	(*msk)->beta,			(*msk)->a2); 	//b*a2
+	element_mul   	(ba2,				(*msk)->beta,		(*msk)->a2); 	//b*a2
 	element_pow_zn((*pub)->g_ba2,			(*pub)->g, 		ba2);	//g^ba2
 
 	/* assignment of tao1_b & tao1 */
@@ -181,13 +182,11 @@ bswabe_setup( bswabe_pub_t** pub, bswabe_msk_t** msk )
 	/* assignment of tao2_b & tao2 */
 	
 	element_pow_zn	(v2_a2,				(*msk)->v2, 		(*msk)->a2);	//v2^a2
-	
 	element_mul   	((*pub)->tao2,			(*msk)->v,		v2_a2); // tao1 = v * v^a2;
-	
 	element_pow_zn((*pub)->tao2_b,			(*pub)->tao2, 		(*msk)->beta);	//tao2^b
 	
 	//create alpha * a1 * beta
-	element_mul   	(a1_beta,			(*msk)->a1,		(*msk)->beta); // tao1 = v * v^a1;
+	element_mul   	(a1_beta,			(*msk)->a1,		(*msk)->beta);
 	
 	//create g alpha*a1*beta
 	element_mul   	(alpha_a1_beta,			a1_beta,		(*msk)->alpha);                          // tao1 = v * v^a1;
@@ -197,8 +196,8 @@ bswabe_setup( bswabe_pub_t** pub, bswabe_msk_t** msk )
 	
 	/* apply eliptic curve elements */
 	//pairing_apply((*pub)->pair,			(*pub)->g,		alpha_a1_beta,		(*pub)->p);	//e(g,g)^alpha*a1*beta
-	pairing_apply((*pub)->pair,			(*msk)->g,		g_alpha_a1_beta,	(*pub)->p);	//e(g,g)^a
-	
+	pairing_apply((*pub)->pair,			(*msk)->g,		g_alpha_a1_beta,	(*pub)->p);	//e(g,g)^alpha_a1_beta
+
 	
 	//clear unneeded elements
 	element_clear(ba1);
@@ -329,12 +328,15 @@ bswabe_prv_t* bswabe_keygen(bswabe_pub_t** pub, bswabe_msk_t** msk, long id_valu
 	element_random	(d2);
 	element_random	(z1);
 	element_random	(z2);
-	element_add(d,			d1,			d2);
+	element_add     (d,			d1,			d2);
 	
 	/*	d_1	compute	*/
-	element_pow_zn	(v_d,		(*msk)->v,			d);			//v^d
+	element_pow_zn	(v_d,		(*msk)->v,		d);			//v^d
 	element_mul   	(prv->d_1,	(*msk)->g_alpha_a1,	v_d);			//D1 = (g^alpha*a1)*(v^d)
-	
+	element_printf("v_d:\t%B\n", v_d);
+	element_printf("d:\t%B\n", d);
+	element_printf("(*msk)->v:\t%B\n", (*msk)->v);
+	element_printf("(*msk)->g_alpha_a1:\t%B\n", (*msk)->g_alpha_a1);
 	/*	d_2	compute	*/
 	element_neg   	(minusapha,	(*msk)->alpha);
 	element_pow_zn	(g_minusalpha,	(*msk)->g,			minusapha);
@@ -350,7 +352,7 @@ bswabe_prv_t* bswabe_keygen(bswabe_pub_t** pub, bswabe_msk_t** msk, long id_valu
 	
 	/*	d_4	compute	*/
 	element_pow_zn	(v2_d,		(*msk)->v2,		d);
-	element_pow_zn	(g_z2,		(*msk)->g,			z1);
+	element_pow_zn	(g_z2,		(*msk)->g,			z2);
 	element_mul     (prv->d_4,	g_z2,			v2_d);			//D4 = (v2^d)*(g^z2)
 	
 	/*	d_5	compute	*/
@@ -358,8 +360,8 @@ bswabe_prv_t* bswabe_keygen(bswabe_pub_t** pub, bswabe_msk_t** msk, long id_valu
 	element_pow_zn	(g_b_minusz2,	(*pub)->g_b,		minusz2);		
 	element_set     (prv->d_5,	g_b_minusz1);					//D5 = (g^b)^-z2
 	/*	d_6	compute	*/
-	element_pow_zn	(g_d2_b,	(*pub)->g_b,		d2);		
-	element_set     (prv->d_6,	g_d2_b);					//D6 = (g^b*d2
+	element_mul	(prv->d_6,	(*msk)->beta,           d2);
+	element_pow_zn	(prv->d_6,	(*pub)->g,		prv->d_6);		
 	/*	d_7	compute	*/
 	element_pow_zn	(g_d1,		(*pub)->g,		d1);		
 	element_set     (prv->d_7,	g_d1);						//D7 = (g^d1)
@@ -1123,7 +1125,6 @@ dec_node_merge( element_t exp, bswabe_policy_t* p, bswabe_prv_t* prv, bswabe_pub
 void
 dec_merge( element_t r, bswabe_policy_t* p, bswabe_prv_t* prv, bswabe_pub_t* pub )
 {
-	int i;
 	element_t one;
 	element_t s;
 
@@ -1239,7 +1240,7 @@ dec_flatten( element_t r, bswabe_policy_t* p, bswabe_prv_t* prv, bswabe_pub_t* p
 char*
 bswabe_dec( bswabe_pub_t* pub, bswabe_prv_t* prv, bswabe_cph_t* cph, long id_value)
 {
-	char* message = 0;
+	unsigned char* message = 0;
 	int i = 0;
 	ct_attr* temp;
 	
@@ -1372,9 +1373,10 @@ bswabe_dec( bswabe_pub_t* pub, bswabe_prv_t* prv, bswabe_cph_t* cph, long id_val
 // 	element_printf("SK state:\t%B", prv->e);
 
 
-	message = malloc(element_length_in_bytes(msg));
+	message =(unsigned char*) malloc(element_length_in_bytes(msg));
 	element_to_bytes(message, msg);
 	printf("The message is:\t\t%s\n", message);
 
-	return message;
+	char* signed_message = (char*) message;
+	return signed_message;
 }
