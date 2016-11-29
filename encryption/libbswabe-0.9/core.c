@@ -337,20 +337,16 @@ bswabe_prv_t* bswabe_keygen(bswabe_pub_t** pub, bswabe_msk_t** msk, long id_valu
 	/*	d_1	compute	*/
 	element_pow_zn	(v_d,		(*msk)->v,		d);			//v^d
 	element_mul   	(prv->d_1,	(*msk)->g_alpha_a1,	v_d);			//D1 = (g^alpha*a1)*(v^d)
-	element_printf("d1:\t%B\n", d1);
-	element_printf("d2:\t%B\n", d2);
-	element_printf("(*msk)->v:\t%B\n", (*msk)->v);
-	element_printf("d:\t%B\n", d);
-	element_printf("v_d:\t%B\n", v_d);
+
 
 	/*	d_2	compute	*/
 	element_neg   	(minusapha,	(*msk)->alpha);
-	element_pow_zn	(g_minusalpha,	(*msk)->g,			minusapha);
+	element_pow_zn	(g_minusalpha,	(*msk)->g,		minusapha);
 	element_pow_zn	(v1_d,		(*msk)->v1,		d);			  
-	element_pow_zn	(g_z1,		(*msk)->g,			z1);
-	element_mul     (prv->d_2,	g_z1,			v1_d);
-	element_mul     (prv->d_2,	prv->d_2,		g_minusalpha);		//D2 = (g^-alpha)*(v1^d)*(g^z1)
-	element_printf("v1_d:\t%B\n", v1_d);
+	element_pow_zn	(g_z1,		(*msk)->g,		z1);
+	element_mul     (prv->d_2,	g_minusalpha,		v1_d);
+	element_mul     (prv->d_2,	prv->d_2,		g_z1);		//D2 = (g^-alpha)*(v1^d)*(g^z1)
+	
 	
 	/*	d_3	compute	*/
 	element_neg   	(minusz1,	z1);
@@ -359,8 +355,8 @@ bswabe_prv_t* bswabe_keygen(bswabe_pub_t** pub, bswabe_msk_t** msk, long id_valu
 	
 	/*	d_4	compute	*/
 	element_pow_zn	(v2_d,		(*msk)->v2,		d);
-	element_pow_zn	(g_z2,		(*msk)->g,			z2);
-	element_mul     (prv->d_4,	g_z2,			v2_d);			//D4 = (v2^d)*(g^z2)
+	element_pow_zn	(g_z2,		(*msk)->g,		z2);
+	element_mul     (prv->d_4,	v2_d,			g_z2);			//D4 = (v2^d)*(g^z2)
 	
 	/*	d_5	compute	*/
 	element_neg   	(minusz2,	z2);
@@ -392,7 +388,7 @@ bswabe_prv_t* bswabe_keygen(bswabe_pub_t** pub, bswabe_msk_t** msk, long id_valu
 	element_clear (v2_d);
 	element_clear (g_z2);
 	element_clear (g_b_minusz2);
-    element_clear (g_d2_b);
+	element_clear (g_d2_b);
 	element_clear (g_d1);
 	element_clear (w_id_h_d1);
 	element_clear (id);			
@@ -752,14 +748,11 @@ bswabe_enc(bswabe_pub_t* pub, bswabe_msk_t* msk, unsigned char* msg, char* input
 	element_mul		(alpha_a1_beta,		msk->alpha,		msk->a1);    //alpha * a1
 	element_mul		(alpha_a1_beta,		alpha_a1_beta,		msk->beta);  //(alpha*a1) * beta
 	element_pow_zn		(g_alpha_a1_beta,   	msk->g,			alpha_a1_beta);
-	printf("pairing_apply	(cph->c_0,		msk->g,		alpha_a1_beta, 	pub->p);\n");
-	pairing_apply	(cph->c_0,		msk->g,		g_alpha_a1_beta, 	pub->p); //apply pairing
-	printf("element_pow_zn	(cph->c_0,	cph->c_0,	s2);\n");
-	element_pow_zn	(cph->c_0,	cph->c_0,	s2);						 //apply power
-	printf("element_mul   	(cph->c_0,	cph->c_0,	m);\n");
-	element_mul   	(cph->c_0,	m,	cph->c_0);							//multiply
 
-	element_clear(alpha_a1_beta);
+	pairing_apply		(cph->c_0,		msk->g,			g_alpha_a1_beta, 	pub->p); //apply pairing
+	element_pow_zn		(cph->c_0,		cph->c_0,		s2);						 //apply power
+	element_mul   		(cph->c_0,		m,			cph->c_0);							//multiply
+	element_clear		(alpha_a1_beta);
 
 	printf("done\n");
 /***** c_1 *****/
@@ -882,6 +875,17 @@ bswabe_enc(bswabe_pub_t* pub, bswabe_msk_t* msk, unsigned char* msg, char* input
 
 
 	printf("libbswabe-enc - Returning to cpabe-enc\n");
+	
+	printf("\nPrint SK After:\n");
+	element_printf("c_0:\t%B\n", cph->c_0);
+	element_printf("c_1:\t%B\n", cph->c_1);
+	element_printf("c_2:\t%B\n", cph->c_2);
+	element_printf("c_3:\t%B\n", cph->c_3);
+	element_printf("c_4:\t%B\n", cph->c_4);
+	element_printf("c_5:\t%B\n", cph->c_5);
+	element_printf("c_6:\t%B\n", cph->c_6);
+	element_printf("c_7:\t%B\n", cph->c_7);
+
 	return cph;
 
 }
@@ -1328,18 +1332,18 @@ bswabe_dec( bswabe_pub_t* pub, bswabe_prv_t* prv, bswabe_cph_t* cph, long id_val
 	
 	
 	//Calculate A1	
-	pairing_apply(a_11,			prv->d_1,		cph->c_1,	pub->p);
-	pairing_apply(a_12,			prv->d_2,		cph->c_2,	pub->p);
-	pairing_apply(a_13,			prv->d_3,		cph->c_3,	pub->p);
-	pairing_apply(a_14,			prv->d_4,		cph->c_4,	pub->p);
-	pairing_apply(a_15,			prv->d_5,		cph->c_5,	pub->p);	
+	pairing_apply(a_11,			cph->c_1,	        prv->d_1,	pub->p);
+	pairing_apply(a_12,			cph->c_2,		prv->d_2,	pub->p);
+	pairing_apply(a_13,			cph->c_3,		prv->d_3,	pub->p);
+	pairing_apply(a_14,			cph->c_4,		prv->d_4,	pub->p);
+	pairing_apply(a_15,			cph->c_5,		prv->d_5,	pub->p);	
 	element_mul  (a_1,			a_11,			a_12);
 	element_mul  (a_1,			a_1,			a_13);
 	element_mul  (a_1,			a_1,			a_14);
 	element_mul  (a_1,			a_1,			a_15);
 	//Calculate A2
-	pairing_apply(a_2,			prv->d_6,		cph->c_6,	pub->p);
-	pairing_apply(a_21,			prv->d_7,		cph->c_7,	pub->p);
+	pairing_apply(a_2,			cph->c_6,		prv->d_6,	pub->p);
+	pairing_apply(a_21,			cph->c_7,		prv->d_7,	pub->p);
 	element_mul  (a_2,			a_2,			a_21);
 	//Calculate A3
 	element_div(a_3,			a_1, 			a_2);
@@ -1370,11 +1374,14 @@ bswabe_dec( bswabe_pub_t* pub, bswabe_prv_t* prv, bswabe_cph_t* cph, long id_val
 		element_t a_4temp2;				/* GT */
 		element_init_GT(a_4temp, 	pub->p);
 		element_init_GT(a_4temp2, 	pub->p);
-		pairing_apply (a_4temp,		prv->k,		 	temp->c_i1,		pub->p);
+		pairing_apply (a_4temp,		temp->c_i1,		prv->k,		pub->p);
 		pairing_apply (a_4temp2,	temp->c_i2,		prv->d_7,		pub->p);
 		element_div   (a_4temp,		a_4temp,		a_4temp2);
 		element_pow_zn(a_4temp,		a_4temp,		idInvert);
-		element_mul   (a_4,		a_4,			a_4temp);
+		if(i==0)
+		    element_set   (a_4,		a_4temp);
+		else
+		    element_mul   (a_4,		a_4,			a_4temp);
 		
 		element_clear (a_4temp);
 		element_clear (a_4temp2);
@@ -1385,8 +1392,8 @@ bswabe_dec( bswabe_pub_t* pub, bswabe_prv_t* prv, bswabe_cph_t* cph, long id_val
 	}
 	
 	
-	//element_div   (a,			a,			a_3);
-	element_div   (msg,			cph->c_0,		a_3);
+	element_div   (a,			a,			a_3);
+	element_div   (msg,			cph->c_0,		a);
 	
 
 // 	element_mul(prv->e, 		prv->e, 		a);			//E <- E * A the state update
