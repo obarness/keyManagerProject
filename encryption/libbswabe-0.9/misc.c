@@ -102,7 +102,9 @@ bswabe_pub_serialize( bswabe_pub_t* pub )
 	
 	
 	serialize_string (b, pub->pairing_desc);
+
 	serialize_element(b, pub->g	);
+	serialize_element(b, pub->n	);
 	serialize_element(b, pub->g_b	);
 	serialize_element(b, pub->g_a1	);
 	serialize_element(b, pub->g_a2	);
@@ -132,6 +134,7 @@ bswabe_pub_unserialize( GByteArray* b, int free )
 	pairing_init_set_buf(pub->p, pub->pairing_desc, strlen(pub->pairing_desc));
 
 	element_init_G1(pub->g,				pub->p);
+	element_init_Zr(pub->n,				pub->p);
 	element_init_G1(pub->g_b,			pub->p);
 	element_init_G1(pub->g_a1,			pub->p);
 	element_init_G1(pub->g_a2,			pub->p);
@@ -147,6 +150,7 @@ bswabe_pub_unserialize( GByteArray* b, int free )
 
 	
 	unserialize_element(b, &offset,		pub->g);
+	unserialize_element(b, &offset,		pub->n);
 	unserialize_element(b, &offset,		pub->g_b);
 	unserialize_element(b, &offset,		pub->g_a1);
 	unserialize_element(b, &offset,		pub->g_a2);
@@ -215,10 +219,10 @@ bswabe_msk_unserialize( bswabe_pub_t* pub, GByteArray* b, int free )
 	
 	element_init_G1(msk->g,					pub->p);
 	element_init_G1(msk->g_alpha,				pub->p);
-	element_init_Zr(msk->g_alpha_a1,			pub->p);
-	element_init_Zr(msk->v,				 	pub->p);
-	element_init_Zr(msk->v1,				pub->p);
-	element_init_Zr(msk->v2,				pub->p);
+	element_init_G1(msk->g_alpha_a1,			pub->p);
+	element_init_G1(msk->v,				 	pub->p);
+	element_init_G1(msk->v1,				pub->p);
+	element_init_G1(msk->v2,				pub->p);
 	element_init_Zr(msk->alpha,				pub->p);
 	element_init_Zr(msk->beta,				pub->p);
 	element_init_Zr(msk->a1,				pub->p);
@@ -288,11 +292,11 @@ bswabe_prv_unserialize( bswabe_pub_t* pub, GByteArray* b, int free )
 	element_init_G1(prv->d_1,	pub->p);
 	element_init_G1(prv->d_2,	pub->p);
 	element_init_G1(prv->d_3,	pub->p);
-	element_init_GT(prv->d_4,	pub->p);
+	element_init_G1(prv->d_4,	pub->p);
 	element_init_G1(prv->d_5,	pub->p);
 	element_init_G1(prv->d_6,	pub->p);
 	element_init_G1(prv->d_7,	pub->p);
-	element_init_GT(prv->k,		pub->p);
+	element_init_G1(prv->k,		pub->p);
 
 	unserialize_element(b, &offset, prv->d_1);
 	unserialize_element(b, &offset, prv->d_2);
@@ -464,14 +468,15 @@ bswabe_cph_unserialize( bswabe_pub_t* pub, GByteArray* b, int free )
 	unserialize_element(b, &offset, cph->c_6);
 	unserialize_element(b, &offset, cph->c_7);
 	printf("\nPrinting CT after reconstruction:\n");
-	element_printf("C~:\t%B\n", 		cph->c_0);
-	element_printf("C~:\t%B\n", 		cph->c_1);
-	element_printf("C~:\t%B\n", 		cph->c_2);
-	element_printf("C~:\t%B\n", 		cph->c_3);
-	element_printf("C~:\t%B\n", 		cph->c_4);
-	element_printf("C~:\t%B\n", 		cph->c_5);
-	element_printf("C~:\t%B\n", 		cph->c_6);
-	element_printf("C~:\t%B\n", 		cph->c_7);
+	element_printf("c_0:\t%B\n", 		cph->c_0);
+	element_printf("c_1:\t%B\n", 		cph->c_1);
+	element_printf("c_2:\t%B\n", 		cph->c_2);
+	element_printf("c_3:\t%B\n", 		cph->c_3);
+	element_printf("c_4:\t%B\n", 		cph->c_4);
+	element_printf("c_5:\t%B\n", 		cph->c_5);
+	element_printf("c_6:\t%B\n", 		cph->c_6);
+	element_printf("c_7:\t%B\n", 		cph->c_7);
+
 	cph->attr = unserialize_attr(pub, b, &offset);
 
 	if( free )

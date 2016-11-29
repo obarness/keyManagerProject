@@ -7,35 +7,35 @@ bswabe_error(35,776
 raise_error(41,821
 element_from_string(58,1062
 bswabe_setup(70,1290
-bswabe_prv_t* bswabe_keygen(240,7127
-base_node(416,12299
-parse_policy_postfix(432,12528
-rand_poly(514,14185
-eval_poly(535,14610
-fill_policy(561,15009
-setId 603,16057
-bswabe_enc(688,18609
-check_sat(870,23923
-pick_sat_naive(902,24545
-bswabe_policy_t* cur_comp_pol;925,24998
-cmp_int(927,25033
-pick_sat_min_leaves(940,25329
-lagrange_coef(979,26272
-dec_leaf_naive(1003,26682
-dec_internal_naive(1023,27220
-dec_node_naive(1048,27773
-dec_naive(1058,28003
-dec_leaf_merge(1064,28129
-dec_internal_merge(1094,28828
-dec_node_merge(1116,29344
-dec_merge(1126,29580
-dec_leaf_flatten(1160,30578
-dec_internal_flatten(1188,31304
-dec_node_flatten(1211,31842
-dec_flatten(1222,32105
-bswabe_dec(1241,32507
+bswabe_prv_t* bswabe_keygen(240,7126
+base_node(425,12397
+parse_policy_postfix(441,12626
+rand_poly(523,14283
+eval_poly(544,14708
+fill_policy(570,15107
+setId 612,16155
+bswabe_enc(697,18707
+check_sat(890,24477
+pick_sat_naive(922,25099
+bswabe_policy_t* cur_comp_pol;945,25552
+cmp_int(947,25587
+pick_sat_min_leaves(960,25883
+lagrange_coef(999,26826
+dec_leaf_naive(1023,27236
+dec_internal_naive(1043,27774
+dec_node_naive(1068,28327
+dec_naive(1078,28557
+dec_leaf_merge(1084,28683
+dec_internal_merge(1114,29382
+dec_node_merge(1136,29898
+dec_merge(1146,30134
+dec_leaf_flatten(1180,31132
+dec_internal_flatten(1208,31858
+dec_node_flatten(1231,32396
+dec_flatten(1242,32659
+bswabe_dec(1261,33061
 
-misc.c,683
+misc.c,684
 serialize_uint32(11,143
 unserialize_uint32(24,330
 serialize_element(37,496
@@ -43,23 +43,23 @@ unserialize_element(52,765
 serialize_string(68,1048
 unserialize_string(74,1162
 bswabe_pub_serialize(97,1451
-bswabe_pub_unserialize(123,2061
-bswabe_msk_serialize(184,4047
-bswabe_msk_unserialize(207,4551
-bswabe_prv_serialize(262,6188
-bswabe_prv_unserialize(280,6573
-serialize_policy(324,7831
-unserialize_policy(343,8243
-serialize_attr 372,8873
-unserialize_attr 389,9211
-bswabe_cph_serialize(423,9979
-bswabe_cph_unserialize(441,10400
-bswabe_pub_free(485,11729
-bswabe_msk_free(509,12194
-bswabe_prv_free(526,12530
-bswabe_policy_free(540,12796
-free_attr 560,13087
-bswabe_cph_free(575,13306
+bswabe_pub_unserialize(125,2094
+bswabe_msk_serialize(188,4160
+bswabe_msk_unserialize(211,4664
+bswabe_prv_serialize(266,6301
+bswabe_prv_unserialize(284,6686
+serialize_policy(328,7944
+unserialize_policy(347,8356
+serialize_attr 376,8986
+unserialize_attr 393,9324
+bswabe_cph_serialize(427,10092
+bswabe_cph_unserialize(445,10513
+bswabe_pub_free(490,11851
+bswabe_msk_free(514,12316
+bswabe_prv_free(531,12652
+bswabe_policy_free(545,12918
+free_attr 565,13209
+bswabe_cph_free(580,13428
 
 bswabe.h,196
 typedef struct bswabe_pub_s bswabe_pub_t;13,186

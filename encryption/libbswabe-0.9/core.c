@@ -69,7 +69,7 @@ element_from_string( element_t h, char* s )
 void
 bswabe_setup( bswabe_pub_t** pub, bswabe_msk_t** msk )
 {
-	signed long int n=5; //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<meanwhile
+	signed long int n=2; //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<meanwhile
 	/* initialize */
 	*pub = (bswabe_pub_t*) malloc(sizeof(bswabe_pub_t));
 	*msk = (bswabe_msk_t*) malloc(sizeof(bswabe_msk_t));
@@ -141,6 +141,7 @@ bswabe_setup( bswabe_pub_t** pub, bswabe_msk_t** msk )
         
 	//random group elements - msk
 	element_random((*msk)->g);
+	element_set   ((*pub)->g,			(*msk)->g);
 	element_random((*msk)->v);
 	element_random((*msk)->v1);
 	element_random((*msk)->v2);
@@ -161,7 +162,6 @@ bswabe_setup( bswabe_pub_t** pub, bswabe_msk_t** msk )
 	element_pow_zn((*msk)->g_alpha_a1,		(*msk)->g, 		alpha_a1);	//g^(alpha*a1)	
 			
 	/*	compute pub	*/
-	element_set   ((*pub)->g,			(*msk)->g); 
 	element_set_si((*pub)->n,			n);  
 	element_pow_zn((*pub)->g_b,			(*pub)->g, 		(*msk)->beta);	//g^b
 	element_pow_zn((*pub)->g_a1,			(*pub)->g, 		(*msk)->a1);	//g^a1
@@ -274,7 +274,10 @@ bswabe_prv_t* bswabe_keygen(bswabe_pub_t** pub, bswabe_msk_t** msk, long id_valu
 	element_t minusapha;
 	element_t minusz1;
 	element_t minusz2;
+	element_t d2Beta;
+	
 
+    
 	printf ("libbswabe keygen - Initializing elements\n");
 	/* initialize */
 	prv = (bswabe_prv_t*) malloc(sizeof(bswabe_prv_t));		//private key allocation
@@ -298,6 +301,7 @@ bswabe_prv_t* bswabe_keygen(bswabe_pub_t** pub, bswabe_msk_t** msk, long id_valu
 	element_init_Zr	(minusapha,	(*pub)->p);
 	element_init_Zr	(minusz1,	(*pub)->p);
 	element_init_Zr	(minusz2,	(*pub)->p);
+	element_init_Zr	(d2Beta,		(*pub)->p);
 	/* d_1 element initialization	*/
 	element_init_G1	(g_alpha_a1,	(*pub)->p);
 	element_init_G1	(v_d,		(*pub)->p);
@@ -333,10 +337,12 @@ bswabe_prv_t* bswabe_keygen(bswabe_pub_t** pub, bswabe_msk_t** msk, long id_valu
 	/*	d_1	compute	*/
 	element_pow_zn	(v_d,		(*msk)->v,		d);			//v^d
 	element_mul   	(prv->d_1,	(*msk)->g_alpha_a1,	v_d);			//D1 = (g^alpha*a1)*(v^d)
-	element_printf("v_d:\t%B\n", v_d);
-	element_printf("d:\t%B\n", d);
+	element_printf("d1:\t%B\n", d1);
+	element_printf("d2:\t%B\n", d2);
 	element_printf("(*msk)->v:\t%B\n", (*msk)->v);
-	element_printf("(*msk)->g_alpha_a1:\t%B\n", (*msk)->g_alpha_a1);
+	element_printf("d:\t%B\n", d);
+	element_printf("v_d:\t%B\n", v_d);
+
 	/*	d_2	compute	*/
 	element_neg   	(minusapha,	(*msk)->alpha);
 	element_pow_zn	(g_minusalpha,	(*msk)->g,			minusapha);
@@ -344,6 +350,7 @@ bswabe_prv_t* bswabe_keygen(bswabe_pub_t** pub, bswabe_msk_t** msk, long id_valu
 	element_pow_zn	(g_z1,		(*msk)->g,			z1);
 	element_mul     (prv->d_2,	g_z1,			v1_d);
 	element_mul     (prv->d_2,	prv->d_2,		g_minusalpha);		//D2 = (g^-alpha)*(v1^d)*(g^z1)
+	element_printf("v1_d:\t%B\n", v1_d);
 	
 	/*	d_3	compute	*/
 	element_neg   	(minusz1,	z1);
@@ -358,10 +365,12 @@ bswabe_prv_t* bswabe_keygen(bswabe_pub_t** pub, bswabe_msk_t** msk, long id_valu
 	/*	d_5	compute	*/
 	element_neg   	(minusz2,	z2);
 	element_pow_zn	(g_b_minusz2,	(*pub)->g_b,		minusz2);		
-	element_set     (prv->d_5,	g_b_minusz1);					//D5 = (g^b)^-z2
+	element_set     (prv->d_5,	g_b_minusz2);					//D5 = (g^b)^-z2
 	/*	d_6	compute	*/
-	element_mul	(prv->d_6,	(*msk)->beta,           d2);
-	element_pow_zn	(prv->d_6,	(*pub)->g,		prv->d_6);		
+
+	element_mul	(d2Beta,	(*msk)->beta,           d2);
+	element_pow_zn	(prv->d_6,	(*pub)->g,		d2Beta);	
+
 	/*	d_7	compute	*/
 	element_pow_zn	(g_d1,		(*pub)->g,		d1);		
 	element_set     (prv->d_7,	g_d1);						//D7 = (g^d1)
@@ -383,7 +392,7 @@ bswabe_prv_t* bswabe_keygen(bswabe_pub_t** pub, bswabe_msk_t** msk, long id_valu
 	element_clear (v2_d);
 	element_clear (g_z2);
 	element_clear (g_b_minusz2);
-        element_clear (g_d2_b);
+    element_clear (g_d2_b);
 	element_clear (g_d1);
 	element_clear (w_id_h_d1);
 	element_clear (id);			
@@ -709,8 +718,19 @@ bswabe_enc(bswabe_pub_t* pub, bswabe_msk_t* msk, unsigned char* msg, char* input
 	element_init_Zr	(s2, 		pub->p);
 
 	/* convert message */
+	
 	printf("string before:\t%s\n", 	msg);
-	element_from_bytes(m, 		msg);						//convert the file's content to an element
+	element_from_bytes (m, 		msg);						//convert the file's content to an element
+	//unsigned char* msg2 = (unsigned char*) malloc(element_length_in_bytes(msg));
+	unsigned char* message2 = 0;
+	message2 =(unsigned char*) malloc(element_length_in_bytes(m));
+	element_to_bytes(message2, m);
+	printf("The message after is:\t\t%s\n", message2);
+	//element_to_bytes(msg2,   	 m);
+	//printf("string afterrrrrr:\t%s\n", 	msg2);
+	
+// 	char* signed_message = (char*) msg2;
+// 	printf("The message original is:\t\t%s\n", signed_message);
 
 	/**** calculate randoms ****/
 	element_random(s1);
@@ -723,31 +743,31 @@ bswabe_enc(bswabe_pub_t* pub, bswabe_msk_t* msk, unsigned char* msg, char* input
 /***** c_0 *****/
 	printf("creating element c_0...\n");
 
-	element_init_GT	(cph->c_0, 	pub->p);
+	element_init_GT		(cph->c_0, 		pub->p);
 	element_t alpha_a1_beta;
 	element_t g_alpha_a1_beta;
-	element_init_G1	(g_alpha_a1_beta, 	pub->p);
-	element_init_Zr	(alpha_a1_beta, 	pub->p);
+	element_init_G1		(g_alpha_a1_beta, 	pub->p);
+	element_init_Zr		(alpha_a1_beta, 	pub->p);
 
-	element_mul		(alpha_a1_beta,		msk->alpha,			msk->a1);    //alpha * a1
+	element_mul		(alpha_a1_beta,		msk->alpha,		msk->a1);    //alpha * a1
 	element_mul		(alpha_a1_beta,		alpha_a1_beta,		msk->beta);  //(alpha*a1) * beta
-	element_pow_zn	(g_alpha_a1_beta,   msk->g,		alpha_a1_beta);
+	element_pow_zn		(g_alpha_a1_beta,   	msk->g,			alpha_a1_beta);
 	printf("pairing_apply	(cph->c_0,		msk->g,		alpha_a1_beta, 	pub->p);\n");
 	pairing_apply	(cph->c_0,		msk->g,		g_alpha_a1_beta, 	pub->p); //apply pairing
 	printf("element_pow_zn	(cph->c_0,	cph->c_0,	s2);\n");
 	element_pow_zn	(cph->c_0,	cph->c_0,	s2);						 //apply power
 	printf("element_mul   	(cph->c_0,	cph->c_0,	m);\n");
-	element_mul   	(cph->c_0,	cph->c_0,	m);							//multiply
+	element_mul   	(cph->c_0,	m,	cph->c_0);							//multiply
 
 	element_clear(alpha_a1_beta);
 
 	printf("done\n");
 /***** c_1 *****/
 	printf("creating element c_1...\n");
-	element_init_G1	(cph->c_1,  			pub->p);
-	element_set     (cph->c_1,			   msk->g);
-	element_pow_zn	(cph->c_1, cph->c_1, msk->beta);
-	element_pow_zn	(cph->c_1, cph->c_1, 		s);
+	element_init_G1		(cph->c_1,  			pub->p);
+	element_set     	(cph->c_1,			msk->g);
+	element_pow_zn		(cph->c_1, 	cph->c_1, 	msk->beta);
+	element_pow_zn		(cph->c_1, 	cph->c_1, 	s);
 	printf("done\n");
 /***** c2 *****/
 	printf("creating element c_2...\n");
@@ -756,7 +776,7 @@ bswabe_enc(bswabe_pub_t* pub, bswabe_msk_t* msk, unsigned char* msg, char* input
 	element_mul		(b_a1, 		msk->beta,   msk->a1);
 
 	element_init_G1	(cph->c_2,  			pub->p);
-	element_set     (cph->c_2,			   msk->g);
+	element_set     (cph->c_2,			  msk->g);
 	element_pow_zn	(cph->c_2, cph->c_2, 		b_a1);
 	element_pow_zn	(cph->c_2, cph->c_2, 		s1);
 
@@ -765,9 +785,9 @@ bswabe_enc(bswabe_pub_t* pub, bswabe_msk_t* msk, unsigned char* msg, char* input
 /***** c3 *****/
 	printf("creating element c_3...\n");
 	element_init_G1	(cph->c_3,  			pub->p);
-	element_set     (cph->c_3,			   msk->g);
-	element_pow_zn	(cph->c_3, cph->c_3, 		b_a1);
-	element_pow_zn	(cph->c_3, cph->c_3, 		s1);
+	element_set     (cph->c_3,			msk->g);
+	element_pow_zn	(cph->c_3, 	cph->c_3, 	msk->a1);
+	element_pow_zn	(cph->c_3, 	cph->c_3, 	s1);
 	printf("done\n");
 /***** c4 *****/
 	printf("creating element c_4...\n");
@@ -1365,8 +1385,8 @@ bswabe_dec( bswabe_pub_t* pub, bswabe_prv_t* prv, bswabe_cph_t* cph, long id_val
 	}
 	
 	
-	element_div   (a,			a_3,			a_4);
-	element_div   (msg,			cph->c_0,		a);
+	//element_div   (a,			a,			a_3);
+	element_div   (msg,			cph->c_0,		a_3);
 	
 
 // 	element_mul(prv->e, 		prv->e, 		a);			//E <- E * A the state update
