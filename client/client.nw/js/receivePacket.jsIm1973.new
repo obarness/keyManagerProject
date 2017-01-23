@@ -1,0 +1,79 @@
+
+function getKey(){
+
+	return 'my secret key';
+};
+
+function decryptMsg(msg, key){
+/*
+	var decryptedMsg = 'this message was decrypted successfuly! it used to be:' + msg.toString(); 
+	return decryptedMsg;
+	*/
+	return msg.toString();
+};
+
+
+
+
+function forward(payload, session){
+
+	return;
+
+
+	session.on("error",function(err){
+    	console.log(err)
+	});
+
+	session.sendPayload(payload);
+	console.log("Sent RTP packet to localhost port 6000");
+};
+
+
+function receive(){
+		//var gui = require('..nw.gui');
+		//var win = gui.Window.get();
+		//gui.Window.open('https://github.com');
+		var RtpSession=require("rtp-rtcp").RtpSession;
+		var RtpPacket=require("rtp-rtcp").RtpPacket;
+		var dgram = require('dgram');
+		var socket = dgram.createSocket('udp4');
+		var crypto = require('crypto');
+		var sharedKey =	new Buffer('a2674254abf859ea720e210016b13ad2','hex');			
+		var initializationVector = new Buffer('82b81f7c58c004dd0bdcd233b5a18ab7','hex');
+
+		var rtpPacket;
+		//var session = new RtpSession(6000);
+		//session.setRemoteAddress(6000,"localhost");
+		var port = 5000;
+		var host = '127.0.0.1';
+
+		socket.on('message', function (msg, info){
+			console.log('received a message');
+        //	console.log('message recieved by client: ' + msg.toString() );
+        //	console.log('packet is being decrypted');
+        	var sk = getKey();
+        	//const decryptedMsg = new Buffer( decryptMsg(msg,sk) )
+        	//forward(decryptedMsg,session);
+        	var rtpPacket = new RtpPacket(msg);
+// 		var payload = new Buffer(rtpPacket.getPayload());  
+// 		
+// 		var decipher = crypto.createDecipheriv('aes-128-cbc', sharedKey, initializationVector),
+// 		payload = decipher.update(payload);
+// 		payload += decipher.final();
+// 		var decpayload = new Buffer(payload);
+// 		rtpPacket.setPayload(decpayload);
+		socket.send(rtpPacket.getBuffer(),6000,host);
+        	//forward(rtpPacket.getBuffer(),session);
+		});
+
+
+		socket.on('listening', function(){
+		var address = socket.address();
+		console.log("listening on :" + address.address + ":" + address.port);
+		});
+
+		socket.bind(port);
+};
+
+
+

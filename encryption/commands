@@ -1,0 +1,23 @@
+cpabe-setup -p pubkey -m masterkey
+
+cpabe-keygen -o alik_key -p pubkey -m masterkey -a 100
+
+cpabe-keygen -o sara_key -p pubkey -m masterkey -a 1
+
+cpabe-enc -p pubkey -m masterkey -i keyTest -a 1
+
+cpabe-dec -p pubkey -c alik_key_100 -i keyTest.cpabe -o testResult -a 100
+
+
+
+
+
+make clean
+
+make
+
+sudo make install
+
+
+
+

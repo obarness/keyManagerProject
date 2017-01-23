@@ -1,6 +1,7 @@
 var fs = require('fs');
 var http = require('http');
 var https = require('https');
+var path = require('path');
 var privateKey  = fs.readFileSync('server.key', 'utf8');
 var certificate = fs.readFileSync('server.crt', 'utf8');
 var credentials = {key: privateKey, cert: certificate};
@@ -9,60 +10,101 @@ var app = express();
 
 // your express configuration here
 var PORT = 1111;
-app.get('/', function(req,res) {
-	handleRequest(req,res);
-	httpsServer.close();
-   
 
+app.get('/', function(req, res) {
+	console.log("we're here");
+    res.sendFile(path.join(__dirname + '/html/index.html'));
+    httpsServer.close();
 });
+
+
+
+
+app.get('/createPrivateKey', function(req,res) {
+	getPrivateKey(req,res);
+	httpsServer.close();
+});
+
+
+app.get('/createMasterkey', function(req,res) {
+	getMasterKey(req,res);
+	httpsServer.close();
+});
+
+app.get('/getPublicKey', function(req,res) {
+	getPublicKey(req,res);
+	httpsServer.close();
+});
+
+function getPublicKey(request, response){
+	console.log("received a request, user is from " + request.query.id)
+	var channelId=13;
+	keyPath ="/pubkeys/pubkey_"+channelId;
+	console.log("looking for public key");
+  	sendKey(keyPath,response);
+    return keyPath;
+}
 
 var httpsServer = https.createServer(credentials, app);
 
 httpsServer.listen(PORT);
 
-function handleRequest(request, response){
-	console.log("received a request, user is from " + request.params)
-	getKey(response);
-
-    //this is so that we don't have to change port#
-    //remove this for real functionality
-    
-}
 
 
-function getKey(response){
+function getPrivateKey(request, response){
+	console.log("received a request, user is from " + request.query.id)
 	var userId=18;
 	var channelId=13;
-	var keyPath = generateKey(userId, channelId);
+	var keyPath = generatePrivateKey(userId, channelId);
 	 console.log("key generated");
   	sendKey(keyPath,response);
     return keyPath;
+  
 }
 
-function generateKey(userId, channelId){
-
-	console.log("TRYING TO GENERATE KEY");
-
-var pubkey = "/home/omer/workspace/keyManagerProject/encryption/cpabe-0.11/pubkey";
-var masterkey = "/home/omer/workspace/keyManagerProject/encryption/cpabe-0.11/masterkey";
-var keyName = "channel#_"+channelId+"_user#_"+userId;
-var keyPath = "/home/omer/workspace/keyManagerProject/server/"+keyName;
-var sys = require('sys')
-var exec = require('child_process').execSync;
-function puts(error, stdout, stderr) { sys.puts(stdout) }
-exec("cpabe-keygen "+ "-o " + "channel#_"+channelId+"_user# -p " + pubkey + " -m " + masterkey + " -a " + userId, puts);
-return keyName;
+function getMasterKey(request, response){
+	console.log("received a request, user is from " + request.query.id)
+	var channelId=13;
+	var keyPath = generateMasterKey(channelId);
+	console.log("key generated");
+  	sendKey(keyPath,response);
+    return keyPath;
+  
 }
 
 function sendKey(fileName,response){
-	var path = require('path');
-	var filePath = path.join(__dirname, fileName);
-   // var stat = fs.statSync(filePath);
+	var filePath = path.join(__dirname, "/keys"+fileName);
     var file = fs.readFile(filePath, 'binary');
 	response.sendFile(filePath);
-    
-    //var readStream = fs.createReadStream(filePath);
-    // We replaced all the event handlers with a simple call to readStream.pipe()
-    //readStream.pipe(response);
-
 }
+
+function generatePrivateKey(userId, channelId){
+
+	console.log("TRYING TO GENERATE KEY");
+	var pubkey = "/home/omer/workspace/keyManagerProject/server/keys/pubkeys/pubkey_"+channelId;
+	var masterkey = "/home/omer/workspace/keyManagerProject/server/keys/masterkeys/masterkey_"+channelId;
+	var keyName = "/privatekeys/channel#_"+channelId+"_user#_"+userId;
+	var keyPath = "/home/omer/workspace/keyManagerProject/server/keys/privatekeys/"+keyName;
+	var sys = require('sys')
+	var exec = require('child_process').execSync;
+	function puts(error, stdout, stderr) { sys.puts(stdout) }
+	exec("cpabe-keygen "+ "-o " + "channel#_"+channelId+"_user# -p " + pubkey + " -m " + masterkey + " -a " + userId, puts);
+	return keyName;
+}
+
+function generateMasterKey(channelId){
+
+	console.log("Generating master key for channel # "  +channelId);
+	masterKeyName = "masterkey_" + channelId;
+	pubKeyName ="pubkey_"+channelId;
+	var sys = require('sys')
+	var exec = require('child_process').execSync;
+	function puts(error, stdout, stderr) { sys.puts(stdout) }
+	exec("cpabe-setup "+ "-p " + pubKeyName+ " -m " + masterKeyName, puts);
+
+	return "/masterkeys/"+masterKeyName;
+}
+
+
+
+

@@ -64,6 +64,7 @@ parse_args( int argc, char** argv )
 			}
 			else
 			{
+				
 				msk_file = argv[i];
 			}
 		}
@@ -84,15 +85,34 @@ main( int argc, char** argv )
 {
 	bswabe_pub_t* pub;
 	bswabe_msk_t* msk;
+	char* path = "/home/omer/workspace/keyManagerProject/server/keys/";
 
 	printf ("cpabe-setup - Starting to parse arguments\n");
 	parse_args(argc, argv);
+	printf("after parse: msk file:  %s \n" , msk_file);
 	printf ("cpabe-setup - About to enter setup on libbswabe\n");
 	bswabe_setup(&pub, &msk);
 
 	printf ("cpabe-setup - Trying to write keys to files\n");
-	spit_file(pub_file, bswabe_pub_serialize(pub), 1);
-	spit_file(msk_file, bswabe_msk_serialize(msk), 1);
+
+	int pathLength = strlen(path);
+	int fileNameLength = strlen(pub_file);
+	char pubFullPath[pathLength + fileNameLength];
+	strcpy(pubFullPath, path);
+	strcat(pubFullPath, "pubkeys/");
+	strcat(pubFullPath, pub_file);
+	printf ("pubFullPath: \n", pubFullPath);
+	spit_file(pubFullPath, bswabe_pub_serialize(pub), 1);
+
+
+	pathLength = strlen(path);
+	fileNameLength = strlen(msk_file);
+	char mskFullPath[pathLength + fileNameLength];
+	strcpy(mskFullPath, path);
+	strcat(mskFullPath, "masterkeys/");
+	strcat(mskFullPath, msk_file);
+
+	spit_file(mskFullPath, bswabe_msk_serialize(msk), 1);
 	printf ("cpabe-setup - Finished Writing keys to files\n");
 	return 0;
 }

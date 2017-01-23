@@ -189,9 +189,11 @@ void
 spit_file( char* file, GByteArray* b, int free )
 {
 	FILE* f;
-
+	printf("trying to write file: %s \n " , file);
 	f = fopen_write_or_die(file);
+	printf("file opened \n ");
 	fwrite(b->data, 1, b->len, f);
+	printf("data written in file \n ");
 	fclose(f);
 
 	if( free )
