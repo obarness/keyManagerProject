@@ -1,0 +1,40 @@
+<html>
+
+<head>
+
+    <title>Broadcaster</title>
+	   <script src="/js/client.js"></script>
+	   <script src="/js/gui.js"></script>
+  	 <script src="/js/vlcCtrl.js"></script>
+	   <script src="/js/requestKey.js"></script>
+	   <script src="/js/receivePacket.js"></script>
+  	 <script src="/js/recieveDecrypted.js"></script>
+     <script src="/js/broad.js"></script>
+     <script src="/js/broadAes.js"></script>
+</head>
+
+<body onload="loaded();">
+
+
+<!-- 
+<script>require('nw.gui').Window.get().showDevTools();</script>
+-->
+
+
+<input id="openVlc" type="button" value="openVlc" onclick="openVlc();" />
+<input id="getMasterKey" type="button" value="getMasterKey" onclick="getMasterKey();" />
+<input id="broadcastVideo" type="button" value="broadcastVideo" onclick="broadcastVideo();" />
+<input id="getPublicKey" type="button" value="getPublicKey" onclick="getPublicKey();" />
+<input id="broadcastAesKey" type="button" value="broadcastAesKey" onclick="broadcastAesKey();" />
+
+<script>
+    function loaded(){
+    	setup();
+    }
+</script>
+
+
+
+</body>
+
+</html>
