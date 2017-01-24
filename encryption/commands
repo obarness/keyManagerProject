@@ -1,12 +1,12 @@
-cpabe-setup -p pubkey -m masterkey
+cpabe-setup -p public -m master
 
-cpabe-keygen -o alik_key -p pubkey -m masterkey -a 100
+cpabe-keygen -o alik_key -p public -m master -a 100
 
-cpabe-keygen -o sara_key -p pubkey -m masterkey -a 1
+cpabe-keygen -o sara_key -p public -m master -a 1
 
-cpabe-enc -p pubkey -m masterkey -i keyTest -a 1
+cpabe-enc -p public -m master -i key -a 1
 
-cpabe-dec -p pubkey -c alik_key_100 -i keyTest.cpabe -o testResult -a 100
+cpabe-dec -p public -c alik_key_100 -i key.cpabe -o testResult -a 100
 
 
 

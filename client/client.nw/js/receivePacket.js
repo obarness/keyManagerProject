@@ -1,11 +1,13 @@
 
 function playVideo(){
 	openVlc();
-	receive();
+	var aesKey;
+	receiveAes();
+	
 }
 
  
-function receive(){
+function receive(aesKey){
 
 		var RtpPacket=require("./RtpPacket.js");
 		var dgram = require('dgram');
@@ -16,7 +18,8 @@ function receive(){
 		var Buffer = require('buffer').Buffer;
 		var keysToKeep = 10;
 		var keysList = createKeysList(null,keysToKeep,0);
-		var sharedKey =	getAesKey(keysList);		
+		//var sharedKey =	getAesKey(keysList);	
+		
 
 		var port = 8000;
 		var host = '127.0.0.1';
@@ -26,7 +29,7 @@ function receive(){
 			console.log('received a message');
 	        var rtpPacket = new RtpPacket(msg);
 			var decrypted;
-			var decipher = crypto.createDecipher('aes-128-ctr', sharedKey),
+			var decipher = crypto.createDecipher('aes-128-ctr', aesKey),
 			decrypted = Buffer.concat([decipher.update(rtpPacket.getPayload()) , decipher.final()]);
 			var decryptedpay = new Buffer(decrypted);
 			rtpPacket.setPayload(decryptedpay);
@@ -51,7 +54,7 @@ exec("vlc rtp://@:6000", puts);
 
 
 function getAesKey(keysList){
-  keysList.key = new Buffer('a2674254abf859ea720e210016b13ad2','hex'); 
+  keysList.key = receiveAes();
   return keysList.key;
 }
 
@@ -86,3 +89,24 @@ function forward(payload, session){
 	session.sendPayload(payload);
 	console.log("Sent RTP packet to localhost port 6000");
 };
+
+
+function receiveAes(){
+
+		var dgram = require('dgram');
+		var socket = dgram.createSocket('udp4');
+		var port = 5004;
+		socket.on('message', function (aesKey, info){
+
+        	alert('we got a new  message: ' + aesKey.toString('hex') );
+        	receive(aesKey);
+
+			});
+
+		socket.on('listening', function(){
+  	    var address = socket.address();
+        alert("waiting for aes key on: " + address.address + ":" + address.port);
+        });
+
+		socket.bind(port);
+}
