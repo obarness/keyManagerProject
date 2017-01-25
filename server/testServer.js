@@ -39,7 +39,7 @@ app.get('/getPublicKey', function(req,res) {
 function getPublicKey(request, response){
 	console.log("received a request, user is from " + request.query.id)
 	var channelId=13;
-	keyPath ="/pubkeys/pubkey_"+channelId;
+	keyPath ="/pubkeys/public";
 	console.log("looking for public key");
   	sendKey(keyPath,response);
     return keyPath;
@@ -81,22 +81,23 @@ function sendKey(fileName,response){
 function generatePrivateKey(userId, channelId){
 
 	console.log("TRYING TO GENERATE KEY");
-	var pubkey = "/home/omer/workspace/keyManagerProject/server/keys/pubkeys/pubkey_"+channelId;
-	var masterkey = "/home/omer/workspace/keyManagerProject/server/keys/masterkeys/masterkey_"+channelId;
-	var keyName = "/privatekeys/channel#_"+channelId+"_user#_"+userId;
+	var pubkey = "/home/omer/workspace/keyManagerProject/server/keys/pubkeys/public"
+	var masterkey = "/home/omer/workspace/keyManagerProject/server/keys/masterkeys/master";
+	//var keyName = "/privatekeys/channel#_"+channelId+"_user#_"+userId;
+	var keyName = "/privatekeys/private";
 	var keyPath = "/home/omer/workspace/keyManagerProject/server/keys/privatekeys/"+keyName;
 	var sys = require('sys')
 	var exec = require('child_process').execSync;
 	function puts(error, stdout, stderr) { sys.puts(stdout) }
-	exec("cpabe-keygen "+ "-o " + "channel#_"+channelId+"_user# -p " + pubkey + " -m " + masterkey + " -a " + userId, puts);
+	exec("cpabe-keygen "+ "-o " + "private -p " + pubkey + " -m " + masterkey + " -a " + userId, puts);
 	return keyName;
 }
 
 function generateMasterKey(channelId){
 
 	console.log("Generating master key for channel # "  +channelId);
-	masterKeyName = "masterkey_" + channelId;
-	pubKeyName ="pubkey_"+channelId;
+	masterKeyName = "master";
+	pubKeyName ="public";
 	var sys = require('sys')
 	var exec = require('child_process').execSync;
 	function puts(error, stdout, stderr) { sys.puts(stdout) }

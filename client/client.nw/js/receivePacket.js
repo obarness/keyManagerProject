@@ -91,6 +91,9 @@ function forward(payload, session){
 };
 
 
+
+
+
 function receiveAes(){
 
 		var dgram = require('dgram');
@@ -98,14 +101,65 @@ function receiveAes(){
 		var port = 5004;
 		socket.on('message', function (aesKey, info){
 
-        	alert('we got a new  message: ' + aesKey.toString('hex') );
+        	//alert('we got a new  message: ' + aesKey.toString('hex'));
+        	//alert('trying to save into file');
+        	var aesKeyPath = "/home/omer/workspace/keyManagerProject/client/client.nw/js/aeskey/key"
+
+        	var fs = require('fs');
+        	/*
+        	const buf = Buffer.alloc(aesKey.length);
+        	buf.write(aesKey.toString('hex'),'binary');
+        	alert("buf:" + buf.toString());
+        	
+			fs.writeFileSync(aesKeyPath+".cpabe", buf.toString(),"binary", function(err) {
+	        	if(err) {
+	        		alert("error occured");
+	        		throw err;
+	           		return;
+	        	}
+        	});
+			*/
+			
+			var wstream = fs.createWriteStream(aesKeyPath+".cpabe");
+			wstream.write(aesKey);
+			wstream.end();
+			//alert("file written");
+			        	
+
+        	
+
+
+
+
+
+
+			//encrypt file
+
+        	var pubkey =  "/home/omer/workspace/keyManagerProject/client/client.nw/js/privateKey/public";
+			var private = "/home/omer/workspace/keyManagerProject/client/client.nw/js/privateKey/private";
+			var sys = require('sys')
+			const exec = require('child_process').execSync;
+			//function puts(error, stdout, stderr) { sys.puts(stdout) }
+			exec("cpabe-dec -p " + pubkey + " -c " + private + " -i " + aesKeyPath+".cpabe" + " -o "+  aesKeyPath  +" -a 100");
+
+			//	  cpabe-dec -p public         -c alik_key_100     -i    key.cpabe               -o testResult -a 100;
+
+
+
+			//read decrypted buffer
+			var aesKey = fs.readFileSync(aesKeyPath, (err, data) => {
+		  		if (err) throw err;
+
+				});	
+
+			alert("buffer:" + aesKey.toString('hex'));
         	receive(aesKey);
 
 			});
 
 		socket.on('listening', function(){
   	    var address = socket.address();
-        alert("waiting for aes key on: " + address.address + ":" + address.port);
+        console.log("waiting for aes key on: " + address.address + ":" + address.port);
         });
 
 		socket.bind(port);

@@ -207,6 +207,7 @@ void writeToFile(char* file_name, char* message)
 int
 main( int argc, char** argv )
 {
+
 	bswabe_pub_t* pub;
 	bswabe_prv_t* prv;
 	bswabe_cph_t* cph;
@@ -218,7 +219,16 @@ main( int argc, char** argv )
 
 	pub = bswabe_pub_unserialize(suck_file(pub_file), 1);
 	prv = bswabe_prv_unserialize(pub, suck_file(prv_file), 1);
-	cph = bswabe_cph_unserialize(pub, suck_file(in_file), 1);
+	
+	GByteArray* sucked_file = suck_file(in_file);
+	//if return 0 is here, program doesn't fail
+
+
+
+
+	//this function is causing the problem in webkit but not in terminal, why?!?!?
+	cph = bswabe_cph_unserialize(pub, sucked_file, 1);
+		
 
 	printf("cpabe-dec - going to dec in libbswabe\n");
 	

@@ -168,7 +168,7 @@ bswabe_pub_unserialize( GByteArray* b, int free )
 	{
 		g_byte_array_free(b, 1);
 	}
-
+	/*
 	printf("\nPrint PK after reconstruction:\n");
 	element_printf("g:\t%B\n", 		pub->g);
 	element_printf("g_b:\t%B\n", 		pub->g_b);
@@ -181,6 +181,7 @@ bswabe_pub_unserialize( GByteArray* b, int free )
 	element_printf("w:\t%B\n", 		pub->w);
 	element_printf("h:\t%B\n", 		pub->h);
 	element_printf("pair:\t%B\n", 		pub->pair);
+	*/
 	return pub;
 }
 
@@ -247,6 +248,7 @@ bswabe_msk_unserialize( bswabe_pub_t* pub, GByteArray* b, int free )
 	{
 		g_byte_array_free(b, 1);
 	}
+	/*
 	printf("\nPrint MSK after reconstruction:\n");
 	element_printf("g:\t%B\n", 		msk->g);
 	element_printf("g_alpha:\t%B\n", 	msk->g_alpha);
@@ -258,7 +260,7 @@ bswabe_msk_unserialize( bswabe_pub_t* pub, GByteArray* b, int free )
 	element_printf("beta:\t%B\n", 		msk->beta);
 	element_printf("a1:\t%B\n", 		msk->a1);
 	element_printf("a2:\t%B\n", 		msk->a2);
-
+	*/
 	return msk;
 }
 
@@ -311,7 +313,7 @@ bswabe_prv_unserialize( bswabe_pub_t* pub, GByteArray* b, int free )
 	{
 		g_byte_array_free(b, 1);
 	}
-
+	/*
 	printf("\nPrint SK after reconstruction:\n");
 	element_printf("D1:\t%B\n", 		prv->d_1);
 	element_printf("D2:\t%B\n", 		prv->d_2);
@@ -321,6 +323,7 @@ bswabe_prv_unserialize( bswabe_pub_t* pub, GByteArray* b, int free )
 	element_printf("D6:\t%B\n", 		prv->d_6);
 	element_printf("D7:\t%B\n", 		prv->d_7);
 	element_printf("K:\t%B\n", 		prv->k);
+	*/
 	return prv;
 }
 
@@ -412,11 +415,11 @@ unserialize_attr (bswabe_pub_t* pub, GByteArray* b, int* offset)
 		unserialize_element(b, offset, temp->c_i1);
 		unserialize_element(b, offset, temp->c_i2);
 		unserialize_element(b, offset, temp->id);
-
+		/*
 		element_printf("id %i :\t%B\n", i, temp->id);
 		element_printf("C1 %i :\t%B\n", i, temp->c_i1);
 		element_printf("C2 %i :\t%B\n", i, temp->c_i2);
-
+		*/
 		g_ptr_array_add(p, temp);
 	}
 
@@ -444,12 +447,13 @@ bswabe_cph_serialize( bswabe_cph_t* cph )
 bswabe_cph_t*
 bswabe_cph_unserialize( bswabe_pub_t* pub, GByteArray* b, int free )
 {
+	die("=============lets see who dies first =================\n ");
 	bswabe_cph_t* cph;
 	int offset;
-
+	die("=============lets see who dies first =================\n ");
 	cph = (bswabe_cph_t*) malloc(sizeof(bswabe_cph_t));
 	offset = 0;
-
+	die("=============you died before this line =================\n ");
 	element_init_GT(cph->c_0, 	pub->p);
 	element_init_G1(cph->c_1,  	pub->p);
 	element_init_G1(cph->c_2,  	pub->p);
@@ -467,6 +471,7 @@ bswabe_cph_unserialize( bswabe_pub_t* pub, GByteArray* b, int free )
 	unserialize_element(b, &offset, cph->c_5);
 	unserialize_element(b, &offset, cph->c_6);
 	unserialize_element(b, &offset, cph->c_7);
+	/*
 	printf("\nPrinting CT after reconstruction:\n");
 	element_printf("c_0:\t%B\n", 		cph->c_0);
 	element_printf("c_1:\t%B\n", 		cph->c_1);
@@ -476,7 +481,7 @@ bswabe_cph_unserialize( bswabe_pub_t* pub, GByteArray* b, int free )
 	element_printf("c_5:\t%B\n", 		cph->c_5);
 	element_printf("c_6:\t%B\n", 		cph->c_6);
 	element_printf("c_7:\t%B\n", 		cph->c_7);
-
+	*/
 	cph->attr = unserialize_attr(pub, b, &offset);
 
 	if( free )

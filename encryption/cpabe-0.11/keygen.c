@@ -110,7 +110,7 @@ parse_args( int argc, char** argv )
 		printf("cpabe-keygen - One of the files weren't initiated\n");
 		die(usage);
 	}
-	out_file = g_strdup_printf("%s_%ld", out_file,id_value);
+	out_file = g_strdup_printf("%s", out_file);
 	printf("the private key file name is: %s\n", out_file);
 }
 

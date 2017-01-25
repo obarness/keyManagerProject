@@ -239,6 +239,7 @@ main( int argc, char** argv )
 	}
 	else
 	{
+		
 		spit_file(out_file, bswabe_cph_serialize(cph), 1);
 		spit_file(msk_file, bswabe_msk_serialize(msk), 1);
 		if( !keep )

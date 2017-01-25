@@ -134,6 +134,7 @@ fopen_write_or_die( char* file )
 GByteArray*
 suck_file( char* file )
 {
+	
 	FILE* f;
 	GByteArray* a;
 	struct stat s;
