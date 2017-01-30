@@ -26,6 +26,7 @@ function setup(){
   if (err) throw err;
   });
 
+
   broadcastAesKey(aesKey);      
   //var initializationVector = new Buffer('82b81f7c58c004dd0bdcd233b5a18ab7','hex');      //crypto.randomBytes(16); 
 

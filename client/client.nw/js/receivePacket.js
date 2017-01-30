@@ -6,6 +6,8 @@ function playVideo(){
 	
 }
 
+
+
  
 function receive(aesKey){
 
@@ -91,11 +93,32 @@ function forward(payload, session){
 };
 
 
+function decrypt(){
+			var fs = require('fs');
+			var aesKeyPath = "/home/omer/workspace/keyManagerProject/client/client.nw/js/aeskey/key"
+			var pubkey =  "/home/omer/workspace/keyManagerProject/client/client.nw/js/privateKey/public";
+			var private = "/home/omer/workspace/keyManagerProject/client/client.nw/js/privateKey/private";
+			var sys = require('sys')
+			var exec = require('child_process').execSync;
+			function puts(error, stdout, stderr) { sys.puts(stdout) }
+			exec("cpabe-dec -p " + pubkey + " -c " + private + " -i " + aesKeyPath+".cpabe" + " -o "+  aesKeyPath  +" -a 100");
+
+						//read decrypted buffer
+			var aesKey = fs.readFileSync(aesKeyPath, (err, data) => {
+		  		if (err) throw err;
+
+				});	
+
+			alert("buffer:" + aesKey.toString());
+			var key = new Buffer(aesKey.toString(),'hex'); 
+        	receive(key);
 
 
+
+
+}
 
 function receiveAes(){
-
 		var dgram = require('dgram');
 		var socket = dgram.createSocket('udp4');
 		var port = 5004;
@@ -105,57 +128,19 @@ function receiveAes(){
         	//alert('trying to save into file');
         	var aesKeyPath = "/home/omer/workspace/keyManagerProject/client/client.nw/js/aeskey/key"
 
+
+
         	var fs = require('fs');
-        	/*
-        	const buf = Buffer.alloc(aesKey.length);
-        	buf.write(aesKey.toString('hex'),'binary');
-        	alert("buf:" + buf.toString());
-        	
-			fs.writeFileSync(aesKeyPath+".cpabe", buf.toString(),"binary", function(err) {
-	        	if(err) {
-	        		alert("error occured");
-	        		throw err;
-	           		return;
-	        	}
-        	});
-			*/
-			
 			var wstream = fs.createWriteStream(aesKeyPath+".cpabe");
 			wstream.write(aesKey);
-			wstream.end();
-			//alert("file written");
-			        	
-
-        	
-
-
-
-
-
-
-			//encrypt file
-
-        	var pubkey =  "/home/omer/workspace/keyManagerProject/client/client.nw/js/privateKey/public";
-			var private = "/home/omer/workspace/keyManagerProject/client/client.nw/js/privateKey/private";
-			var sys = require('sys')
-			const exec = require('child_process').execSync;
-			//function puts(error, stdout, stderr) { sys.puts(stdout) }
-			exec("cpabe-dec -p " + pubkey + " -c " + private + " -i " + aesKeyPath+".cpabe" + " -o "+  aesKeyPath  +" -a 100");
-
-			//	  cpabe-dec -p public         -c alik_key_100     -i    key.cpabe               -o testResult -a 100;
-
-
-
-			//read decrypted buffer
-			var aesKey = fs.readFileSync(aesKeyPath, (err, data) => {
-		  		if (err) throw err;
-
-				});	
-
-			alert("buffer:" + aesKey.toString('hex'));
-        	receive(aesKey);
-
+			wstream.end(    function(){
+				decrypt();
 			});
+			//alert("file written");
+		
+
+		});
+
 
 		socket.on('listening', function(){
   	    var address = socket.address();

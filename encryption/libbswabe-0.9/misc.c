@@ -447,13 +447,12 @@ bswabe_cph_serialize( bswabe_cph_t* cph )
 bswabe_cph_t*
 bswabe_cph_unserialize( bswabe_pub_t* pub, GByteArray* b, int free )
 {
-	die("=============lets see who dies first =================\n ");
 	bswabe_cph_t* cph;
 	int offset;
-	die("=============lets see who dies first =================\n ");
+
 	cph = (bswabe_cph_t*) malloc(sizeof(bswabe_cph_t));
 	offset = 0;
-	die("=============you died before this line =================\n ");
+	
 	element_init_GT(cph->c_0, 	pub->p);
 	element_init_G1(cph->c_1,  	pub->p);
 	element_init_G1(cph->c_2,  	pub->p);
