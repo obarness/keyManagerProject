@@ -6,7 +6,6 @@ function playVideo(){
 
  
 function receive(){
-
 		var RtpPacket=require("./RtpPacket.js");
 		var dgram = require('dgram');
 		var get_video_Socket = dgram.createSocket('udp4');
@@ -16,65 +15,87 @@ function receive(){
 		var Buffer = require('buffer').Buffer;
 		var keysToKeep = 10;
 		var keysList =  new createKeysList(null,keysToKeep,0);
-		receiveAes(keysList);
-		var get_video_port = 7068;
-		var send_Dec_port = 10032;
+	//	receiveAes(keysList);
+		var get_video_port = 8040;
+		var send_Dec_port = 10108;
 		var vlc_port = 6000;
 		var host = '127.0.0.1';
 		get_video_Socket.bind(get_video_port);
 		send_Dec_Socket.bind(send_Dec_port);
-		var aesKey = null;
-
+		var aesKey = keysList;
 
 		get_video_Socket.on('message', function (msg, info){
 			console.log('received a message');
 	        var rtpPacket = new RtpPacket(msg);
 	        var keyId = rtpPacket.getAesSeq();
 
-	        //poll until you got the key!
-	        while(aesKey == null){
+	        //this means key has changed!
+	        if(aesKey.key!= null && aesKey.id != keyId){
+	        	aesKey.key=null;
 	        	aesKey = getAesKeyById(keysList, keyId);
-
 	        }
-			var decrypted;
-			var decipher = crypto.createDecipher('aes-128-ctr', aesKey),
-			decrypted = Buffer.concat([decipher.update(rtpPacket.getPayload()) , decipher.final()]);
-			var decryptedpay = new Buffer(decrypted);
-			rtpPacket.setPayload(decryptedpay);
-			send_Dec_Socket.send(rtpPacket.getBuffer(), 
-			0,
-			rtpPacket.getBuffer().length,vlc_port,host,function(err){
-			  if (err) console.log(err);
-			}); 
+	        if(aesKey.key==null){
+	        		return;
+	        }
+	        else{
+				var decrypted;
+				var decipher = crypto.createDecipher('aes-128-ctr', aesKey.key),
+				decrypted = Buffer.concat([decipher.update(rtpPacket.getPayload()) , decipher.final()]);
+				var decryptedpay = new Buffer(decrypted);
+				rtpPacket.setPayload(decryptedpay);
+
+				//send decrypted patyload to vlc port.
+				send_Dec_Socket.send(rtpPacket.getBuffer(), 
+				0,
+				rtpPacket.getBuffer().length,vlc_port,host,function(err){
+				  if (err) console.log(err);
+				}); 
+			}
 		});
 
 		get_video_Socket.on('listening', function(){
 		var address = get_video_Socket.address();
 
 		});
-};
 
-function receiveAes(keysList){
-		var dgram = require('dgram');
-		var socket = dgram.createSocket('udp4');
-		var port = 5032;
-		var keyId = 8;
-		
+/*=========================================================================================================================
+============================================CODE FOR AES SOCKET============================================================
+===========================================================================================================================
+===========================================================================================================================
+*/
+		var dgram3 = require('dgram');
+		var AesSocket = dgram3.createSocket('udp4');
+		var Aes_Socket_port = 6022;
+		var keyId = -1;
 
 
+		AesSocket.on('error', (err) => {
+  			alert(`====error====:\n${err.stack}`);
+  			server.close();
+			});
 
-		socket.on('message', function (msg, info){
+		AesSocket.on('message', function (msg, info){
+			
 			//this is not a number, this is a keyId.
 			if (isNaN(msg.toString())) {
-				aesKey = msg;
-	        	var aesKeyPath = "/home/omer/workspace/keyManagerProject/client/client.nw/js/aeskey/key"
-	        	var fs = require('fs');
-				var wstream = fs.createWriteStream(aesKeyPath+".cpabe");
-				wstream.write(aesKey);
-				wstream.end(    function(){
-					setAesKeyById(keysList, keyId, decrypt());
-				//	keyId = -1;
-				})
+				var aesKey = msg;
+
+				//either we don't know the seq of key yet, or the key was already obtained.
+				if(keyId==-1 || getAesKeyById(keysList,keyId).key != null){
+					// do nothing.
+					// return???
+				}
+				else{	
+		        	var aesKeyPath = "/home/omer/workspace/keyManagerProject/client/client.nw/js/aeskey/key"
+		        	var fs = require('fs');
+					var wstream = fs.createWriteStream(aesKeyPath+".cpabe");
+					wstream.write(aesKey);
+					wstream.end(    function(){
+						setAesKeyById(keysList, keyId, decrypt());
+						keyId = -1;
+					});
+				
+				}
 			}
 
 			else{
@@ -86,11 +107,80 @@ function receiveAes(keysList){
 		});
 
 
-		socket.on('listening', function(){
+		AesSocket.on('listening', function(){
+  	    var address = AesSocket.address();
+        });
+
+        AesSocket.on('close', function (){
+        	alert("this socket got closed!");
+        });
+
+        AesSocket.bind(Aes_Socket_port);
+
+
+
+
+};
+
+
+//not in use!! maybe should be.
+function receiveAes(keysList){
+		alert("func called");
+		
+		var dgram3 = require('dgram');
+		var AesSocket = dgram3.createSocket('udp4');
+		var Aes_Socket_port = 5096;
+		var keyId = -1;
+		
+		AesSocket.on('error', (err) => {
+  			alert(`====error====:\n${err.stack}`);
+  			server.close();
+			});
+
+
+		AesSocket.on('message', function (msg, info){
+			alert("received an AES message!");
+			//this is not a number, this is a keyId.
+			if (isNaN(msg.toString())) {
+				var aesKey = msg;
+
+				//either we don't know the seq of key yet, or the key was already obtained.
+				if(keyId==-1 || getAesKeyById(keysList,keyId).key != null){
+					// do nothing.
+					// return???
+				}
+				else{	
+		        	var aesKeyPath = "/home/omer/workspace/keyManagerProject/client/client.nw/js/aeskey/key"
+		        	var fs = require('fs');
+					var wstream = fs.createWriteStream(aesKeyPath+".cpabe");
+					wstream.write(aesKey);
+					wstream.end(    function(){
+						setAesKeyById(keysList, keyId, decrypt());
+						keyId = -1;
+					});
+				
+				}
+			}
+
+			else{
+				alert("key seq: " + (parseInt(msg.toString())));
+				keyId = (parseInt(msg.toString()));
+			}
+			//alert("file written");
+		
+
+		});
+
+
+		AesSocket.on('listening', function(){
   	    var address = socket.address();
         });
 
-        socket.bind(port);
+        AesSocket.on('close', function (){
+        	alert("this socket got closed!");
+        });
+
+        AesSocket.bind(Aes_Socket_port);
 }
 
 function openVlc(){
@@ -106,7 +196,7 @@ function getAesKeyById(keysList, keyId){
   while(keysList.id != keyId){
   		keysList = keysList.next;
   }
-  return keysList.key;
+  return keysList;
 }
 
 
@@ -160,43 +250,62 @@ function decrypt(){
 
 }
 
+function receiveAes(){
+	alert("this does nothing!");
 
+}
 
+function receivebackup(){
 
-
-
-
-
-//// DO NOT USE
-function receiveAes2(keysList){
-		alert("this works");
+		var RtpPacket=require("./RtpPacket.js");
 		var dgram = require('dgram');
-		var socket = dgram.createSocket('udp4');
-		var port = 5016;
-		socket.on('message', function (aesKey, info){
-			alert("AES message!");
-        	//alert('we got a new  message: ' + aesKey.toString('hex'));
-        	//alert('trying to save into file');
-        	var aesKeyPath = "/home/omer/workspace/keyManagerProject/client/client.nw/js/aeskey/key"
+		var get_video_Socket = dgram.createSocket('udp4');
+		var dgram2 = require('dgram');
+		var send_Dec_Socket = dgram2.createSocket('udp4');
+		var crypto = require('crypto');
+		var Buffer = require('buffer').Buffer;
+		var keysToKeep = 10;
+		var keysList =  new createKeysList(null,keysToKeep,0);
+		receiveAes(keysList);
+		var get_video_port = 8026;
+		var send_Dec_port = 10094;
+		var vlc_port = 6000;
+		var host = '127.0.0.1';
+		get_video_Socket.bind(get_video_port);
+		send_Dec_Socket.bind(send_Dec_port);
+		var aesKey = keysList;
 
 
+		get_video_Socket.on('message', function (msg, info){
+			console.log('received a message');
+	        var rtpPacket = new RtpPacket(msg);
+	        var keyId = rtpPacket.getAesSeq();
 
-        	var fs = require('fs');
-			var wstream = fs.createWriteStream(aesKeyPath+".cpabe");
-			wstream.write(aesKey);
-			wstream.end(    function(){
-				decrypt();
-			});
-			//alert("file written");
-		
+	        //this means key has changed!
+	        if(aesKey.key!= null && aesKey.id != keyId){
+	        	aesKey.key=null;
+	        	//receiveAes(keysList);
+	        }
 
+	        //poll until you got the key!
+	        while(aesKey.key == null){
+	        	aesKey = getAesKeyById(keysList, keyId);
+
+	        }
+			var decrypted;
+			var decipher = crypto.createDecipher('aes-128-ctr', aesKey.key),
+			decrypted = Buffer.concat([decipher.update(rtpPacket.getPayload()) , decipher.final()]);
+			var decryptedpay = new Buffer(decrypted);
+			rtpPacket.setPayload(decryptedpay);
+			send_Dec_Socket.send(rtpPacket.getBuffer(), 
+			0,
+			rtpPacket.getBuffer().length,vlc_port,host,function(err){
+			  if (err) console.log(err);
+			}); 
 		});
 
+		get_video_Socket.on('listening', function(){
+		var address = get_video_Socket.address();
 
-		socket.on('listening', function(){
-  	    var address = socket.address();
-        console.log("waiting for aes key on: " + address.address + ":" + address.port);
-        });
-
-		socket.bind(port);
-}
+		});
+};

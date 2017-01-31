@@ -16,16 +16,14 @@ function setup(){
   var testmessage = "[hello broadcaster] pid: ";
   var address = '192.168.0.255'; //change for your LAN broacast IP !
   var ffmpegOutPort = 7777;
-  var clientPort = 7068;
+  var clientPort = 8040;
   var host = '127.0.0.1';
-
-  var aesKey = crypto.randomBytes(16); 
-   crypto.randomBytes(16, (err, aesKey) => {
-  if (err) throw err;
-  });
-
-
-  broadcastAesKey(aesKey);      
+  var keysToKeep = 10;
+  var keysList =  new createKeysList(null,keysToKeep,0);
+  keysList.key = crypto.randomBytes(16);
+  var aesKey =  keysList.key;
+  var aesSeq = keysList.id;
+  broadcastAesKey(aesKey,aesSeq);      
 
 
   //server
@@ -35,17 +33,18 @@ function setup(){
   });
 
   var timeStamp = Math.floor(Date.now());
-  var gap = 5000; //5 seconds, this is how often we'll change AES key.
+  var gap = 15000; //7 seconds, this is how often we'll change AES key.
   socket2.on('message', function(msg, rinfo){
 
    if((Math.floor(Date.now()))> gap + timeStamp){
       timeStamp = Math.floor(Date.now());
-      changeKey(aesKey);
-    
+      keysList = changeKey(keysList);
+      aesKey = keysList.key;
+      aesSeq = keysList.id;
    }
 
       var rtpPacket = new RtpPacket(msg);
-      rtpPacket.setAesSeq(8);
+      rtpPacket.setAesSeq(aesSeq);
     // alert("seq number? = " + rtpPacket.getAesSeq());
 
       //need to set RTP HEADERS!!!!!!
@@ -92,10 +91,49 @@ function broadcastVideo(){
 
 }
 
-function changeKey(aesKey){
+function changeKey(keysList){
+  var crypto = require('crypto');
+  keysList = keysList.next;
+  keysList.key = crypto.randomBytes(16);
+  broadcastAesKey(keysList.key,keysList.id);
 
-  broadcastAesKey(aesKey);
+  return keysList;
 
+}
+
+
+function getAesKeyById(keysList, keyId){
+  while(keysList.id != keyId){
+      keysList = keysList.next;
+  }
+  return keysList;
+}
+
+
+
+//change key to new key, set following key to null. (this is in order to verify we're not using an old key!)
+function setAesKeyById(keysList, keyId, newKey){
+  while(keysList.id != keyId){
+      keysList = keysList.next;
+  }
+   keysList.key = newKey;
+   keysList.next.key = null;
+}
+
+
+function createKeysList(head,length,count) {
+  this.id=count++;  
+  this.key=null;
+  if(head==null)
+    head = this;
+  if(length>0){
+    this.next = new createKeysList(head,--length,count);
+    return this;
+  }
+  else{
+    this.next=head;
+    return head;
+  }
 }
 
 
