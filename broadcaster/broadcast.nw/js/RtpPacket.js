@@ -35,15 +35,26 @@ RtpPacket.prototype._init=function(options){
         extensionLength = opts.extensionLength ? opts.extensionLength : -1, // header extension length. default -1 make (extension+1)*4 equal 0 (16 bits)
         payload=opts.payload?opts.payload:null;
 
+
+/*          ORIGINAL CODE
     var lengthOfHeader =
             12 +
             (extensionLength + 1) * 4 +
             (CC) * 4, //totalLength of header
         lengthOfPayload=0;
         buffersList = [];
+*/
+    //new code, added in order to support seq key number.
+    var lengthOfHeader =
+            13 +
+            (extensionLength + 1) * 4 +
+            (CC) * 4, //totalLength of header
+        lengthOfPayload=0;
+        buffersList = [];
+
 
     //fixed header
-    var header = new Buffer(12);
+    var header = new Buffer(13);
     header[0] = (V << 6 | P << 5 | X << 4 | CC);
     header[1] = (M << 7 | PT);
     header[2] = (sequenceNumber >>> 8);
@@ -56,6 +67,7 @@ RtpPacket.prototype._init=function(options){
     header[9] = (SSRC >>> 16 & 0xFF);
     header[10] = (SSRC >>> 8 & 0xFF);
     header[11] = (SSRC & 0xFF);
+    header[12] = -1;         //added by Omer
 
     buffersList.push(header);
 
@@ -104,7 +116,7 @@ RtpPacket.prototype._init=function(options){
 RtpPacket.prototype.getHeaderLength = function () {
 
     //fixed length
-    var len = 12;
+    var len = 13; //originally 12! changed by Omer.
 
     //extensional length
     var extensionLength = this.getExtensionLength();
@@ -132,7 +144,7 @@ RtpPacket.prototype.setX = function (val) {
 
 RtpPacket.prototype.getExtensionLength = function () {
     if (this.getX()) {
-        return (this._bufpkt[14] << 8 & this._bufpkt[15]);
+        return (this._bufpkt[15] << 8 & this._bufpkt[16]);
     } else {
         return null;
     }
@@ -194,6 +206,17 @@ RtpPacket.prototype.setSSRC = function (val) {
         this._bufpkt[9] = (val >>> 16 & 0xFF);
         this._bufpkt[10] = (val >>> 8 & 0xFF);
         this._bufpkt[11] = (val & 0xFF);
+    }
+};
+
+//added by omer.
+RtpPacket.prototype.getAesSeq = function () {
+    return this._bufpkt[12];
+};
+RtpPacket.prototype.setAesSeq = function (val) {
+    val = val.toUnsigned();
+    if (val <= 255) {  //max number to be represented by 8 bits.
+        this._bufpkt[12] = val;
     }
 };
 

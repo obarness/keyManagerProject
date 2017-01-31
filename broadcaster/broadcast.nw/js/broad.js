@@ -16,11 +16,9 @@ function setup(){
   var testmessage = "[hello broadcaster] pid: ";
   var address = '192.168.0.255'; //change for your LAN broacast IP !
   var ffmpegOutPort = 7777;
-  var clientPort = 8000;
+  var clientPort = 7068;
   var host = '127.0.0.1';
 
-
-  //var aesKey = new Buffer('a2674254abf859ea720e210016b13ad2','hex'); 
   var aesKey = crypto.randomBytes(16); 
    crypto.randomBytes(16, (err, aesKey) => {
   if (err) throw err;
@@ -28,7 +26,6 @@ function setup(){
 
 
   broadcastAesKey(aesKey);      
-  //var initializationVector = new Buffer('82b81f7c58c004dd0bdcd233b5a18ab7','hex');      //crypto.randomBytes(16); 
 
 
   //server
@@ -37,9 +34,19 @@ function setup(){
       console.log('RTP Server listening on ' + address.address + ":" + address.ffmpegOutPort);
   });
 
-
+  var timeStamp = Math.floor(Date.now());
+  var gap = 5000; //5 seconds, this is how often we'll change AES key.
   socket2.on('message', function(msg, rinfo){
+
+   if((Math.floor(Date.now()))> gap + timeStamp){
+      timeStamp = Math.floor(Date.now());
+      changeKey(aesKey);
+    
+   }
+
       var rtpPacket = new RtpPacket(msg);
+      rtpPacket.setAesSeq(8);
+    // alert("seq number? = " + rtpPacket.getAesSeq());
 
       //need to set RTP HEADERS!!!!!!
       var encrypted;
@@ -75,8 +82,6 @@ function broadcastVideo(){
       .audioBitrate('128k')
       .outputOptions('-f rtp_mpegts')
       .output('rtp://127.0.0.1:7777')
-      
-      
       .on('error', function(err) {
         console.log('an error happened: ' + err.message);
       })
@@ -84,6 +89,12 @@ function broadcastVideo(){
         console.log('Spawned Ffmpeg with command: ' + commandLine);})
        
       .run();
+
+}
+
+function changeKey(aesKey){
+
+  broadcastAesKey(aesKey);
 
 }
 

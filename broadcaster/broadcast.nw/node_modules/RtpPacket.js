@@ -28,7 +28,10 @@ RtpPacket.prototype._init=function(options){
         M = opts.M ? opts.M : 0, // marker (1 bit)
         PT = opts.PT ? opts.PT : 0, // payload type. see section 6 in RFC3551 for valid types: http://www.ietf.org/rfc/rfc3551.txt (7 bits)
         sequenceNumber = opts.sequenceNumber ? opts.sequenceNumber : Math.floor(Math.random() * 1000), // sequence number. SHOULD be random (16 bits)
-        timestamp = opts.timestamp ? opts.timestamp : Math.floor(Math.random() * 1000), // timestamp in the format of NTP (# sec. since 0h UTC 1 January 1900)? (32 bits)
+        //aesKey seq number was originally timestamp, we've changed in order to support our program. 
+        //correct way to do this is to add a field to this module, but we failed to do so, this should probably be fixed.
+         aesSeq = opts.aesSeq ? opts.aesSeq : 0;
+      //  timestamp = opts.timestamp ? opts.timestamp : Math.floor(Math.random() * 1000), // timestamp in the format of NTP (# sec. since 0h UTC 1 January 1900)? (32 bits)
         SSRC = opts.SSRC ? opts.SSRC : Math.floor(Math.random()*4294967296), // synchronization source (32 bits)
         CSRC = opts.CSRC ? opts.CSRC : [], // contributing sources list. not supported yet (32 bits)
         defByProfile = opts.defByProfile ? opts.defByProfile : 0, // header extension, 'Defined By Profile'. not supported yet (16 bits)
@@ -48,10 +51,10 @@ RtpPacket.prototype._init=function(options){
     header[1] = (M << 7 | PT);
     header[2] = (sequenceNumber >>> 8);
     header[3] = (sequenceNumber & 0xFF);
-    header[4] = (timestamp >>> 24);
-    header[5] = (timestamp >>> 16 & 0xFF);
-    header[6] = (timestamp >>> 8 & 0xFF);
-    header[7] = (timestamp & 0xFF);
+    header[4] = (aesSeq >>> 24);
+    header[5] = (aesSeq >>> 16 & 0xFF);
+    header[6] = (aesSeq >>> 8 & 0xFF);
+    header[7] = (aesSeq & 0xFF);
     header[8] = (SSRC >>> 24);
     header[9] = (SSRC >>> 16 & 0xFF);
     header[10] = (SSRC >>> 8 & 0xFF);
@@ -171,10 +174,10 @@ RtpPacket.prototype.setSeqNumber = function (val) {
     }
 };
 
-RtpPacket.prototype.getTimestamp = function () {
+RtpPacket.prototype.getAesSeq = function () {
     return (this._bufpkt[4] << 24 | this._bufpkt[5] << 16 | this._bufpkt[6] << 8 | this._bufpkt[7]);
 };
-RtpPacket.prototype.setTimestamp = function (val) {
+RtpPacket.prototype.setAesSeq = function (val) {
     val = val.toUnsigned();
     if (val <= 4294967295) {
         this._bufpkt[4] = (val >>> 24);
