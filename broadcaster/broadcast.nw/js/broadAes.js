@@ -5,8 +5,10 @@ function broadcastAesKey(aesKey, aesSeq){
 			const message = new Buffer('Some bytes');
 			const client = dgram.createSocket('udp4');
 			const client2 = dgram.createSocket('udp4');
-			var port = 6022;
-			var aesKeyPath = "/home/omer/workspace/keyManagerProject/broadcaster/broadcast.nw/js/aeskey/key";
+			const port = 6022;
+			const path = require('path');
+			__dirname = path.resolve(path.dirname(''));
+			var aesKeyPath = path.join(__dirname + "/js/aeskey/key");
 
 			//save key as a file.
 			var fs = require('fs');
@@ -18,8 +20,10 @@ function broadcastAesKey(aesKey, aesSeq){
         	});
 			
 			//encrypt the file
-			var pubkey = 	"/home/omer/workspace/keyManagerProject/broadcaster/broadcast.nw/js/masterkey/public";
-			var masterkey = "/home/omer/workspace/keyManagerProject/broadcaster/broadcast.nw/js/masterkey/master";
+			
+			var pubkey = path.join(__dirname + "/js/masterkey/public");
+			var masterkey = path.join(__dirname + "/js/masterkey/master");
+
 			var sys = require('sys')
 			var exec = require('child_process').execSync;
 			function puts(error, stdout, stderr) { sys.puts(stdout) }

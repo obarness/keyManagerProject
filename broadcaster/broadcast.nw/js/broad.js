@@ -12,14 +12,15 @@ function setup(){
 
 
   //parameters
-
-  var testmessage = "[hello broadcaster] pid: ";
   var address = '192.168.0.255'; //change for your LAN broacast IP !
   var ffmpegOutPort = 7777;
   var clientPort = 8040;
   var host = '127.0.0.1';
+
   var keysToKeep = 10;
   var keysList =  new createKeysList(null,keysToKeep,0);
+
+  //our initial key.
   keysList.key = crypto.randomBytes(16);
   var aesKey =  keysList.key;
   var aesSeq = keysList.id;
@@ -33,15 +34,28 @@ function setup(){
   });
 
   var timeStamp = Math.floor(Date.now());
-  var gap = 15000; //7 seconds, this is how often we'll change AES key.
-  socket2.on('message', function(msg, rinfo){
+  //in miliseconds
+  var gap = 1000; 
 
-   if((Math.floor(Date.now()))> gap + timeStamp){
-      timeStamp = Math.floor(Date.now());
-      keysList = changeKey(keysList);
+
+  //we get a video message from ffmpeg.
+  //we're going to encrypt it, and broadcast the video!
+  socket2.on('message', function(msg, rinfo){
+  var newTimeStamp = (Math.floor(Date.now()));
+   
+
+   //we dont want to broadcast video with the new key immediately.
+   //we want to give some time for the clients to decrypt the key before we start using it.
+   //we will only start using the new key, after we've already sent it's following key.
+   //for e.g, if we created key.id = 1, we'll only start using it after we've sent key.id=2 to all clients.
+   if(newTimeStamp > gap + timeStamp){
       aesKey = keysList.key;
       aesSeq = keysList.id;
+      timeStamp = newTimeStamp;
+      keysList = changeKey(keysList);
+
    }
+
 
       var rtpPacket = new RtpPacket(msg);
       rtpPacket.setAesSeq(aesSeq);
@@ -72,9 +86,15 @@ function setup(){
 }
 
 function broadcastVideo(){
-    var ffmpeg = require('fluent-ffmpeg');
+  const ffmpeg = require('fluent-ffmpeg');
+  const dialog = require('nw-dialog');
+
+  //prompt file selection
+  dialog.setContext(document); // work in client
+  dialog.openFileDialog('.mp4',function(path){
+    
     //RTP creation with FFmpeg
-      var proc = ffmpeg('SampleVideo.mp4').native()
+      var proc = ffmpeg(path).native()
       .videoCodec('mpeg2video')
       .videoBitrate('1024k')
       .audioCodec('libmp3lame')
@@ -89,7 +109,15 @@ function broadcastVideo(){
        
       .run();
 
+
+
+  });
+  
+    
+
 }
+
+
 
 function changeKey(keysList){
   var crypto = require('crypto');

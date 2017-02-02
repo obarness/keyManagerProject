@@ -11,6 +11,8 @@ function receive(){
 		var get_video_Socket = dgram.createSocket('udp4');
 		var dgram2 = require('dgram');
 		var send_Dec_Socket = dgram2.createSocket('udp4');
+		const path = require('path');
+		__dirname = path.resolve(path.dirname(''));
 		var crypto = require('crypto');
 		var Buffer = require('buffer').Buffer;
 		var keysToKeep = 10;
@@ -86,7 +88,7 @@ function receive(){
 					// return???
 				}
 				else{	
-		        	var aesKeyPath = "/home/omer/workspace/keyManagerProject/client/client.nw/js/aeskey/key"
+					var aesKeyPath = path.join(__dirname + "/js/aeskey/key");
 		        	var fs = require('fs');
 					var wstream = fs.createWriteStream(aesKeyPath+".cpabe");
 					wstream.write(aesKey);
@@ -131,6 +133,8 @@ function receiveAes(keysList){
 		var AesSocket = dgram3.createSocket('udp4');
 		var Aes_Socket_port = 5096;
 		var keyId = -1;
+		const path = require('path');
+		__dirname = path.resolve(path.dirname(''));
 		
 		AesSocket.on('error', (err) => {
   			alert(`====error====:\n${err.stack}`);
@@ -150,7 +154,7 @@ function receiveAes(keysList){
 					// return???
 				}
 				else{	
-		        	var aesKeyPath = "/home/omer/workspace/keyManagerProject/client/client.nw/js/aeskey/key"
+					var aesKeyPath = path.join(__dirname + "/js/aeskey/key");
 		        	var fs = require('fs');
 					var wstream = fs.createWriteStream(aesKeyPath+".cpabe");
 					wstream.write(aesKey);
@@ -228,11 +232,12 @@ function createKeysList(head,length,count) {
 
 
 function decrypt(){
-
+			const path = require('path');
+			__dirname = path.resolve(path.dirname(''));
 			var fs = require('fs');
-			var aesKeyPath = "/home/omer/workspace/keyManagerProject/client/client.nw/js/aeskey/key"
-			var pubkey =  "/home/omer/workspace/keyManagerProject/client/client.nw/js/privateKey/public";
-			var private = "/home/omer/workspace/keyManagerProject/client/client.nw/js/privateKey/private";
+			var aesKeyPath = path.join(__dirname + "/js/aeskey/key");
+			var pubkey = path.join(__dirname + "/js/privateKey/public");
+			var private = path.join(__dirname + "/js/privateKey/private");;
 			var sys = require('sys')
 			var exec = require('child_process').execSync;
 			function puts(error, stdout, stderr) { sys.puts(stdout) }

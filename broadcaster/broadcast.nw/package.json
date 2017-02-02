@@ -3,7 +3,10 @@
   "name": "broadcaster",
   "description": "easybroad -broadcaster app",
   "version": "0.1.0",
-  "keywords": [ "broadcaster", "node-webkit" ],
+  "keywords": [
+    "broadcaster",
+    "node-webkit"
+  ],
   "window": {
     "title": "broadcaster",
     "toolbar": true,
@@ -18,5 +21,8 @@
   },
   "webkit": {
     "plugin": true
+  },
+  "dependencies": {
+    "nw-dialog": "^1.0.7"
   }
 }

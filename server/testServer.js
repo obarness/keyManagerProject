@@ -79,13 +79,12 @@ function sendKey(fileName,response){
 }
 
 function generatePrivateKey(userId, channelId){
-
+	const path = require('path');
+	__dirname = path.resolve(path.dirname(''));
 	console.log("TRYING TO GENERATE KEY");
-	var pubkey = "/home/omer/workspace/keyManagerProject/server/keys/pubkeys/public"
-	var masterkey = "/home/omer/workspace/keyManagerProject/server/keys/masterkeys/master";
-	//var keyName = "/privatekeys/channel#_"+channelId+"_user#_"+userId;
+	var pubkey = path.join(__dirname + "/keys/pubkeys/public");
+	var masterkey = path.join(__dirname + "/keys/masterkeys/master");
 	var keyName = "/privatekeys/private";
-	var keyPath = "/home/omer/workspace/keyManagerProject/server/keys/privatekeys/"+keyName;
 	var sys = require('sys')
 	var exec = require('child_process').execSync;
 	function puts(error, stdout, stderr) { sys.puts(stdout) }
