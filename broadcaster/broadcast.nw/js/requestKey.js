@@ -32,6 +32,8 @@ https.get('https://localhost:1111/createMasterKey', (res) => {
 function getPublicKey(){
   var https = require('https');
   var fs = require('fs');
+  const path = require('path');
+ __dirname = path.resolve(path.dirname(''));
   //command below ignores our unsigned https certificate.
   process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
   https.get('https://localhost:1111/getPublicKey', (res) => {

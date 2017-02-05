@@ -26,6 +26,8 @@ function broadcastAesKey(aesKey, aesSeq){
 
 			var sys = require('sys')
 			var exec = require('child_process').execSync;
+
+			//1 is a temporary revoke id!
 			function puts(error, stdout, stderr) { sys.puts(stdout) }
 			exec("cpabe-enc "+ "-p " + pubkey + " -m " + masterkey + " -i " + aesKeyPath +" -a 1");
 			//      cpabe-enc     -p     public     -m     master        -i     key           -a 1

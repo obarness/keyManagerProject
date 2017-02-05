@@ -37,12 +37,11 @@ app.get('/getPublicKey', function(req,res) {
 });
 
 function getPublicKey(request, response){
-	console.log("received a request, user is from " + request.query.id)
-	var channelId=13;
-	keyPath ="/pubkeys/public";
-	console.log("looking for public key");
-  	sendKey(keyPath,response);
-    return keyPath;
+	const path = require('path');
+	__dirname = path.resolve(path.dirname(''));
+	console.log("TRYING TO GENERATE KEY");
+	var pubkey = path.join(__dirname + "/keys/pubkeys/public");
+  	response.sendFile(pubkey);
 }
 
 var httpsServer = https.createServer(credentials, app);
@@ -53,58 +52,49 @@ httpsServer.listen(PORT);
 
 function getPrivateKey(request, response){
 	console.log("received a request, user is from " + request.query.id)
-	var userId=18;
+	var userId=100;
 	var channelId=13;
-	var keyPath = generatePrivateKey(userId, channelId);
-	 console.log("key generated");
-  	sendKey(keyPath,response);
-    return keyPath;
+	generatePrivateKey(userId, channelId, response);
+
   
 }
 
 function getMasterKey(request, response){
 	console.log("received a request, user is from " + request.query.id)
 	var channelId=13;
-	var keyPath = generateMasterKey(channelId);
-	console.log("key generated");
-  	sendKey(keyPath,response);
-    return keyPath;
+	generateMasterKey(channelId, response);
+
   
 }
 
-function sendKey(fileName,response){
-	var filePath = path.join(__dirname, "/keys"+fileName);
-    var file = fs.readFile(filePath, 'binary');
-	response.sendFile(filePath);
-}
 
-function generatePrivateKey(userId, channelId){
+
+function generatePrivateKey(userId, channelId, response){
 	const path = require('path');
 	__dirname = path.resolve(path.dirname(''));
 	console.log("TRYING TO GENERATE KEY");
 	var pubkey = path.join(__dirname + "/keys/pubkeys/public");
 	var masterkey = path.join(__dirname + "/keys/masterkeys/master");
-	var keyName = "/privatekeys/private";
+	var keyName = path.join(__dirname + "/keys/privatekeys/private");
 	var sys = require('sys')
 	var exec = require('child_process').execSync;
 	function puts(error, stdout, stderr) { sys.puts(stdout) }
-	exec("cpabe-keygen "+ "-o " + "private -p " + pubkey + " -m " + masterkey + " -a " + userId, puts);
-	return keyName;
+	exec("cpabe-keygen "+ "-o " + keyName + " -p " + pubkey + " -m " + masterkey + " -a " + userId);
+	response.sendFile(keyName);
 }
 
-function generateMasterKey(channelId){
-
-	console.log("Generating master key for channel # "  +channelId);
-	masterKeyName = "master";
-	pubKeyName ="public";
+function generateMasterKey(channelId,response){
+	const path = require('path');
+	__dirname = path.resolve(path.dirname(''));
+	var pubkey = path.join(__dirname + "/keys/pubkeys/public");
+	var masterkey = path.join(__dirname + "/keys/masterkeys/master");
 	var sys = require('sys')
 	var exec = require('child_process').execSync;
 	function puts(error, stdout, stderr) { sys.puts(stdout) }
-	exec("cpabe-setup "+ "-p " + pubKeyName+ " -m " + masterKeyName, puts);
+	exec("cpabe-setup "+ "-p " + pubkey+ " -m " + masterkey, puts);
+	console.log("success");
+	response.sendFile(masterkey);
 
-	return "/masterkeys/"+masterKeyName;
 }
-
-
 
 

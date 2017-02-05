@@ -86,6 +86,7 @@ function setup(){
 }
 
 function broadcastVideo(){
+  setup();
   const ffmpeg = require('fluent-ffmpeg');
   const dialog = require('nw-dialog');
 

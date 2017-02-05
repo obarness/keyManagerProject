@@ -27,6 +27,7 @@ function receive(){
 		var aesKey = keysList;
 
 		get_video_Socket.on('message', function (msg, info){
+			
 			console.log('received a message');
 	        var rtpPacket = new RtpPacket(msg);
 	        var keyId = rtpPacket.getAesSeq();
@@ -46,12 +47,15 @@ function receive(){
 				var decryptedpay = new Buffer(decrypted);
 				rtpPacket.setPayload(decryptedpay);
 
+
 				//send decrypted patyload to vlc port.
+
 				send_Dec_Socket.send(rtpPacket.getBuffer(), 
 				0,
 				rtpPacket.getBuffer().length,vlc_port,host,function(err){
 				  if (err) console.log(err);
 				}); 
+
 			}
 		});
 
@@ -77,6 +81,7 @@ function receive(){
 			});
 
 		AesSocket.on('message', function (msg, info){
+
 			
 			//this is not a number, this is a keyId.
 			if (isNaN(msg.toString())) {

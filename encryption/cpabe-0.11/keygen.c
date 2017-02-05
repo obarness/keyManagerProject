@@ -132,16 +132,7 @@ main( int argc, char** argv )
 
 	printf ("cpabe-keygen - Entering keygen on libbwabe");
 	prv = bswabe_keygen(&pub, &msk, id_value);
-
-
-	char* path = "/home/omer/workspace/keyManagerProject/server/keys/";
-	int pathLength = strlen(path);
-	int fileNameLength = strlen(out_file);
-	char prvFullPath[pathLength + fileNameLength];
-	strcpy(prvFullPath, path);
-	strcat(prvFullPath, "privatekeys/");
-	strcat(prvFullPath, out_file);
-	spit_file(prvFullPath, bswabe_prv_serialize(prv), 1);
+	spit_file(out_file, bswabe_prv_serialize(prv), 1);
 
 	return 0;
 }
