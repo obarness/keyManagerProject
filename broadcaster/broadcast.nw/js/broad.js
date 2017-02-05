@@ -13,6 +13,7 @@ function setup(){
 
   //parameters
   var address = '192.168.0.255'; //change for your LAN broacast IP !
+  var BROADCAST_ADDRESS = '192.168.1.255';
   var ffmpegOutPort = 7777;
   var clientPort = 8040;
   var host = '127.0.0.1';
@@ -33,9 +34,16 @@ function setup(){
       console.log('RTP Server listening on ' + address.address + ":" + address.ffmpegOutPort);
   });
 
+  //server
+  socket.on('listening', function () {
+
+      socket.setBroadcast(true);
+  });
+
+
   var timeStamp = Math.floor(Date.now());
   //in miliseconds
-  var gap = 1000; 
+  var gap = 10000; 
 
 
   //we get a video message from ffmpeg.
@@ -75,7 +83,7 @@ function setup(){
       0,
       rtpPacket.getBuffer().length,
       clientPort,
-      host,
+      BROADCAST_ADDRESS,
       function(err){
         if (err) console.log(err);
       });   
@@ -86,7 +94,6 @@ function setup(){
 }
 
 function broadcastVideo(){
-  setup();
   const ffmpeg = require('fluent-ffmpeg');
   const dialog = require('nw-dialog');
 

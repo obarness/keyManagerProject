@@ -24,11 +24,12 @@ function receive(){
 		var host = '127.0.0.1';
 		get_video_Socket.bind(get_video_port);
 		send_Dec_Socket.bind(send_Dec_port);
+		
 		var aesKey = keysList;
 
 		get_video_Socket.on('message', function (msg, info){
 			
-			console.log('received a message');
+		
 	        var rtpPacket = new RtpPacket(msg);
 	        var keyId = rtpPacket.getAesSeq();
 
@@ -61,6 +62,7 @@ function receive(){
 
 		get_video_Socket.on('listening', function(){
 		var address = get_video_Socket.address();
+	//	get_video_Socket.setBroadcast(true);
 
 		});
 
@@ -115,6 +117,7 @@ function receive(){
 
 
 		AesSocket.on('listening', function(){
+//		AesSocket.setBroadcast(true);
   	    var address = AesSocket.address();
         });
 
