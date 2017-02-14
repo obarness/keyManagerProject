@@ -14,7 +14,7 @@
   //parameters
 
   var testmessage = "[hello broadcaster] pid: ";
-  var address = '192.168.0.255'; //change for your LAN broacast IP !
+  var BROADCAST_ADDRESS = '192.168.1.255';
   var ffmpegOutPort = 7777;
   var clientPort = 8000;
   var host = '127.0.0.1';
@@ -55,13 +55,13 @@
       0,
       rtpPacket.getBuffer().length,
       clientPort,
-      host,
+      BROADCAST_ADDRESS,
       function(err){
         if (err) console.log(err);
       });   
   });
    
-  socket.bind(9990);
+  socket.bind();
   socket2.bind(ffmpegOutPort); 
 
 

@@ -29,7 +29,7 @@ function receive(){
 
 		get_video_Socket.on('message', function (msg, info){
 			
-		
+
 	        var rtpPacket = new RtpPacket(msg);
 	        var keyId = rtpPacket.getAesSeq();
 

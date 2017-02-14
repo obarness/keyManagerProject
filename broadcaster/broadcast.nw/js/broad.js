@@ -1,5 +1,5 @@
 function setup(){
-
+ // setupAes();
   var ffmpeg = require('fluent-ffmpeg');
   var fs = require('fs');
   var dgram = require('dgram');
@@ -12,7 +12,6 @@ function setup(){
 
 
   //parameters
-  var address = '192.168.0.255'; //change for your LAN broacast IP !
   var BROADCAST_ADDRESS = '192.168.1.255';
   var ffmpegOutPort = 7777;
   var clientPort = 8040;
@@ -43,7 +42,7 @@ function setup(){
 
   var timeStamp = Math.floor(Date.now());
   //in miliseconds
-  var gap = 10000; 
+  var gap = 5000; 
 
 
   //we get a video message from ffmpeg.
@@ -89,11 +88,12 @@ function setup(){
       });   
   });
    
-  socket.bind(9990);
+  socket.bind();
   socket2.bind(ffmpegOutPort); 
 }
 
 function broadcastVideo(){
+  setup();
   const ffmpeg = require('fluent-ffmpeg');
   const dialog = require('nw-dialog');
 

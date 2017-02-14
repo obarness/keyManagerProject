@@ -132,7 +132,34 @@ parse_args( int argc, char** argv )
 			}
 			else
 			{
-				attr = argv[i];					//get the attributes from the arguments
+				
+
+				/*** TODO:
+				we receive a string of the form 0_1_2_3_4
+				those are the id's to revoke.
+				we need to parse the string so that it looks like this:
+				0 1 2 3 4 ...... 100.
+				the final result, should be in var attr, which is declared outside this function already.
+
+				****/
+
+
+				char* delimiter = "_";
+				char* attr_unparsed = argv[i];					//get the attributes from the arguments				
+				 char *token;
+			   /* get the first token */
+			   token = strtok(attr_unparsed, delimiter);
+			   
+			   /* walk through other tokens */
+			   while( token != NULL ) 
+			   {
+			   	  strcat(attr, (const char *)token);
+			      printf( "token:  %s\n", token );
+			      token = strtok(NULL, delimiter);
+			      printf ("attr: %s\n", attr);
+				}
+			   	
+
 				printf ("argument is attribute\n");
 			}
 		}

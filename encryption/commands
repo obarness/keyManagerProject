@@ -1,11 +1,11 @@
 cpabe-setup -p public -m master
 
-cpabe-keygen -o private1 -p public -m master -a 100
+cpabe-keygen -o private -p public -m master -a 100
 
 
-cpabe-enc -p public -m master -i key -a 1
+cpabe-enc -p public -m master -i key -a 0_100
 
-cpabe-dec -p public -c private1 -i key.cpabe -o testResult -a 100
+cpabe-dec -p public -c private -i key.cpabe -o key -a 100
 
 
 

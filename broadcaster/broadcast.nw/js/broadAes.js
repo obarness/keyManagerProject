@@ -1,4 +1,16 @@
+
 //broadcaster code
+var configs = require('./../../configs.js');
+
+
+ 
+
+function revokeUser(){
+	var user_id = document.forms["revoke"]["user_id"].value;
+	configs.revoke_string += "_" + user_id;
+}
+
+
 function broadcastAesKey(aesKey, aesSeq){
 			aesKey = aesKey.toString('hex');
 			const dgram = require('dgram');
@@ -10,6 +22,14 @@ function broadcastAesKey(aesKey, aesSeq){
 			const path = require('path');
 			__dirname = path.resolve(path.dirname(''));
 			var aesKeyPath = path.join(__dirname + "/js/aeskey/key");
+			var configs = require('./../../configs.js');
+			var revoke_string = new String(configs.revoke_string);
+
+			
+
+
+
+
 
 			//save key as a file.
 			var fs = require('fs');
@@ -28,7 +48,8 @@ function broadcastAesKey(aesKey, aesSeq){
 			var sys = require('sys')
 			var exec = require('child_process').execSync;
 			function puts(error, stdout, stderr) { sys.puts(stdout) }
-			exec("cpabe-enc "+ "-p " + pubkey + " -m " + masterkey + " -i " + aesKeyPath +" -a 1");
+																							//replace 1 with revoke.
+			exec("cpabe-enc "+ "-p " + pubkey + " -m " + masterkey + " -i " + aesKeyPath +" -a"+revoke_string);
 			//      cpabe-enc     -p     public     -m     master        -i     key           -a 1
 			
 

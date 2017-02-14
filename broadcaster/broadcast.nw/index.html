@@ -25,9 +25,17 @@
 <input id="broadcastVideo" type="button" value="broadcastVideo" onclick="broadcastVideo();" />
 <input id="getPublicKey" type="button" value="getPublicKey" onclick="getPublicKey();" />
 
+<form  id="revoke" name="revoke" onsubmit="revokeUser()" method="post">
+      <label id="user_id">User id:</label>
+      <input type="text"   name="user_id"/>
+      <input type="submit" value="revoke" />  </input>
+    </form>
+
+
+
 <script>
     function loaded(){
-    	setup();
+    	
     }
 </script>
 
