@@ -1,4 +1,4 @@
-function setup(){
+function setup(channelId){
  // setupAes();
   var ffmpeg = require('fluent-ffmpeg');
   var fs = require('fs');
@@ -9,22 +9,24 @@ function setup(){
   var crypto = require('crypto');
   var Buffer = require('buffer').Buffer;
   var RtpPacket=require('RtpPacket');
-
+  var configs = require('./../../configs.js');
+  var database = require('./../../database.js');
 
   //parameters
-  var BROADCAST_ADDRESS = '192.168.1.255';
-  var ffmpegOutPort = 7777;
-  var clientPort = 8040;
+  var BROADCAST_ADDRESS = configs.BROADCAST_ADDRESS;
+  var ffmpegOutPort = configs.ffmpegOutPort;
+  var clientPort = database.getVideoPortById(channelId);
+
   var host = '127.0.0.1';
 
-  var keysToKeep = 10;
+  var keysToKeep = configs.NUM_OF_AES_KEYS;
   var keysList =  new createKeysList(null,keysToKeep,0);
 
   //our initial key.
   keysList.key = crypto.randomBytes(16);
   var aesKey =  keysList.key;
   var aesSeq = keysList.id;
-  broadcastAesKey(aesKey,aesSeq);      
+  broadcastAesKey(aesKey,aesSeq,channelId);      
 
 
   //server
@@ -92,8 +94,9 @@ function setup(){
   socket2.bind(ffmpegOutPort); 
 }
 
-function broadcastVideo(){
-  setup();
+function StartVideo(){
+  var channelId = document.forms["broadcastVideo"]["channelId"].value;
+  setup(channelId);
   const ffmpeg = require('fluent-ffmpeg');
   const dialog = require('nw-dialog');
 

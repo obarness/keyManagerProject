@@ -17,10 +17,10 @@ struct bswabe_pub_s
 	pairing_t p;			//the struct with the description
 	element_t g;
 	element_t n;
-	element_t g_b;			/* G1 */
-	element_t g_a1;          /* G1 */
-	element_t g_a2;		/* G1 */
-	element_t g_ba1;			/* G1 */
+	element_t g_b;			
+	element_t g_a1;         
+	element_t g_a2;		
+	element_t g_ba1;			
 	element_t g_ba2;			
 	element_t tao1;
 	element_t tao2;
@@ -28,7 +28,13 @@ struct bswabe_pub_s
 	element_t tao2_b;
 	element_t w;
 	element_t h;
-	element_t pair;			/* GT */
+	element_t pair;			
+
+	//added the following elements in order to support bswabe_enc without using the msk.
+	element_t alpha;
+	element_t a1;
+	element_t a2;
+	element_t beta;	
 
 };
 

@@ -52,7 +52,7 @@ bswabe_prv_t* bswabe_keygen(bswabe_pub_t** pub, bswabe_msk_t** msk, long id_valu
   the message "msg" that will be encrypted first converted to an element_t form and then incorparated
   to the cipher-text.
 */
-bswabe_cph_t* bswabe_enc(bswabe_pub_t* pub, bswabe_msk_t* msk, unsigned char* msg, char* inputIdString);
+bswabe_cph_t* bswabe_enc(bswabe_pub_t* pub,  unsigned char* msg, char* inputIdString);
 
 /*
   Decrypt the specified ciphertext using the given private key and the client's id.

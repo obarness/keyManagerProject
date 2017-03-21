@@ -16,26 +16,41 @@
 <body onload="loaded();">
 
 
-<!-- 
+<!--   this loads NWJS console for developers 
 <script>require('nw.gui').Window.get().showDevTools();</script>
 -->
 
 
-<input id="getMasterKey" type="button" value="getMasterKey" onclick="getMasterKey();" />
-<input id="broadcastVideo" type="button" value="broadcastVideo" onclick="broadcastVideo();" />
-<input id="getPublicKey" type="button" value="getPublicKey" onclick="getPublicKey();" />
 
-<form  id="revoke" name="revoke" onsubmit="revokeUser()" method="post">
-      <label id="user_id">User id:</label>
-      <input type="text"   name="user_id"/>
-      <input type="submit" value="revoke" />  </input>
-    </form>
+
+  <form  id="initializeYourChannel" name="initializeYourChannel" onsubmit="initializeChannel()" method="post">
+        <label id="channelId">channelId:</label>
+        <input type="text"   name="channelId"/>
+        <input type="submit" value="initializeYourChannel" />  </input>
+  </form>
+
+  <br>
+
+  <form  id="revoke" name="revoke" onsubmit="revokeUser()" method="post">
+        <label id="user_id">User id:</label>
+        <input type="text"   name="user_id"/>
+        <input type="submit" value="revoke" />  </input>
+  </form>
+
+  <br>
+
+  <form  id="broadcastVideo" name="broadcastVideo" onsubmit="StartVideo()" method="post">
+        <label id="channelId">channelId:</label>
+        <input type="text"   name="channelId"/>
+        <input type="submit" value="broadcastVideo" />  </input>
+  </form>
+
 
 
 
 <script>
     function loaded(){
-    	
+    	//for now do nothing.
     }
 </script>
 

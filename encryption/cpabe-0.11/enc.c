@@ -14,9 +14,6 @@
 #include "policy_lang.h"
 
 
-
-
-
 char* usage =
 "Usage: cpabe-enc -p [PUBLIC KEY] -m [MASTER KEY] -i [INPUT FILE] -a [ID1 ID2 ... IDr] [OPTIONS]\n"
 "\n"
@@ -40,7 +37,6 @@ char* usage =
  * cpabe-enc -p pub_key -m msk_key -i security_report.pdf -a ’[ID1]...[IDr]’
  */
 char* pub_file = 0;
-char* msk_file = 0;
 char* in_file  = 0;
 char* out_file = 0;
 char* attr     = 0;
@@ -100,6 +96,7 @@ parse_args( int argc, char** argv )
 				printf("argument pub_file: %s\n", pub_file);
 			}
 		}
+
 		else if( !strcmp(argv[i], "-m"))		//the flag for the master secret key file name
 		{
 			if( ++i >= argc )
@@ -108,8 +105,9 @@ parse_args( int argc, char** argv )
 			}
 			else
 			{
-				msk_file = argv[i];
-				printf ("argument is master key - %s\n", msk_file);
+				//there used to be an msk file (mater secret key) it is no longer needed.
+				//code should never reach here.
+				
 			}
 		}
 		else if( !strcmp(argv[i], "-i"))		//the flag for the master secret key file name
@@ -133,33 +131,7 @@ parse_args( int argc, char** argv )
 			else
 			{
 				
-
-				/*** TODO:
-				we receive a string of the form 0_1_2_3_4
-				those are the id's to revoke.
-				we need to parse the string so that it looks like this:
-				0 1 2 3 4 ...... 100.
-				the final result, should be in var attr, which is declared outside this function already.
-
-				****/
-
-
-				char* delimiter = "_";
-				char* attr_unparsed = argv[i];					//get the attributes from the arguments				
-				 char *token;
-			   /* get the first token */
-			   token = strtok(attr_unparsed, delimiter);
-			   
-			   /* walk through other tokens */
-			   while( token != NULL ) 
-			   {
-			   	  strcat(attr, (const char *)token);
-			      printf( "token:  %s\n", token );
-			      token = strtok(NULL, delimiter);
-			      printf ("attr: %s\n", attr);
-				}
-			   	
-
+				attr = argv[i];	
 				printf ("argument is attribute\n");
 			}
 		}
@@ -242,7 +214,6 @@ int
 main( int argc, char** argv )
 {
 	bswabe_pub_t* pub;
-	bswabe_msk_t* msk;
 	bswabe_cph_t* cph;
 
 	unsigned char* fileString;
@@ -251,7 +222,6 @@ main( int argc, char** argv )
 	parse_args(argc, argv);
 
 	pub = bswabe_pub_unserialize(suck_file(pub_file), 1);
-	msk = bswabe_msk_unserialize(pub, suck_file(msk_file), 1);
 
 	printf ("cpabe-enc - Reading from the input file\n");
 	fileString = readFromFile(in_file);
@@ -259,7 +229,7 @@ main( int argc, char** argv )
 
 
 	printf ("cpabe-enc - Entering enc on libbswabe\n");
-	if( !(cph = bswabe_enc(pub, msk, fileString, attr)) )
+	if( !(cph = bswabe_enc(pub,  fileString, attr)) )
 	{
 		printf("cpabe-enc - Enc ended with an error\n");
 		die("%s", bswabe_error());
@@ -268,7 +238,6 @@ main( int argc, char** argv )
 	{
 		
 		spit_file(out_file, bswabe_cph_serialize(cph), 1);
-		spit_file(msk_file, bswabe_msk_serialize(msk), 1);
 		if( !keep )
 		{
 			unlink(in_file);

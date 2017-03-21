@@ -1,11 +1,11 @@
 
-function playVideo(){
+function start(channelId){
 	openVlc();
-	receive();
+	receive(channelId);
 }
 
  
-function receive(){
+function receive(channelId){
 		var RtpPacket=require("./RtpPacket.js");
 		var dgram = require('dgram');
 		var get_video_Socket = dgram.createSocket('udp4');
@@ -14,13 +14,14 @@ function receive(){
 		const path = require('path');
 		__dirname = path.resolve(path.dirname(''));
 		var crypto = require('crypto');
+		var database = require('./../../database.js');
+		var configs = require('./../../configs.js');
 		var Buffer = require('buffer').Buffer;
-		var keysToKeep = 10;
+		var keysToKeep = configs.NUM_OF_AES_KEYS;
 		var keysList =  new createKeysList(null,keysToKeep,0);
-	//	receiveAes(keysList);
-		var get_video_port = 8040;
-		var send_Dec_port = 10108;
-		var vlc_port = 6000;
+		var get_video_port = database.getVideoPortById(channelId);
+		var send_Dec_port = configs.send_Dec_port;
+		var VLC_PORT = configs.VLC_PORT;
 		var host = '127.0.0.1';
 		get_video_Socket.bind(get_video_port);
 		send_Dec_Socket.bind(send_Dec_port);
@@ -50,10 +51,10 @@ function receive(){
 
 
 				//send decrypted patyload to vlc port.
-
+				
 				send_Dec_Socket.send(rtpPacket.getBuffer(), 
 				0,
-				rtpPacket.getBuffer().length,vlc_port,host,function(err){
+				rtpPacket.getBuffer().length,VLC_PORT,host,function(err){
 				  if (err) console.log(err);
 				}); 
 
@@ -73,7 +74,7 @@ function receive(){
 */
 		var dgram3 = require('dgram');
 		var AesSocket = dgram3.createSocket('udp4');
-		var Aes_Socket_port = 6022;
+		var Aes_Socket_port = database.getKeyPortById(channelId);
 		var keyId = -1;
 
 
@@ -100,7 +101,7 @@ function receive(){
 					var wstream = fs.createWriteStream(aesKeyPath+".cpabe");
 					wstream.write(aesKey);
 					wstream.end(    function(){
-						setAesKeyById(keysList, keyId, decrypt());
+						setAesKeyById(keysList, keyId, decrypt(channelId));
 						keyId = -1;
 					});
 				
@@ -133,76 +134,18 @@ function receive(){
 };
 
 
-//not in use!! maybe should be.
-function receiveAes(keysList){
-		alert("func called");
-		
-		var dgram3 = require('dgram');
-		var AesSocket = dgram3.createSocket('udp4');
-		var Aes_Socket_port = 5096;
-		var keyId = -1;
-		const path = require('path');
-		__dirname = path.resolve(path.dirname(''));
-		
-		AesSocket.on('error', (err) => {
-  			alert(`====error====:\n${err.stack}`);
-  			server.close();
-			});
 
 
-		AesSocket.on('message', function (msg, info){
-			alert("received an AES message!");
-			//this is not a number, this is a keyId.
-			if (isNaN(msg.toString())) {
-				var aesKey = msg;
 
-				//either we don't know the seq of key yet, or the key was already obtained.
-				if(keyId==-1 || getAesKeyById(keysList,keyId).key != null){
-					// do nothing.
-					// return???
-				}
-				else{	
-					var aesKeyPath = path.join(__dirname + "/js/aeskey/key");
-		        	var fs = require('fs');
-					var wstream = fs.createWriteStream(aesKeyPath+".cpabe");
-					wstream.write(aesKey);
-					wstream.end(    function(){
-						setAesKeyById(keysList, keyId, decrypt());
-						keyId = -1;
-					});
-				
-				}
-			}
-
-			else{
-				alert("key seq: " + (parseInt(msg.toString())));
-				keyId = (parseInt(msg.toString()));
-			}
-			//alert("file written");
-		
-
-		});
-
-
-		AesSocket.on('listening', function(){
-  	    var address = socket.address();
-        });
-
-        AesSocket.on('close', function (){
-        	alert("this socket got closed!");
-        });
-
-        AesSocket.bind(Aes_Socket_port);
-}
 
 function openVlc(){
-var vlc_port = 6000;
+var configs = require('./../../configs.js');
+var VLC_PORT = configs.VLC_PORT;
 var sys = require('sys')
 var exec = require('child_process').exec;
 function puts(error, stdout, stderr) { sys.puts(stdout) }
-exec("vlc rtp://@:"+ vlc_port, puts);
+exec("vlc rtp://@:"+ VLC_PORT, puts);
 }
-
 
 function getAesKeyById(keysList, keyId){
   while(keysList.id != keyId){
@@ -210,7 +153,6 @@ function getAesKeyById(keysList, keyId){
   }
   return keysList;
 }
-
 
 
 //change key to new key, set following key to null. (this is in order to verify we're not using an old key!)
@@ -239,13 +181,13 @@ function createKeysList(head,length,count) {
 }
 
 
-function decrypt(){
+function decrypt(channelId){
 			const path = require('path');
 			__dirname = path.resolve(path.dirname(''));
 			var fs = require('fs');
 			var aesKeyPath = path.join(__dirname + "/js/aeskey/key");
-			var pubkey = path.join(__dirname + "/js/privateKey/public");
-			var private = path.join(__dirname + "/js/privateKey/private");;
+			var pubkey = path.join(__dirname + "/js/privateKey/public_"+channelId);
+			var private = path.join(__dirname + "/js/privateKey/private_"+channelId);
 			var sys = require('sys')
 			var exec = require('child_process').execSync;
 			function puts(error, stdout, stderr) { sys.puts(stdout) }
@@ -263,10 +205,13 @@ function decrypt(){
 
 }
 
-function receiveAes(){
-	alert("this does nothing!");
 
-}
+
+
+
+
+
+/*
 
 function receivebackup(){
 
@@ -322,3 +267,72 @@ function receivebackup(){
 
 		});
 };
+
+
+
+
+
+
+//not in use!! maybe should be. this code is also in function receive
+function receiveAes111(keysList,channelId){
+		alert("func called");
+		
+		var dgram3 = require('dgram');
+		var AesSocket = dgram3.createSocket('udp4');
+		var Aes_Socket_port = 5096;
+		var keyId = -1;
+		const path = require('path');
+		__dirname = path.resolve(path.dirname(''));
+		
+		AesSocket.on('error', (err) => {
+  			alert(`====error====:\n${err.stack}`);
+  			server.close();
+			});
+
+
+		AesSocket.on('message', function (msg, info){
+			alert("received an AES message!");
+			//this is not a number, this is a keyId.
+			if (isNaN(msg.toString())) {
+				var aesKey = msg;
+
+				//either we don't know the seq of key yet, or the key was already obtained.
+				if(keyId==-1 || getAesKeyById(keysList,keyId).key != null){
+					// do nothing.
+					// return???
+				}
+				else{	
+					var aesKeyPath = path.join(__dirname + "/js/aeskey/key");
+		        	var fs = require('fs');
+					var wstream = fs.createWriteStream(aesKeyPath+".cpabe");
+					wstream.write(aesKey);
+					wstream.end(    function(){
+						setAesKeyById(keysList, keyId, decrypt(channelId));
+						keyId = -1;
+					});
+				
+				}
+			}
+
+			else{
+				alert("key seq: " + (parseInt(msg.toString())));
+				keyId = (parseInt(msg.toString()));
+			}
+			//alert("file written");
+		
+
+		});
+
+
+		AesSocket.on('listening', function(){
+  	    var address = socket.address();
+        });
+
+        AesSocket.on('close', function (){
+        	alert("this socket got closed!");
+        });
+
+        AesSocket.bind(Aes_Socket_port);
+}
+
+*/
