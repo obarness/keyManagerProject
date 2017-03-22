@@ -30,6 +30,7 @@ function broadcastAesKey(aesKey, aesSeq, channelId){
 
 			//save key as a file.
 			var fs = require('fs');
+
 			fs.writeFileSync(aesKeyPath, aesKey, function(err) {
 	        	if(err) {
 	        		throw err;
@@ -48,7 +49,7 @@ function broadcastAesKey(aesKey, aesSeq, channelId){
 			var exec = require('child_process').execSync;
 			function puts(error, stdout, stderr) { sys.puts(stdout) }
 																							//replace 1 with revoke.
-			exec("cpabe-enc "+ "-p " + pubkey  + " -i " + aesKeyPath +" -a"+revoke_string);
+			exec("cpabe-enc "+ "-p " + pubkey  + " -i " + aesKeyPath +" -a" + revoke_string);
 			//      cpabe-enc     -p     public     -m     master        -i     key           -a 1
 			
 
@@ -64,6 +65,7 @@ function broadcastAesKey(aesKey, aesSeq, channelId){
 			var timesToSend = 3;
 
 			//we should be sending a few times, since udp is unreliable.
+			
 			
 			client2.send(keyIdBuf,0,keyIdBuf.length ,port, BROADCAST_ADDRESS, (err) => {
 		  		client2.close();

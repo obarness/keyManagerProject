@@ -32,24 +32,26 @@ function setup(channelId){
   //server
   socket2.on('listening', function () {
       var address = socket2.address();
-      console.log('RTP Server listening on ' + address.address + ":" + address.ffmpegOutPort);
+      alert("SOCKET 2 IS LISTENING");
   });
 
   //server
   socket.on('listening', function () {
 
       socket.setBroadcast(true);
+      alert("this socket is sending the encrypted video"  );
   });
 
 
   var timeStamp = Math.floor(Date.now());
   //in miliseconds
-  var gap = 5000; 
+  var gap = 2500; 
 
 
   //we get a video message from ffmpeg.
   //we're going to encrypt it, and broadcast the video!
   socket2.on('message', function(msg, rinfo){
+  // alert("message on socket 2");
   var newTimeStamp = (Math.floor(Date.now()));
    
 
@@ -61,10 +63,9 @@ function setup(channelId){
       aesKey = keysList.key;
       aesSeq = keysList.id;
       timeStamp = newTimeStamp;
-      keysList = changeKey(keysList);
+      keysList = changeKey(keysList,channelId);
 
    }
-
 
       var rtpPacket = new RtpPacket(msg);
       rtpPacket.setAesSeq(aesSeq);
@@ -89,8 +90,11 @@ function setup(channelId){
         if (err) console.log(err);
       });   
   });
-   
-  socket.bind();
+
+  //for some reason, the messages being sent from function StartVideo (below) aren't reaching socket2,
+  // unless we put some alerts.
+  alert("wait....");
+  socket.bind(9994);
   socket2.bind(ffmpegOutPort); 
 }
 
@@ -99,7 +103,8 @@ function StartVideo(){
   setup(channelId);
   const ffmpeg = require('fluent-ffmpeg');
   const dialog = require('nw-dialog');
-
+  var configs = require('./../../configs.js');
+  var ffmpegOutPort = configs.ffmpegOutPort;
   //prompt file selection
   dialog.setContext(document); // work in client
   dialog.openFileDialog('.mp4',function(path){
@@ -111,9 +116,9 @@ function StartVideo(){
       .audioCodec('libmp3lame')
       .audioBitrate('128k')
       .outputOptions('-f rtp_mpegts')
-      .output('rtp://127.0.0.1:7777')
+      .output('rtp://127.0.0.1:'+ffmpegOutPort)
       .on('error', function(err) {
-        console.log('an error happened: ' + err.message);
+       console.log('an error happened: ' + err.message);
       })
       .on('start', function(commandLine) {
         console.log('Spawned Ffmpeg with command: ' + commandLine);})
@@ -130,11 +135,11 @@ function StartVideo(){
 
 
 
-function changeKey(keysList){
+function changeKey(keysList,channelId){
   var crypto = require('crypto');
   keysList = keysList.next;
   keysList.key = crypto.randomBytes(16);
-  broadcastAesKey(keysList.key,keysList.id);
+  broadcastAesKey(keysList.key,keysList.id,channelId);
 
   return keysList;
 

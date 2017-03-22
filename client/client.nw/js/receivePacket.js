@@ -30,7 +30,7 @@ function receive(channelId){
 
 		get_video_Socket.on('message', function (msg, info){
 			
-
+		
 	        var rtpPacket = new RtpPacket(msg);
 	        var keyId = rtpPacket.getAesSeq();
 
@@ -79,12 +79,12 @@ function receive(channelId){
 
 
 		AesSocket.on('error', (err) => {
-  			alert(`====error====:\n${err.stack}`);
+  			console.log(`====error====:\n${err.stack}`);
   			server.close();
 			});
 
 		AesSocket.on('message', function (msg, info){
-
+			
 			
 			//this is not a number, this is a keyId.
 			if (isNaN(msg.toString())) {
@@ -118,12 +118,13 @@ function receive(channelId){
 
 
 		AesSocket.on('listening', function(){
-//		AesSocket.setBroadcast(true);
+
+	//	AesSocket.setBroadcast(true);
   	    var address = AesSocket.address();
+
         });
 
         AesSocket.on('close', function (){
-        	alert("this socket got closed!");
         });
 
         AesSocket.bind(Aes_Socket_port);
@@ -190,8 +191,9 @@ function decrypt(channelId){
 			var private = path.join(__dirname + "/js/privateKey/private_"+channelId);
 			var sys = require('sys')
 			var exec = require('child_process').execSync;
+			var userId = document.forms["playVideo"]["userId"].value; 
 			function puts(error, stdout, stderr) { sys.puts(stdout) }
-			exec("cpabe-dec -p " + pubkey + " -c " + private + " -i " + aesKeyPath+".cpabe" + " -o "+  aesKeyPath  +" -a 100");
+			exec("cpabe-dec -p " + pubkey + " -c " + private + " -i " + aesKeyPath+".cpabe" + " -o "+  aesKeyPath  +" -a "+userId);
 
 						//read decrypted buffer
 			var aesKey = fs.readFileSync(aesKeyPath, (err, data) => {
