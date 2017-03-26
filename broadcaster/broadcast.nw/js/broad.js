@@ -45,13 +45,13 @@ function setup(channelId){
 
   var timeStamp = Math.floor(Date.now());
   //in miliseconds
-  var gap = 2500; 
+  var gap = 5000; 
 
 
   //we get a video message from ffmpeg.
   //we're going to encrypt it, and broadcast the video!
   socket2.on('message', function(msg, rinfo){
-  // alert("message on socket 2");
+  //alert("message on socket 2");
   var newTimeStamp = (Math.floor(Date.now()));
    
 

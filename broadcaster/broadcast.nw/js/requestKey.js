@@ -23,7 +23,7 @@ https.get('https://localhost:'+SERVER_PORT+'/Masterkey_'+channelId, (res) => {
            return  alert(err);
         }
 
-        alert("The file was saved!");
+      // alert("The file was saved!");
       }); 
   });
 

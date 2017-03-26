@@ -20,7 +20,7 @@ function getKeys(){
         if(err) {
            return  alert(err);
         }
-        alert("The file was saved!");
+     //   alert("The file was saved!");
         }); 
 
        // process.stdout.write(d);
@@ -49,7 +49,7 @@ function getPublicKey(channelId){
         if(err) {
            return  alert(err);
         }
-        alert("The file was saved!");
+    //    alert("The file was saved!");
         }); 
 
       
