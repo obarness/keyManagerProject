@@ -55,7 +55,7 @@ function receive(channelId){
 				send_Dec_Socket.send(rtpPacket.getBuffer(), 
 				0,
 				rtpPacket.getBuffer().length,VLC_PORT,host,function(err){
-				  if (err) console.log(err);
+				  if (err) alert(err);
 				}); 
 
 			}
