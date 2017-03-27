@@ -1,4 +1,4 @@
-function setup(channelId){
+function setup(){
  // setupAes();
   var ffmpeg = require('fluent-ffmpeg');
   var fs = require('fs');
@@ -15,43 +15,64 @@ function setup(channelId){
   //parameters
   var BROADCAST_ADDRESS = configs.BROADCAST_ADDRESS;
   var ffmpegOutPort = configs.ffmpegOutPort;
-  var clientPort = database.getVideoPortById(channelId);
-
-  var host = '127.0.0.1';
-
+  var channelId = document.forms["broadcastVideo"]["channelId"].value;
   var keysToKeep = configs.NUM_OF_AES_KEYS;
+  var gap = configs.CHANGE_KEY_INTERVAL; 
+  var clientPort = database.getVideoPortById(channelId);
   var keysList =  new createKeysList(null,keysToKeep,0);
 
   //our initial key.
   keysList.key = crypto.randomBytes(16);
   var aesKey =  keysList.key;
   var aesSeq = keysList.id;
-  broadcastAesKey(aesKey,aesSeq,channelId);      
-
-
-  //server
-  socket2.on('listening', function () {
-      var address = socket2.address();
-      alert("SOCKET 2 IS LISTENING");
+  
+  socket.on('close', function () {
+      alert("socket 1 closing");
+     
+    //alert("this socket is sending the encrypted video"  );
   });
+
+  socket.on('error', function (err) {
+      alert("socket 1 error: "+ err);
+     
+    //alert("this socket is sending the encrypted video"  );
+  });
+
+  socket2.on('close', function () {
+      alert("socket 2 closing");
+     
+    //alert("this socket is sending the encrypted video"  );
+  });
+
+ socket2.on('error', function (err) {
+      alert("socket 2 error: "+ err);
+     
+    //alert("this socket is sending the encrypted video"  );
+  });
+
 
   //server
   socket.on('listening', function () {
-
       socket.setBroadcast(true);
-      alert("this socket is sending the encrypted video"  );
+     // alert("sock 1 listening");
+  });
+
+
+    //server
+  socket2.on('listening', function () {
+    //alert("sock 2 listening");
+    
   });
 
 
   var timeStamp = Math.floor(Date.now());
   //in miliseconds
-  var gap = 5000; 
-
-
+ 
   //we get a video message from ffmpeg.
   //we're going to encrypt it, and broadcast the video!
   socket2.on('message', function(msg, rinfo){
-  //alert("message on socket 2");
+//alert("message on socket 2 " +  msg.toString());
+
   var newTimeStamp = (Math.floor(Date.now()));
    
 
@@ -76,10 +97,8 @@ function setup(channelId){
       var cipher = crypto.createCipher('aes-128-ctr', aesKey);
       encrypted = Buffer.concat([cipher.update(rtpPacket.getPayload()), cipher.final()]); 
       var encryptedpay = new Buffer(encrypted);
-
       //update only payload of packet.
       rtpPacket.setPayload(encryptedpay);
-
       //send packet to client.
       socket.send(rtpPacket.getBuffer(), 
       0,
@@ -90,27 +109,35 @@ function setup(channelId){
         if (err) console.log(err);
       });   
   });
+ // alert("wait....");
+   socket.bind(9990,() => {
+    socket2.bind(ffmpegOutPort, () =>{
+      broadcastAesKey(aesKey,aesSeq,channelId); 
+      StartVideo(); 
 
-  //for some reason, the messages being sent from function StartVideo (below) aren't reaching socket2,
-  // unless we put some alerts.
-  alert("wait....");
-  socket.bind(9994);
-  socket2.bind(ffmpegOutPort); 
+      });
+  });
+  
 }
 
+
 function StartVideo(){
-  var channelId = document.forms["broadcastVideo"]["channelId"].value;
-  setup(channelId);
   const ffmpeg = require('fluent-ffmpeg');
   const dialog = require('nw-dialog');
   var configs = require('./../../configs.js');
   var ffmpegOutPort = configs.ffmpegOutPort;
   //prompt file selection
   dialog.setContext(document); // work in client
-  dialog.openFileDialog('.mp4',function(path){
-    
+
+
+
+//  dialog.openFileDialog('.mp4',function(path){
+
+    //path should be chosen by a file dialog.
+    //for some reason, dialog is failing, this is a temp workaround.
+    var path =  'SampleVideo.mp4';
     //RTP creation with FFmpeg
-      var proc = ffmpeg(path).native()
+      var proc = ffmpeg('SampleVideo.mp4').native()
       .videoCodec('mpeg2video')
       .videoBitrate('1024k')
       .audioCodec('libmp3lame')
@@ -122,25 +149,16 @@ function StartVideo(){
       })
       .on('start', function(commandLine) {
         console.log('Spawned Ffmpeg with command: ' + commandLine);})
-       
       .run();
 
-
-
-  });
-  
-    
-
+ //      });
 }
-
-
 
 function changeKey(keysList,channelId){
   var crypto = require('crypto');
   keysList = keysList.next;
   keysList.key = crypto.randomBytes(16);
   broadcastAesKey(keysList.key,keysList.id,channelId);
-
   return keysList;
 
 }

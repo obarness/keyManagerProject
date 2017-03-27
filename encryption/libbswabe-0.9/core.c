@@ -635,7 +635,7 @@ setId ( bswabe_pub_t* pub, char* rawAttrString, element_t s, GPtrArray * root, e
 	element_t t_i;		//Si is a part from the exponent S
 	element_t t_i_sum;	//the sum of r-1 Si		in total S1+...+Sr = S
 
-	idArray = g_strsplit(rawAttrString, " ", 0);	//split the whole rawAttrString string with the delimiter " "
+	idArray = g_strsplit(rawAttrString, "_", 0);	//split the whole rawAttrString string with the delimiter " "
 	currentId = idArray;
 
 	element_init_Zr(t_i, 		pub->p);
@@ -1352,6 +1352,10 @@ bswabe_dec( bswabe_pub_t* pub, bswabe_prv_t* prv, bswabe_cph_t* cph, long id_val
 			printf("ids doesn't match.\t CONTINUE\n");
 		}
 	}
+
+
+
+	
 	
 	
 	//Calculate A1	

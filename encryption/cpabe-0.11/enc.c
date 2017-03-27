@@ -132,6 +132,10 @@ parse_args( int argc, char** argv )
 			{
 				
 				attr = argv[i];	
+				
+
+
+				
 				printf ("argument is attribute\n");
 			}
 		}

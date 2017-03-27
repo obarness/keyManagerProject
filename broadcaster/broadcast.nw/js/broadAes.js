@@ -7,6 +7,7 @@ var configs = require('./../../configs.js');
 function revokeUser(){
 	var user_id = document.forms["revoke"]["user_id"].value;
 	configs.revoke_string += "_" + user_id;
+	alert("revoke string:" + configs.revoke_string );
 }
 
 function broadcastAesKey(aesKey, aesSeq, channelId){
@@ -17,7 +18,8 @@ function broadcastAesKey(aesKey, aesSeq, channelId){
 			const client2 = dgram.createSocket('udp4');
 			var database = require('./../../database.js');
 			
-			
+
+
 			const port = database.getKeyPortById(channelId);
 			const path = require('path');
 			__dirname = path.resolve(path.dirname(''));
@@ -90,6 +92,7 @@ function broadcastAesKey(aesKey, aesSeq, channelId){
 			client.setBroadcast(true);
 
 			});
+
 
 
 }
