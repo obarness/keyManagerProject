@@ -6,6 +6,7 @@ var fs = require('fs');
 const path = require('path');
  __dirname = path.resolve(path.dirname(''));
  var configs = require('./../../configs.js');
+ var SERVER_ADDRESS = configs.SERVER_ADDRESS;
 var SERVER_PORT = configs.SERVER_PORT;
 var channelId = document.forms["initializeYourChannel"]["channelId"].value;
 
@@ -14,7 +15,7 @@ process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
 //change 1111 this with SERVER_PORT (using config file)
 //change 4 with a variable.
-https.get('https://localhost:'+SERVER_PORT+'/Masterkey_'+channelId, (res) => {
+https.get('https://'+SERVER_ADDRESS+':'+SERVER_PORT+'/Masterkey_'+channelId, (res) => {
 
   res.on('data', (d) => {
       var masterPath = path.join(__dirname + "/js/masterkey/pubkey_" + channelId);

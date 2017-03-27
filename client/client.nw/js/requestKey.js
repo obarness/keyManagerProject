@@ -7,12 +7,13 @@ function getKeys(){
   __dirname = path.resolve(path.dirname(''));
    var configs = require('./../../configs.js');
   var SERVER_PORT = configs.SERVER_PORT;
+  var SERVER_ADDRESS = configs.SERVER_ADDRESS;
 
   var channelId = document.forms["playVideo"]["channelId"].value;  
   var userId = document.forms["playVideo"]["userId"].value; 
   //command below ignores our unsigned https certificate.
   process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
-  https.get('https://localhost:'+SERVER_PORT+'/PrivateKey_'+channelId+'_'+userId, (res) => {
+  https.get('https://'+SERVER_ADDRESS+':'+SERVER_PORT+'/PrivateKey_'+channelId+'_'+userId, (res) => {
 
       res.on('data', (d) => {
         var privatePath = path.join(__dirname + "/js/privateKey/private_"+channelId);
@@ -38,10 +39,11 @@ function getPublicKey(channelId){
    __dirname = path.resolve(path.dirname(''));
   var configs = require('./../../configs.js');
   var SERVER_PORT = configs.SERVER_PORT;
+  var SERVER_ADDRESS = configs.SERVER_ADDRESS;
 
   //command below ignores our unsigned https certificate.
   process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
-  https.get('https://localhost:'+SERVER_PORT+'/PublicKey_'+channelId, (res) => {
+  https.get('https://'+SERVER_ADDRESS+':'+SERVER_PORT+'/PublicKey_'+channelId, (res) => {
 
       res.on('data', (d) => {
         var publicPath = path.join(__dirname + "/js/privateKey/public_"+channelId);
