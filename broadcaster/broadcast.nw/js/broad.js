@@ -66,6 +66,8 @@ function setup(){
 
 
   var timeStamp = Math.floor(Date.now());
+  var lastKeySent=0;
+
   //in miliseconds
  
   //we get a video message from ffmpeg.
@@ -74,18 +76,27 @@ function setup(){
 //alert("message on socket 2 " +  msg.toString());
 
   var newTimeStamp = (Math.floor(Date.now()));
-   
 
    //we dont want to broadcast video with the new key immediately.
    //we want to give some time for the clients to decrypt the key before we start using it.
    //we will only start using the new key, after we've already sent it's following key.
    //for e.g, if we created key.id = 1, we'll only start using it after we've sent key.id=2 to all clients.
+  
    if(newTimeStamp > gap + timeStamp){
       aesKey = keysList.key;
       aesSeq = keysList.id;
       timeStamp = newTimeStamp;
+      lastKeySent = timeStamp;
       keysList = changeKey(keysList,channelId);
+    //  alert("using aes id:" + keysList.id);
 
+   }
+   
+
+   else if(newTimeStamp > lastKeySent + configs.SEND_KEY_INTERVAL){
+   
+       broadcastAesKey(aesKey,aesSeq,channelId); 
+       lastKeySent = newTimeStamp;
    }
 
       var rtpPacket = new RtpPacket(msg);
@@ -101,14 +112,17 @@ function setup(){
       rtpPacket.setPayload(encryptedpay);
       //send packet to client.
       
-      socket.send(rtpPacket.getBuffer(), 
-      0,
-      rtpPacket.getBuffer().length,
-      clientPort,
-      BROADCAST_ADDRESS,
-      function(err){
-        if (err) console.log(err);
-      });   
+      for(var i=0; i<BROADCAST_ADDRESS.length;i++){
+       // alert("sending packet to: " + BROADCAST_ADDRESS[i] );
+          socket.send(rtpPacket.getBuffer(), 
+          0,
+          rtpPacket.getBuffer().length,
+          clientPort,
+          BROADCAST_ADDRESS[i],
+          function(err){
+            if (err) console.log(err);
+          });   
+      }
   });
  // alert("wait....");
    socket.bind(9990,() => {
@@ -159,6 +173,8 @@ function changeKey(keysList,channelId){
   var crypto = require('crypto');
   keysList = keysList.next;
   keysList.key = crypto.randomBytes(16);
+
+  
   broadcastAesKey(keysList.key,keysList.id,channelId);
   return keysList;
 

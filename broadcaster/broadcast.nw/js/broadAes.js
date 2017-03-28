@@ -63,35 +63,41 @@ function broadcastAesKey(aesKey, aesSeq, channelId){
 		
 			
 			var keyId = aesSeq.toString();
+			
 			var keyIdBuf = new Buffer(keyId);
-			var timesToSend = 3;
 
 			//we should be sending a few times, since udp is unreliable.
-			
-			
-			client2.send(keyIdBuf,0,keyIdBuf.length ,port, BROADCAST_ADDRESS, (err) => {
-		  		client2.close();
-			});
-			
-			
 			client2.on('listening', function(){
-			var address = client2.address();
-			client2.setBroadcast(true);
+				var address = client2.address();
+				client2.setBroadcast(true);
 
-			});
-			
-			
-			client.send(buf,0,buf.length ,port, BROADCAST_ADDRESS, (err) => {
-	  			client.close();
-			});
-			
+				});
 
-			
 			client.on('listening', function(){
-			var address = client.address();
-			client.setBroadcast(true);
+				var address = client.address();
+				client.setBroadcast(true);
 
-			});
+				});
+			
+      		for(var i=0; i<BROADCAST_ADDRESS.length;i++){
+
+					client2.send(keyIdBuf,0,keyIdBuf.length ,port, BROADCAST_ADDRESS[i], (err) => {
+				  		//client2.close();
+					});
+
+					client.send(buf,0,buf.length ,port, BROADCAST_ADDRESS[i], (err) => {
+			  			//client.close();
+					});
+				
+					if(i== BROADCAST_ADDRESS.length){
+						client2.close();
+						client.close();
+					}
+				
+				}
+				
+
+		
 
 
 

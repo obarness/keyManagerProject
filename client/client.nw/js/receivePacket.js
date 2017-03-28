@@ -27,37 +27,45 @@ function receive(channelId){
 		send_Dec_Socket.bind(send_Dec_port);
 		
 		var aesKey = keysList;
-
+		
 		get_video_Socket.on('message', function (msg, info){
 			
-		
+
 	        var rtpPacket = new RtpPacket(msg);
 	        var keyId = rtpPacket.getAesSeq();
+
+	        //this is the first time we got a video!
+	        
 
 	        //this means key has changed!
 	        if(aesKey.key!= null && aesKey.id != keyId){
 	        	aesKey.key=null;
 	        	aesKey = getAesKeyById(keysList, keyId);
 	        }
-	        if(aesKey.key==null){
-	        		return;
+	        else if(aesKey.key== null){
+	        	aesKey = getAesKeyById(keysList, keyId);
 	        }
-	        else{
+	        if(aesKey.key!=null){
+
+	        
+
 				var decrypted;
 				var decipher = crypto.createDecipher('aes-128-ctr', aesKey.key),
 				decrypted = Buffer.concat([decipher.update(rtpPacket.getPayload()) , decipher.final()]);
 				var decryptedpay = new Buffer(decrypted);
 				rtpPacket.setPayload(decryptedpay);
 
-
 				//send decrypted patyload to vlc port.
-				
 				send_Dec_Socket.send(rtpPacket.getBuffer(), 
 				0,
 				rtpPacket.getBuffer().length,VLC_PORT,host,function(err){
 				  if (err) alert(err);
 				}); 
 
+			}
+			else{
+
+			
 			}
 		});
 
@@ -96,6 +104,7 @@ function receive(channelId){
 					// return???
 				}
 				else{	
+
 					var aesKeyPath = path.join(__dirname + "/js/aeskey/key");
 		        	var fs = require('fs');
 					var wstream = fs.createWriteStream(aesKeyPath+".cpabe");
@@ -109,7 +118,9 @@ function receive(channelId){
 			}
 
 			else{
+
 				keyId = (parseInt(msg.toString()));
+				
 			}
 			//alert("file written");
 		
@@ -118,19 +129,14 @@ function receive(channelId){
 
 
 		AesSocket.on('listening', function(){
-
-	//	AesSocket.setBroadcast(true);
-  	    var address = AesSocket.address();
-
+			console.log("AesSocket is listening")
         });
 
         AesSocket.on('close', function (){
+        	console.log("AesSocket is closing")
         });
-
+        
         AesSocket.bind(Aes_Socket_port);
-
-
-
 
 };
 
