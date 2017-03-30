@@ -7,7 +7,7 @@ function getKeys(){
   __dirname = path.resolve(path.dirname(''));
    var configs = require('./../../configs.js');
   var SERVER_PORT = configs.SERVER_PORT;
-  var SERVER_ADDRESS = configs.SERVER_ADDRESS;
+  var SERVER_ADDRESS = configs.SERVER_ADDRESSES[0];
 
   var channelId = document.forms["playVideo"]["channelId"].value;  
   var userId = document.forms["playVideo"]["userId"].value; 
@@ -39,7 +39,7 @@ function getPublicKey(channelId){
    __dirname = path.resolve(path.dirname(''));
   var configs = require('./../../configs.js');
   var SERVER_PORT = configs.SERVER_PORT;
-  var SERVER_ADDRESS = configs.SERVER_ADDRESS;
+  var SERVER_ADDRESS = configs.SERVER_ADDRESSES[0];
 
   //command below ignores our unsigned https certificate.
   process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";

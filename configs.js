@@ -5,11 +5,16 @@ var configs = {};
 configs.revoke_string = " 0";
 
 //array of addresses to send video to.
-configs.BROADCAST_ADDRESS = ['192.168.1.255'];
+configs.BROADCAST_ADDRESSES = ['192.168.1.255','192.268.1.255','192.268.1.255','192.268.1.255'];
 
 //server which provides public and private keys.
-configs.SERVER_ADDRESS = '192.168.1.17';
-configs.SERVER_ADDRESS = '192.168.1.17';
+configs.SERVER_ADDRESSES = ['192.168.1.17','192.168.1.17','192.168.1.17','192.168.1.17'];
+
+configs.SERVER_NAMES = 		['HOT','COLD','YES', 'NO'];
+
+configs.BROADCAST_SERVER = 		[1,0,0,0];
+
+
 //number of keys broadcaster and client keeps.
 configs.NUM_OF_AES_KEYS = 10;
 
@@ -19,10 +24,10 @@ configs.SERVER_PORT = 1111;
 configs.VLC_PORT=6000;
 
 //how often we change aes key. (in miliseconds. (1000 ms = 1 second).)
-configs.CHANGE_KEY_INTERVAL = 2500; 
+configs.CHANGE_KEY_INTERVAL = 5000; 
 
 //how often aes key is being sent, in miliseconds.
-configs.SEND_KEY_INTERVAL = 1000;
+configs.SEND_KEY_INTERVAL = 2000;
 
 //port which client uses in order to send decrypted packets.
 configs.send_Dec_port = 9998;

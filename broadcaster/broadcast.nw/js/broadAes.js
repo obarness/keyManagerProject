@@ -26,46 +26,61 @@ function broadcastAesKey(aesKey, aesSeq, channelId){
 			var aesKeyPath = path.join(__dirname + "/js/aeskey/key");
 			var configs = require('./../../configs.js');
 			var revoke_string = new String(configs.revoke_string);
-			var BROADCAST_ADDRESS = configs.BROADCAST_ADDRESS;
+			var BROADCAST_ADDRESSES = configs.BROADCAST_ADDRESSES;
 
 			
 
 			//save key as a file.
 			var fs = require('fs');
 
-			fs.writeFileSync(aesKeyPath, aesKey, function(err) {
-	        	if(err) {
-	        		throw err;
-	           	return  console.log(err);
-	        	}
-        	});
+			for(var i=0; i<BROADCAST_ADDRESSES.length;i++){
+      			if(configs.BROADCAST_SERVER[i]==1){
 			
-			//encrypt the file
-			
-			var pubkey = path.join(__dirname + "/js/masterkey/pubkey_"+channelId);
+					fs.writeFileSync(aesKeyPath, aesKey, function(err) {
+			        	if(err) {
+			        		throw err;
+			           	return  console.log(err);
+			        	}
+		        	});
+					
+					//encrypt the file
+					
+					var pubkey = path.join(__dirname + "/js/companies/"+ configs.SERVER_NAMES[i] + "/pubkey_"+channelId);
 
-			//master key shouldn't be needed!
-			var masterkey = path.join(__dirname + "/js/masterkey/master_"+channelId);
 
-			var sys = require('sys')
-			var exec = require('child_process').execSync;
-			function puts(error, stdout, stderr) { sys.puts(stdout) }
-																							//replace 1 with revoke.
-			exec("cpabe-enc "+ "-p " + pubkey  + " -i " + aesKeyPath +" -a" + revoke_string);
-			//      cpabe-enc     -p     public     -m     master        -i     key           -a 1
-			
+					var sys = require('sys')
+					var exec = require('child_process').execSync;
+					function puts(error, stdout, stderr) { sys.puts(stdout) }
+																									//replace 1 with revoke.
+					exec("cpabe-enc "+ "-p " + pubkey  + " -i " + aesKeyPath +" -a" + revoke_string);
+					//      cpabe-enc     -p     public     -m     master        -i     key           -a 1
+					
 
-			//read buffer from file and send it to client.
-			var buf = fs.readFileSync(aesKeyPath+'.cpabe', (err, data) => {
-		  		if (err) throw err;
+					//read buffer from file and send it to client.
+					var buf = fs.readFileSync(aesKeyPath+'.cpabe', (err, data) => {
+				  		if (err) throw err;
 
-				});	
-		
-			
-			var keyId = aesSeq.toString();
-			
-			var keyIdBuf = new Buffer(keyId);
+						});	
 
+					var keyId = aesSeq.toString();		
+					var keyIdBuf = new Buffer(keyId);
+
+					client2.send(keyIdBuf,0,keyIdBuf.length ,port, BROADCAST_ADDRESSES[i], (err) => {
+				  		
+					});
+
+					client.send(buf,0,buf.length ,port, BROADCAST_ADDRESSES[i], (err) => {
+			  			
+					});
+	
+				}
+
+				if(i == BROADCAST_ADDRESSES.length){
+					client2.close();
+					client.close();
+				}
+
+			}
 			//we should be sending a few times, since udp is unreliable.
 			client2.on('listening', function(){
 				var address = client2.address();
@@ -78,27 +93,9 @@ function broadcastAesKey(aesKey, aesSeq, channelId){
 				client.setBroadcast(true);
 
 				});
-			
-      		for(var i=0; i<BROADCAST_ADDRESS.length;i++){
 
-					client2.send(keyIdBuf,0,keyIdBuf.length ,port, BROADCAST_ADDRESS[i], (err) => {
-				  		//client2.close();
-					});
 
-					client.send(buf,0,buf.length ,port, BROADCAST_ADDRESS[i], (err) => {
-			  			//client.close();
-					});
-				
-					if(i== BROADCAST_ADDRESS.length){
-						client2.close();
-						client.close();
-					}
-				
-				}
-				
-
-		
-
+	
 
 
 }

@@ -13,7 +13,7 @@ function setup(){
   var database = require('./../../database.js');
 
   //parameters
-  var BROADCAST_ADDRESS = configs.BROADCAST_ADDRESS;
+  var BROADCAST_ADDRESSES = configs.BROADCAST_ADDRESSES;
   var ffmpegOutPort = configs.ffmpegOutPort;
   var channelId = document.forms["broadcastVideo"]["channelId"].value;
   var keysToKeep = configs.NUM_OF_AES_KEYS;
@@ -112,16 +112,18 @@ function setup(){
       rtpPacket.setPayload(encryptedpay);
       //send packet to client.
       
-      for(var i=0; i<BROADCAST_ADDRESS.length;i++){
-       // alert("sending packet to: " + BROADCAST_ADDRESS[i] );
-          socket.send(rtpPacket.getBuffer(), 
-          0,
-          rtpPacket.getBuffer().length,
-          clientPort,
-          BROADCAST_ADDRESS[i],
-          function(err){
-            if (err) console.log(err);
-          });   
+      //
+      for(var i=0; i<BROADCAST_ADDRESSES.length;i++){
+          if(configs.BROADCAST_SERVER[i]==1){
+              socket.send(rtpPacket.getBuffer(), 
+              0,
+              rtpPacket.getBuffer().length,
+              clientPort,
+              BROADCAST_ADDRESSES[i],
+              function(err){
+                if (err) console.log(err);
+              });   
+        }
       }
   });
  // alert("wait....");

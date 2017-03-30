@@ -48,7 +48,6 @@ function receive(channelId){
 	        if(aesKey.key!=null){
 
 	        
-
 				var decrypted;
 				var decipher = crypto.createDecipher('aes-128-ctr', aesKey.key),
 				decrypted = Buffer.concat([decipher.update(rtpPacket.getPayload()) , decipher.final()]);
@@ -59,7 +58,7 @@ function receive(channelId){
 				send_Dec_Socket.send(rtpPacket.getBuffer(), 
 				0,
 				rtpPacket.getBuffer().length,VLC_PORT,host,function(err){
-				  if (err) alert(err);
+				  if (err) console.log(err);
 				}); 
 
 			}
@@ -122,7 +121,7 @@ function receive(channelId){
 				keyId = (parseInt(msg.toString()));
 				
 			}
-			//alert("file written");
+			
 		
 
 		});
@@ -138,9 +137,8 @@ function receive(channelId){
         
         AesSocket.bind(Aes_Socket_port);
 
+
 };
-
-
 
 
 
