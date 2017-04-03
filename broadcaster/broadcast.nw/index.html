@@ -3,9 +3,7 @@
 <head>
 
     <title>Broadcaster</title>
-	   <script src="/js/client.js"></script>
 	   <script src="/js/gui.js"></script>
-  	 <script src="/js/vlcCtrl.js"></script>
 	   <script src="/js/requestKey.js"></script>
 	   <script src="/js/receivePacket.js"></script>
   	 <script src="/js/recieveDecrypted.js"></script>
@@ -16,11 +14,11 @@
 <body onload="loaded();">
 
 
-<!--   this loads NWJS console for developers 
-<script>require('nw.gui').Window.get().showDevTools();</script>
--->
 
- <form  id="initializeYourChannel" name="initializeYourChannel" onsubmit="initializeChannel()" method="post">
+<script>require('nw.gui').Window.get().showDevTools();</script>
+
+
+ <form  id="initializeYourChannel" name="initializeYourChannel" onsubmit="initializeChannel();return false" method="post">
       <label id="channelId">channelId:</label>
       <input type="text"  name="channelId"/>
       <label id="company">company:</label>
@@ -30,7 +28,7 @@
 
   <br>
 
-  <form  id="revoke" name="revoke" onsubmit="revokeUser()" method="post">
+  <form  id="revoke" name="revoke" onsubmit="revokeUser();return false" method="post">
         <label id="user_id">User id:</label>
         <input type="text"   name="user_id"/>
         <input type="submit" value="revoke" />  </input>
@@ -38,11 +36,14 @@
 
   <br>
 
-  <form  id="broadcastVideo" name="broadcastVideo" onsubmit="setup()" method="post">
+  <form  id="broadcastVideo" name="broadcastVideo" onsubmit="setup();return false" method="post">
         <label id="channelId">channelId:</label>
         <input type="text"   name="channelId"/>
         <input type="submit" value="broadcastVideo" />  </input>
   </form>
+
+
+
 
 
 

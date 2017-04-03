@@ -4,28 +4,31 @@
 
     <title>easy broad</title>
 
-	<script src="/js/client.js"></script>
 	<script src="/js/gui.js"></script>
   	<script src="/js/vlcCtrl.js"></script>
 	<script src="/js/requestKey.js"></script>
 	<script src="/js/receivePacket.js"></script>
-  	<script src="/js/recieveDecrypted.js"></script>
+  
 </head>
 
-<body onload="loaded();">
 
 
-<!-- 
-<script>require('nw.gui').Window.get().showDevTools();</script>
--->
+<body onload="">
 
-    <form  id="playVideo" name="playVideo" onsubmit="getKeys()" method="post">
+
+  <script>require('nw.gui').Window.get().showDevTools();</script>
+
+
+
+    <form  id="playVideo" action="" name="playVideo" onsubmit="getKeys();return false" method="get">
       <label id="channelId">channelId:</label>
       <input type="text"  name="channelId"/>
       <label id="userId">userId:</label>
       <input type="text" name="userId"/> </input>
       <input type="submit" value="playVideo" />  </input>
     </form>
+
+
 
  <br><br><br>
 <!-- 
@@ -37,20 +40,19 @@
 
 
 -->
-  <form  id="getKey" name="getKey" onsubmit="getPrivateKey()" method="post">
+  <form  id="getKey" name="getKey" onsubmit=  "getPrivateKey();return false" method="post">
         <label id="userId">UserId:</label>
         <input type="text"   name="userId"/>
         <input type="submit" value="getKey" />  </input>
   </form>
 
-  <input id="playVideo1" type="button" value="playVideo" onclick="playVideo();" />
-
 
 
 
 <script>
-    function loaded(){
-    }
+  
+     
+    
 </script>
 
 

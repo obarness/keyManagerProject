@@ -8,7 +8,7 @@ database.getVideoPortById = function(ChannelId){
 	
 	var IdNum = parseInt(ChannelId);
 	IdNum *= 2;
-	var port =  20000 + IdNum;
+	var port =  10000 + IdNum;
 	return port.toString();
 }
 
@@ -16,7 +16,7 @@ database.getKeyPortById = function(ChannelId){
 
 	var IdNum = parseInt(ChannelId);
 	IdNum *= 2;
-	var port =  20000 + IdNum + 2;
+	var port =  10000 + IdNum + 1;
 	return port.toString();
 
 }

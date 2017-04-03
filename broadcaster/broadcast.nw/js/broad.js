@@ -27,25 +27,25 @@ function setup(){
   var aesSeq = keysList.id;
   
   socket.on('close', function () {
-      alert("socket 1 closing");
+      console.log("socket 1 closing");
      
-    //alert("this socket is sending the encrypted video"  );
+
   });
 
   socket.on('error', function (err) {
-      alert("socket 1 error: "+ err);
+      console.log("socket 1 error: "+ err);
      
-    //alert("this socket is sending the encrypted video"  );
+    
   });
 
   socket2.on('close', function () {
-      alert("socket 2 closing");
+      console.log("socket 2 closing");
      
-    //alert("this socket is sending the encrypted video"  );
+   
   });
 
  socket2.on('error', function (err) {
-      alert("socket 2 error: "+ err);
+      console.log("socket 2 error: "+ err);
      
     //alert("this socket is sending the encrypted video"  );
   });
@@ -53,6 +53,8 @@ function setup(){
 
   //server
   socket.on('listening', function () {
+      var address = socket.address();
+      console.log('broadcasting will be done from port '+ socket.address().port);
       socket.setBroadcast(true);
      // alert("sock 1 listening");
   });
@@ -60,8 +62,8 @@ function setup(){
 
     //server
   socket2.on('listening', function () {
-    //alert("sock 2 listening");
-    
+   console.log("encrypted video messages will be sent to " + socket2.address().port);
+
   });
 
 
@@ -172,11 +174,12 @@ function StartVideo(){
 }
 
 function changeKey(keysList,channelId){
+
   var crypto = require('crypto');
   keysList = keysList.next;
   keysList.key = crypto.randomBytes(16);
 
-  
+  console.log('changing AES key, key id:' + keysList.id +', key is '+ keysList.key.toString('hex'));
   broadcastAesKey(keysList.key,keysList.id,channelId);
   return keysList;
 

@@ -69,6 +69,7 @@ function broadcastAesKey(aesKey, aesSeq, channelId){
 				  		
 					});
 
+					console.log("broadcasting AES key to " + BROADCAST_ADDRESSES[i] + ":" + port);
 					client.send(buf,0,buf.length ,port, BROADCAST_ADDRESSES[i], (err) => {
 			  			
 					});
