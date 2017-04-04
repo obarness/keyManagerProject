@@ -19,7 +19,7 @@ configs.BROADCAST_SERVER = 		[1,0,0,0];
 configs.NUM_OF_AES_KEYS = 10;
 
 //keys server port for https requests (should probably be 343).
-configs.SERVER_PORT = 1113;
+configs.SERVER_PORT = 1114;
 
 configs.VLC_PORT=6000;
 
