@@ -1,0 +1,39 @@
+<html>
+
+<head>
+
+    <title>Server</title>
+      <script src="/server.js"></script>
+	   
+</head>
+
+<body onload="loaded();">
+
+
+
+
+
+
+   <form  id="revoke" name="revoke" onsubmit="revokeUser();return false" method="post">
+      <label id="channelId">channelId:</label>
+      <input type="text"  name="channelId"/>
+      <label id="user_id">user_id:</label>
+      <input type="text" name="user_id"/> </input>
+       <input type="submit" value="revoke" />  </input>
+    </form>
+
+
+
+
+<script>
+    function loaded(){
+    	  var exec = require('child_process').exec;
+        exec('nodejs runServer.js').stdout.pipe(process.stdout);
+    }
+</script>
+
+
+
+</body>
+
+</html>
