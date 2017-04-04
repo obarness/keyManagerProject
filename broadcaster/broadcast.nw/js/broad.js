@@ -174,6 +174,7 @@ function StartVideo(){
 }
 
 function changeKey(keysList,channelId){
+  updateRevokeString(channelId);
 
   var crypto = require('crypto');
   keysList = keysList.next;
@@ -193,6 +194,7 @@ function getAesKeyById(keysList, keyId){
   return keysList;
 }
 
+  
 
 
 //change key to new key, set following key to null. (this is in order to verify we're not using an old key!)
@@ -218,6 +220,49 @@ function createKeysList(head,length,count) {
     this.next=head;
     return head;
   }
+}
+
+function updateRevokeString(channelId){
+    var https = require('https');
+    var configs = require('./../../configs.js');
+    const path = require('path');
+   __dirname = path.resolve(path.dirname(''));
+   var fs = require('fs');
+
+      
+    process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+    for(var i=0; i<configs.BROADCAST_ADDRESSES.length;i++){
+      if(configs.BROADCAST_SERVER[i]==1){
+        var company = getServerNameByAddress(configs.SERVER_ADDRESSES[i]);
+        https.get('https://'+configs.SERVER_ADDRESSES[i]+':'+configs.SERVER_PORT+'/revoke_'+channelId, (res) => {
+          res.on('data', (d) => {
+                var revokePath = path.join(__dirname + "/js/companies/"+company+"/revoke_" + channelId);
+                console.log('saved new revoke file at: ' + revokePath);
+                fs.writeFile(revokePath, d, function(err) {
+                  if(err) {
+                    return console.log(err);
+                  }
+
+                
+                }); 
+          });
+        });
+    }
+  }
+}
+
+function getServerNameByAddress(address){
+    var configs = require('./../../configs.js');
+    var SERVER_ADDRESSES = configs.SERVER_ADDRESSES;
+    var SERVER_NAMES = configs.SERVER_NAMES;
+
+    for(var i =0; i<SERVER_ADDRESSES.length;i++){
+      if(SERVER_ADDRESSES[i]== address){
+          return SERVER_NAMES[i];
+
+        }
+    }
+    return "error";
 }
 
 

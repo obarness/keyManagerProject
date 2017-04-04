@@ -1,14 +1,7 @@
 
-//broadcaster code
 var configs = require('./../../configs.js');
 
 
-
-function revokeUser(){
-	var user_id = document.forms["revoke"]["user_id"].value;
-	configs.revoke_string += "_" + user_id;
-	alert("revoke string:" + configs.revoke_string );
-}
 
 function broadcastAesKey(aesKey, aesSeq, channelId){
 			aesKey = aesKey.toString('hex');
@@ -17,16 +10,24 @@ function broadcastAesKey(aesKey, aesSeq, channelId){
 			const client = dgram.createSocket('udp4');
 			const client2 = dgram.createSocket('udp4');
 			var database = require('./../../database.js');
-			
-
 
 			const port = database.getKeyPortById(channelId);
 			const path = require('path');
 			__dirname = path.resolve(path.dirname(''));
 			var aesKeyPath = path.join(__dirname + "/js/aeskey/key");
 			var configs = require('./../../configs.js');
-			var revoke_string = new String(configs.revoke_string);
+			
 			var BROADCAST_ADDRESSES = configs.BROADCAST_ADDRESSES;
+
+			//we're trying to send an older key, skip this.
+			if((configs.lastKeySent > aesSeq+1 ) && aesSeq!=0){
+
+				console.log("key trying to send:" + aesSeq);
+				console.log("last key sent:" + configs.lastKeySent);
+				return;
+			}
+			else
+				configs.lastKeySent = aesSeq;
 
 			
 
@@ -46,13 +47,19 @@ function broadcastAesKey(aesKey, aesSeq, channelId){
 					//encrypt the file
 					
 					var pubkey = path.join(__dirname + "/js/companies/"+ configs.SERVER_NAMES[i] + "/pubkey_"+channelId);
+					var revoke_path = path.join(__dirname + "/js/companies/"+ configs.SERVER_NAMES[i] + "/revoke_"+channelId)
 
+					var revoke_string = fs.readFileSync(revoke_path, (err, data) => {
+				  		if (err) throw err;
+
+					});	
+					
 
 					var sys = require('sys')
 					var exec = require('child_process').execSync;
 					function puts(error, stdout, stderr) { sys.puts(stdout) }
 																									//replace 1 with revoke.
-					exec("cpabe-enc "+ "-p " + pubkey  + " -i " + aesKeyPath +" -a" + revoke_string);
+					exec("cpabe-enc "+ "-p " + pubkey  + " -i " + aesKeyPath +" -a " + revoke_string);
 					//      cpabe-enc     -p     public     -m     master        -i     key           -a 1
 					
 
@@ -94,9 +101,6 @@ function broadcastAesKey(aesKey, aesSeq, channelId){
 				client.setBroadcast(true);
 
 				});
-
-
-	
 
 
 }

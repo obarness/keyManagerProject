@@ -19,27 +19,39 @@ if(SERVER_ADDRESS == "error"){
 
 //command below ignores our unsigned https certificate.
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
-
 console.log('requesting server at ' + SERVER_ADDRESS +':'+SERVER_PORT +' to setup encryption for channel #' +channelId );
-//change 1111 this with SERVER_PORT (using config file)
-//change 4 with a variable.
 console.log('requesting public key from server at: ' + SERVER_ADDRESS +':'+SERVER_PORT);
 https.get('https://'+SERVER_ADDRESS+':'+SERVER_PORT+'/Masterkey_'+channelId, (res) => {
 
   res.on('data', (d) => {
-      var pubkeyPath = path.join(__dirname + "/js/companies/"+company+"/pubkey_" + channelId);
-      console.log('saved public key at: ' + pubkeyPath);
-    	fs.writeFile(pubkeyPath, d, function(err) {
-        if(err) {
-          return console.log(err);
-        }
+        var pubkeyPath = path.join(__dirname + "/js/companies/"+company+"/pubkey_" + channelId);
+        console.log('saved public key at: ' + pubkeyPath);
+      	fs.writeFile(pubkeyPath, d, function(err) {
+          if(err) {
+            return console.log(err);
+          }
 
-      
-      }); 
+        
+        }); 
   });
+});
+
+https.get('https://'+SERVER_ADDRESS+':'+SERVER_PORT+'/revoke_'+channelId, (res) => {
+
+  res.on('data', (d) => {
+        var revokePath = path.join(__dirname + "/js/companies/"+company+"/revoke_" + channelId);
+        console.log('saved revoke file at: ' + revokePath);
+        fs.writeFile(revokePath, d, function(err) {
+          if(err) {
+            return console.log(err);
+          }
+
+        
+        }); 
+  });
+});
 
 
-	});
 
 }
 
@@ -56,12 +68,7 @@ function getServerAddressByName(name){
         }
     }
     return "error";
-
-
-
-
 }
-
 
 
 
