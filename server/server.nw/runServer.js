@@ -11,12 +11,18 @@
 	var configs = require('../../configs.js');
 
 	//override console.log in order to display output on terminal.
+	/*
 	var console = new function(){
 		this.log = function(message){
 		process.stdout.write(message);
 		}
 
 	}
+*/
+	var broadcastersList =[];
+	broadcastersList.push("broadcaster ip        channel id");
+	var usersList = [];
+	usersList.push("user id     user ip           channel id");
 
 	// your express configuration here
 	var SERVER_PORT = configs.SERVER_PORT;
@@ -63,6 +69,11 @@
 		var pubkey = path.join(__dirname + "/keys/pubkeys/public_"+channelId);
 	  	res.sendFile(pubkey);
 	  	console.log("public key sent");
+	  	console.log("==============")
+
+	  	broadcastersList.push(req.ip  + "     " + channelId);
+	  	console.log(broadcastersList);
+	  	console.log("==============")
 		
 
 	});
@@ -82,6 +93,11 @@
 		var userId = arr[1];
 		console.log("proccessing request for private key. user id:"+userId +", channel id: " +channelId);
 		generatePrivateKey(userId,channelId,res);
+
+		usersList.push(userId +'       '+  req.ip+'      '+channelId);
+		console.log("==============")
+	  	console.log(usersList);
+	  	console.log("==============")
 		
 
 	});
