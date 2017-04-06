@@ -13,6 +13,15 @@ var revokeUser = function(){
 			if (err) throw err;
 	});	
 	
+	//check if user is already revoked
+	if(revoke_string.toString().indexOf('_'+userId+'_') != -1){
+		alert("already revoked!");
+		return;
+	}
+	var node = document.getElementById("revokedList");
+	node.innerHTML += '\n' + userId;
+	
+
 
 
 	//write new string
@@ -54,7 +63,7 @@ var unrevokeUser = function(){
 
 	else{
 		var preString = revoke_string.substr(0,index+1);
-		var postString = revoke_string.substr(index+3);
+		var postString = revoke_string.substr(index+2+userId.length);
 		newRevokeString = preString + postString;
 	}
 
