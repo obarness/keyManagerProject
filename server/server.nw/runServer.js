@@ -138,7 +138,7 @@
 	var revokePath = path.join(__dirname + "/keys/revokeStrings/revoke_"+channelId);
 
 	var fs = require('fs');
-	fs.writeFileSync(revokePath, '0', function(err) {
+	fs.writeFileSync(revokePath, '0_', function(err) {
 			        	if(err) {
 			        		throw err;
 			           	return  console.log(err);

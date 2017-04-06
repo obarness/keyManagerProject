@@ -12,9 +12,11 @@ var revokeUser = function(){
 	var revoke_string = fs.readFileSync(revokePath, (err, data) => {
 			if (err) throw err;
 	});	
+	
+
 
 	//write new string
-	var newRevokeString = revoke_string.toString()+'_'+ userId;
+	var newRevokeString = revoke_string.toString() + userId+ '_';
 	fs.writeFileSync(revokePath, newRevokeString, function(err) {
 			        	if(err) {
 			        		throw err;
@@ -46,21 +48,13 @@ var unrevokeUser = function(){
 	var index = revoke_string.indexOf('_'+userId+'_');
 	
 	if(index==-1){
-		//in case user id is at the end of string.
-		var index = revoke_string.indexOf('_'+userId);
-		
-		if(index==-1)
-			return;
-		else{
-			newRevokeString = revoke_string.substr(0,index);
-			
-		}
+		return;
 
 	}
 
 	else{
-		var preString = revoke_string.substr(0,index);
-		var postString = revoke_string.substr(index+2);
+		var preString = revoke_string.substr(0,index+1);
+		var postString = revoke_string.substr(index+3);
 		newRevokeString = preString + postString;
 	}
 
