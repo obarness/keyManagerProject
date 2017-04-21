@@ -23,44 +23,147 @@
 
 
 
-        <form action="https://localhost:1115/revoke" method="GET">
+        
       <div class="form-group">
          
-        <input type="text" class="form-control" name="channelId" id="channelId" placeholder="Channel Id:">
+        <input type="text" class="form-control" name="channelId" id="revchannelId" placeholder="Channel Id:">
 
       </div>
       <div class="form-group">
         
-        <input type="text" class="form-control" name="userid" id="userid" placeholder="User Id">
+        <input type="text" class="form-control" name="userid" id="revuserid" placeholder="User Id">
       </div>
-      <button type="submit" class="btn btn-danger">Revoke</button>
-    </form>
+      <button type="submit" class="btn btn-danger" id="revoke">Revoke</button>
+   
 
 
-        <form action="https://localhost:1115/unrevoke" method="GET">
+      <br><br>
       <div class="form-group">
         
-        <input type="text" class="form-control" name="channelId" id="channelId" placeholder="Channel Id:">
+        <input type="text" class="form-control" name="channelId" id="unchannelId" placeholder="Channel Id:">
       </div>
       <div class="form-group">
         
-        <input type="text" class="form-control" name="userid" id="userid" placeholder="User Id">
+        <input type="text" class="form-control" name="userid" id="unuserid" placeholder="User Id">
       </div>
-      <button type="submit" class="btn btn-success">Unrevoke</button>
-    </form>
+      <button type="submit" class="btn btn-success" id="unrevoke">Unrevoke</button>
+   
 
 
 
-<p id="revokedList"> revokedList: </p>
+    <script type="text/javascript">
+
+        
+          $('#revoke').click(function() {
+
+            var channelId = $('#revchannelId').val(); 
+            var userId = $('#revuserid').val(); 
+            console.log("AJAX" +channelId + userId)
+              $.ajax({
+                type:"post",
+                url:"https://localhost:1115/revoke",
+                dataType: 'json',
+                data: JSON.stringify({"channelId": channelId,
+                "userid": userId}),
+                contentType: 'application/json',
+                success: function(data){
+                  // var data = JSON.stringify(data)
+                  console.log("AJAX" +data['revokeString']) 
+                  $('#revokedList').text(data.revokeString);
+                
+                 }
+               });
+             });
+
+
+         $('#unrevoke').click(function() {
+
+            var channelId = $('#unchannelId').val(); 
+            var userId = $('#unuserid').val();
+            console.log("AJAX" +channelId + userId) 
+              $.ajax({
+                type:"post",
+                url:"https://localhost:1115/unrevoke",
+                dataType: 'json',
+                data: JSON.stringify({"channelId": channelId,
+                "userid": userId}),
+                contentType: 'application/json',
+                success: function(data){
+                $('#revokedList').text(data);
+                }
+               });    
+
+          });
+
+
+            function ajax_call_users(){
+              $.ajax({
+                type:"get",
+                url:"https://localhost:1115/ajaxuser",
+
+                success: function(data){
+                  console.log(data) 
+                $('#panelUsers').text(data);
+                }
+               });   
+            }
+
+            function ajax_call_broadcasters(){
+              $.ajax({
+                type:"get",
+                url:"https://localhost:1115/ajaxbroad",
+
+                success: function(data){
+                  console.log(data) 
+                $('#panelbroadcaster').text(data);
+                }
+               });   
+            }
   
+          setInterval(ajax_call_users, 1000);
+          setInterval(ajax_call_broadcasters, 1000);
+    </script>
 
-
+<br><br>
+      <p>Revoked Users:</p>
+      <div class="alert alert-info" role="alert" id="revokedList">...</div>
+      
 
       </div>
 
 
+      <div class="col-md-4">
 
+
+      <div class="panel panel-success">
+  <div class="panel-heading">
+    <h3 class="panel-title">User List:</h3>
   </div>
+  <div class="panel-body" id="panelUsers">
+    Panel content
+  </div>
+</div>
+</div>
+
+
+  <div class="col-md-4">
+
+
+<div class="panel panel-success">
+  <div class="panel-heading">
+    <h3 class="panel-title">Broadcaster List:</h3>
+  </div>
+  <div class="panel-body" id="panelbroadcaster">
+    Panel content
+  </div>
+</div>
+
+
+
+</div>
+
+
+</div>
 </div>
 <!-- <script>
     function loaded(){

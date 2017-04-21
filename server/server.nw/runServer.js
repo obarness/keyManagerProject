@@ -3,12 +3,15 @@
 	var http = require('http');
 	var https = require('https');
 	var path = require('path');
+	var bodyParser = require('body-parser');
 	var privateKey  = fs.readFileSync('server.key', 'utf8');
 	var certificate = fs.readFileSync('server.crt', 'utf8');
 	var credentials = {key: privateKey, cert: certificate};
 	var express = require('express');
 	var app = express();
 	var configs = require('../../configs.js');
+	app.use(bodyParser.urlencoded({ extended: false }));
+	app.use(bodyParser.json());  
 
 	//override console.log in order to display output on terminal.
 	/*
@@ -106,29 +109,51 @@
 	});
 
 
-	app.get('/revoke', function(req,res) {
+	app.post('/revoke', function(req,res) {
 		
-		channelId = req.query.channelId;
-		userId = req.query.userid;
+		
+		var channelId = req.body.channelId;
+		var userId = req.body.userid;
+		var revokeString;
 
 		console.log("revoke user: " + userId + " in channel: " + channelId);
-		revokeUser(channelId,userId);
+		revokeString = revokeUser(channelId,userId);
+		res.set({'Content-Type': 'text/plain'});
+		res.end(JSON.stringify({'revokeString': revokeString}));
 		
 
 	});
 
 
-	app.get('/unrevoke', function(req,res) {
+	app.post('/unrevoke', function(req,res) {
 		
-		channelId = req.query.channelId;
-		userId = req.query.userid;
+		var channelId = req.body.channelId;
+		var userId = req.body.userid;
+		var revokeString;
 
 		console.log("Unrevoke user: " + userId + " in channel: " + channelId);
-		unrevokeUser(channelId,userId);
+		revokeString = unrevokeUser(channelId,userId);
+		res.set({'Content-Type': 'text/plain'});
+		res.end(JSON.stringify({'revokeString': revokeString}));
 		
 
 	});
 
+	
+	app.get('/ajaxuser', function(req, res) {
+
+		res.set({'Content-Type': 'text/plain'});
+		res.send(usersList);
+		
+	});
+	
+	app.get('/ajaxbroad', function(req, res) {
+
+		res.set({'Content-Type': 'text/plain'});
+		res.send(broadcastersList);
+		
+	});
+	
 	function getRevokeFIle(request, response, channelId){
 		
 			const path = require('path');
@@ -202,6 +227,8 @@
 
 	var channelId = channelId;
 	var userId = userId;
+	
+
 	var revokePath = path.join(__dirname + "/keys/revokeStrings/revoke_"+channelId);
 
 	var revoke_string = fs.readFileSync(revokePath, (err, data) => {
@@ -213,20 +240,20 @@
 		console.log("already revoked!");
 		return;
 	}
-	var node = document.getElementById("revokedList");
-	node.innerHTML += '\n' + userId;
 	
-
-
 
 	//write new string
 	var newRevokeString = revoke_string.toString() + userId+ '_';
+
+    
+
 	fs.writeFileSync(revokePath, newRevokeString, function(err) {
 			        	if(err) {
 			        		throw err;
 			           	return  console.log(err);
 			        	}
 		        	});
+	return newRevokeString;
 }
 
 
@@ -262,6 +289,7 @@ function unrevokeUser(channelId,userId){
 		newRevokeString = preString + postString;
 	}
 
+	sendAjax("",newRevokeString);
 	//write new string
 	fs.writeFileSync(revokePath, newRevokeString, function(err) {
 			        	if(err) {
@@ -269,5 +297,7 @@ function unrevokeUser(channelId,userId){
 			           	return  console.log(err);
 			        	}
 		        	});
+
+	return newRevokeString;
 }
 
