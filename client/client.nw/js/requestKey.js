@@ -14,6 +14,7 @@ function getKeys(){
 
   var channelId = document.forms["playVideo"]["channelId"].value;  
   var userId = document.forms["playVideo"]["userId"].value; 
+  alert("TEST" + channelId + userId)
   //command below ignores our unsigned https certificate.
   process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
   console.log('requesting private key for channel: '+ channelId  + ' from server at:' + SERVER_ADDRESS + ':' + SERVER_PORT);

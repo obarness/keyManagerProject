@@ -8,7 +8,7 @@ configs.revoke_string = " 0";
 configs.BROADCAST_ADDRESSES = ['192.168.1.255','192.268.1.255','192.268.1.255','192.268.1.255'];
 
 //server which provides public and private keys.
-configs.SERVER_ADDRESSES = ['192.168.1.17','192.168.1.17','192.168.1.17','192.168.1.17'];
+configs.SERVER_ADDRESSES = ['10.0.2.15','192.168.1.17','192.168.1.17','192.168.1.17'];
 
 configs.SERVER_NAMES = 		['HOT','COLD','YES', 'NO'];
 

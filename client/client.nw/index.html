@@ -2,58 +2,100 @@
 
 <head>
 
-    <title>easy broad</title>
+    <title>Client</title>
 
-	<script src="/js/gui.js"></script>
-  	<script src="/js/vlcCtrl.js"></script>
-	<script src="/js/requestKey.js"></script>
-	<script src="/js/receivePacket.js"></script>
+  
+  <script src="/js/vlcCtrl.js"></script>
+  <script src="/js/requestKey.js"></script>
+  <script src="/js/receivePacket.js"></script>
+
+  <script src="jsboot/jquery-3.2.0.min.js"></script>
+  <link href="css/bootstrap.css" rel="stylesheet" />
+  <link href="css/bootstrap-theme.css" rel="stylesheet"/>
+  <link href="app.css" rel="stylesheet" />
   
 </head>
 
+<script>require('nw.gui').Window.get().showDevTools();</script>
+
+<body>
 
 
-<body onload="">
+  
 
 
-  <script>require('nw.gui').Window.get().showDevTools();</script>
-
-
-
+<!-- 
     <form  id="playVideo" action="" name="playVideo" onsubmit="getKeys();return false" method="get">
       <label id="channelId">channelId:</label>
       <input type="text"  name="channelId"/>
       <label id="userId">userId:</label>
       <input type="text" name="userId"/> </input>
-      <input type="submit" value="playVideo" />  </input>
+      <input type="submit" value="playVideo"/>  </input>
     </form>
 
 
 
- <br><br><br>
-<!-- 
-   <form  id="ChooseChannel" name="ChooseChannel" onsubmit="getPublicKey()" method="post">
-        <label id="channelId">ChannelId:</label>
-        <input type="text"   name="channelId"/>
-        <input type="submit" value="chooseChannel" />  </input>
-  </form>
-
-
--->
-  <form  id="getKey" name="getKey" onsubmit=  "getPrivateKey();return false" method="post">
+  <form  id="getKey" name="getKey" onsubmit="getPrivateKey();return false" method="post">
         <label id="userId">UserId:</label>
         <input type="text"   name="userId"/>
         <input type="submit" value="getKey" />  </input>
-  </form>
+  </form> -->
 
 
 
 
-<script>
-  
-     
+
+<div class="container">
     
-</script>
+
+    <div class="row">
+    
+      <div class=".col-md-4">
+      <form  id="playVideo" name="playVideo" onsubmit="getKeys();return false" method="post">
+      <div id="login-form" class="form-container" data-form-container>
+      <div class="row">
+        <div class="form-title">
+          <span>Play Video</span>
+        </div>
+      </div>
+      <div class="input-container">
+        <div class="row">
+          <span>Channel Id:</span>
+              <span class="req-input" >
+              
+              <select class="form-control" id="channelId" name="channelId" width=100px>
+                <option>1</option>
+                <option>2</option>
+                <option>3</option>
+                <option>4</option>
+                <option>5</option>
+              </select>
+          </span>
+        </div>
+        <div class="row">
+          <span class="req-input">
+            <span class="input-status" data-toggle="tooltip" data-placement="top" title="User Id:"> 
+            </span>
+            <input type="text" name="userId" placeholder="User Id">
+          </span>
+        </div>
+        
+        
+        <div class="row submit-row">
+          <button type="submit" class="btn btn-block submit-form" value="playVideo">Play Video</button>
+        </div>
+      </div>
+      </div>
+      </form>
+    </div>
+        
+
+
+
+    
+  </div>
+
+</div>
 
 
 
