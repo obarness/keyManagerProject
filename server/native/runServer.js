@@ -36,7 +36,7 @@
 	        });
 
 	httpsServer.on('listening', function (){
-			console.log("server is running access on: https://localhost:" + httpsServer.address().port);
+			console.log("server is running on port:" + httpsServer.address().port);
 	        	
 	});
 
@@ -45,16 +45,13 @@
 	        httpsServer.close();
 	});
 
-	app.use(express.static(path.join(__dirname,'/')));
-
 	app.get('/', function(req, res) {
 		console.log("request for index.html is being processed");
 		console.log("sending file index.html to user");
-	    res.sendFile(path.join(__dirname + '/index.html'));
+	    res.sendFile(path.join(__dirname + '/html/index.html'));
 	    httpsServer.close();
 	});
 
-	
 
 	app.get(/.PublicKey_*/, function(req,res) {
 		var channelId = req.originalUrl.substr('/PublicKey_'.length);
@@ -81,13 +78,13 @@
 
 	});
 
-	// app.get(/.revoke_*/, function(req,res) {
-	// 	var channelId = req.originalUrl.substr('/revoke_'.length);
-	// 	console.log("broadcaster has requested revoke file for channel:" + channelId);
-	// 	getRevokeFIle(req,res,channelId);
+	app.get(/.revoke_*/, function(req,res) {
+		var channelId = req.originalUrl.substr('/revoke_'.length);
+		console.log("broadcaster has requested revoke file for channel:" + channelId);
+		getRevokeFIle(req,res,channelId);
 		
 
-	// });
+	});
 
 	app.get(/.PrivateKey_*/, function(req,res) {
 		var input = req.originalUrl.substr('/PrivateKey_'.length);
@@ -101,30 +98,6 @@
 		console.log("==============")
 	  	console.log(usersList);
 	  	console.log("==============")
-		
-
-	});
-
-
-	app.get('/revoke', function(req,res) {
-		
-		channelId = req.query.channelId;
-		userId = req.query.userid;
-
-		console.log("revoke user: " + userId + " in channel: " + channelId);
-		revokeUser(channelId,userId);
-		
-
-	});
-
-
-	app.get('/unrevoke', function(req,res) {
-		
-		channelId = req.query.channelId;
-		userId = req.query.userid;
-
-		console.log("Unrevoke user: " + userId + " in channel: " + channelId);
-		unrevokeUser(channelId,userId);
 		
 
 	});
@@ -188,86 +161,3 @@
 			        	}
 		        	});
 	}
-
-
-
-
-
-	function revokeUser(channelId,userId){
-
-	const path = require('path');
-	__dirname = path.resolve(path.dirname(''));
-	var fs = require('fs');
-	//read old string
-
-	var channelId = channelId;
-	var userId = userId;
-	var revokePath = path.join(__dirname + "/keys/revokeStrings/revoke_"+channelId);
-
-	var revoke_string = fs.readFileSync(revokePath, (err, data) => {
-			if (err) throw err;
-	});	
-	
-	//check if user is already revoked
-	if(revoke_string.toString().indexOf('_'+userId+'_') != -1){
-		console.log("already revoked!");
-		return;
-	}
-	var node = document.getElementById("revokedList");
-	node.innerHTML += '\n' + userId;
-	
-
-
-
-	//write new string
-	var newRevokeString = revoke_string.toString() + userId+ '_';
-	fs.writeFileSync(revokePath, newRevokeString, function(err) {
-			        	if(err) {
-			        		throw err;
-			           	return  console.log(err);
-			        	}
-		        	});
-}
-
-
-function unrevokeUser(channelId,userId){
-
-	const path = require('path');
-	__dirname = path.resolve(path.dirname(''));
-	var fs = require('fs');
-	//read old string
-
-	var channelId = channelId;
-	var userId = userId;
-	var revokePath = path.join(__dirname + "/keys/revokeStrings/revoke_"+channelId);
-
-	var revoke_string = fs.readFileSync(revokePath, (err, data) => {
-			if (err) throw err;
-	});	
-
-
-	var newRevokeString;
-	revoke_string = revoke_string.toString();
-	//in case user id is in middle of string
-	var index = revoke_string.indexOf('_'+userId+'_');
-	
-	if(index==-1){
-		return;
-
-	}
-
-	else{
-		var preString = revoke_string.substr(0,index+1);
-		var postString = revoke_string.substr(index+2+userId.length);
-		newRevokeString = preString + postString;
-	}
-
-	//write new string
-	fs.writeFileSync(revokePath, newRevokeString, function(err) {
-			        	if(err) {
-			        		throw err;
-			           	return  console.log(err);
-			        	}
-		        	});
-}
-

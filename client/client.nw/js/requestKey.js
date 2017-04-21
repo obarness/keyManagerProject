@@ -14,7 +14,7 @@ function getKeys(){
 
   var channelId = document.forms["playVideo"]["channelId"].value;  
   var userId = document.forms["playVideo"]["userId"].value; 
-  alert("TEST" + channelId + userId)
+  
   //command below ignores our unsigned https certificate.
   process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
   console.log('requesting private key for channel: '+ channelId  + ' from server at:' + SERVER_ADDRESS + ':' + SERVER_PORT);
@@ -28,6 +28,7 @@ function getKeys(){
         if(err) {
            return  alert(err);
         }
+        else console.log('private key saved');
      //   alert("The file was saved!");
         }); 
 
@@ -35,7 +36,7 @@ function getKeys(){
       });
   	});
   
-  console.log('private key saved');
+  
   getPublicKey(channelId);
 
   return "false";
