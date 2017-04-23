@@ -53,7 +53,7 @@ function receive(channelId){
 	        	aesKey = getAesKeyById(keysList, keyId);
 	        }
 	        if(aesKey.key!=null){
-	        	log('forwarding decrypted video to vlc');
+	        //	log('forwarding decrypted video to vlc');
 	        
 				var decrypted;
 				var decipher = crypto.createDecipher('aes-128-ctr', aesKey.key),

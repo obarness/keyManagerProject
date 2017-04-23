@@ -28,7 +28,7 @@ configs.CHANGE_KEY_INTERVAL = 4000;
 configs.SEND_KEY_INTERVAL = 1000;
 
 //port which client uses in order to send decrypted packets.
-configs.send_Dec_port = 9998;
+configs.send_Dec_port = 9498;
 
 //broadcaster sends ffmpeg's output to this port, than encrypts the packets.
 configs.ffmpegOutPort = 9996;
