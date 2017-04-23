@@ -53,7 +53,7 @@ function receive(channelId){
 	        	aesKey = getAesKeyById(keysList, keyId);
 	        }
 	        if(aesKey.key!=null){
-	        	console.log('forwarding decrypted video to vlc');
+	        	log('forwarding decrypted video to vlc');
 	        
 				var decrypted;
 				var decipher = crypto.createDecipher('aes-128-ctr', aesKey.key),
@@ -65,7 +65,7 @@ function receive(channelId){
 				send_Dec_Socket.send(rtpPacket.getBuffer(), 
 				0,
 				rtpPacket.getBuffer().length,VLC_PORT,host,function(err){
-				  if (err) console.log(err);
+				  if (err) log(err);
 				}); 
 
 			}
@@ -76,7 +76,7 @@ function receive(channelId){
 		});
 
 		get_video_Socket.on('listening', function(){
-		console.log("awaiting decrypted video messages on:" + get_video_port);
+		log("awaiting decrypted video messages on:" + get_video_port);
 
 		});
 
@@ -92,7 +92,7 @@ function receive(channelId){
 
 
 		AesSocket.on('error', (err) => {
-  			console.log(`====error====:\n${err.stack}`);
+  			log(`====error====:\n${err.stack}`);
   			server.close();
 			});
 
@@ -104,12 +104,12 @@ function receive(channelId){
 
 				//either we don't know the seq of key yet, or the key was already obtained.
 				if(keyId==-1 || getAesKeyById(keysList,keyId).key != null){
-					console.log('we already have this key, no need to decrypt');
+					log('we already have this key, no need to decrypt');
 				}
 				else{	
-					console.log('received a decrypted AES key');
-					console.log('key id is:' + keyId);
-					console.log('decrypting key...');
+					log('received a decrypted AES key');
+					log('key id is:' + keyId);
+					log('decrypting key...');
 					var aesKeyPath = path.join(__dirname + "/js/aeskey/key");
 		        	var fs = require('fs');
 		        	if(configs.FULL_ENCRYPTION)
@@ -138,11 +138,11 @@ function receive(channelId){
 
 
 		AesSocket.on('listening', function(){
-			console.log("awaiting decrypted AES key  on:" + Aes_Socket_port);
+			log("awaiting decrypted AES key  on:" + Aes_Socket_port);
         });
 
         AesSocket.on('close', function (){
-        	console.log("AesSocket is closing")
+        	log("AesSocket is closing")
         });
         
         AesSocket.bind(Aes_Socket_port);
@@ -159,7 +159,7 @@ var VLC_PORT = configs.VLC_PORT;
 var sys = require('sys')
 var exec = require('child_process').exec;
 function puts(error, stdout, stderr) { sys.puts(stdout) }
-console.log("opening vlc on port: "+ VLC_PORT);
+log("opening vlc on port: "+ VLC_PORT);
 exec("vlc rtp://@:"+ VLC_PORT, puts);
 }
 
@@ -223,7 +223,7 @@ function decrypt(channelId){
 				});	
 
 			var key = new Buffer(aesKey.toString(),'hex'); 
-			console.log('our key is:' + aesKey.toString());
+			log('our key is:' + aesKey.toString());
         	return key;
 
 }
