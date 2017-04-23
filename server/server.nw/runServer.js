@@ -84,13 +84,13 @@
 
 	});
 
-	// app.get(/.revoke_*/, function(req,res) {
-	// 	var channelId = req.originalUrl.substr('/revoke_'.length);
-	// 	console.log("broadcaster has requested revoke file for channel:" + channelId);
-	// 	getRevokeFIle(req,res,channelId);
+	app.get(/.revoke_*/, function(req,res) {
+		var channelId = req.originalUrl.substr('/revoke_'.length);
+		console.log("broadcaster has requested revoke file for channel:" + channelId);
+		getRevokeFIle(req,res,channelId);
 		
 
-	// });
+	});
 
 	app.get(/.PrivateKey_*/, function(req,res) {
 		var input = req.originalUrl.substr('/PrivateKey_'.length);
@@ -109,7 +109,7 @@
 	});
 
 
-	app.post('/revoke', function(req,res) {
+	app.post('/revo', function(req,res) {
 		
 		
 		var channelId = req.body.channelId;
