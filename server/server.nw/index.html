@@ -68,7 +68,7 @@
                 contentType: 'application/json',
                 success: function(data){
                   // var data = JSON.stringify(data)
-                  console.log("AJAX" +data['revokeString']) 
+                  //console.log("AJAX" +data['revokeString']) 
                   $('#revokedList').text(data.revokeString);
                 
                  }
@@ -89,7 +89,7 @@
                 "userid": userId}),
                 contentType: 'application/json',
                 success: function(data){
-                $('#revokedList').text(data);
+                $('#revokedList').text(data.revokeString);
                 }
                });    
 
@@ -100,6 +100,7 @@
               $.ajax({
                 type:"get",
                 url:"/ajaxuser",
+                dataType: 'json',
 
                 success: function(data){
                   console.log(data) 
@@ -112,6 +113,7 @@
               $.ajax({
                 type:"get",
                 url:"/ajaxbroad",
+                dataType: 'json',
 
                 success: function(data){
                   console.log(data) 

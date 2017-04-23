@@ -77,10 +77,10 @@
 	  	console.log("public key sent");
 	  	console.log("==============")
 
-	  	broadcastersList.push(req.ip  + "     " + channelId);
-	  	console.log(broadcastersList);
-	  	console.log("==============")
-		
+	  	broadcastersList.push({'channelId':channelId,'channelIP':req.ip});
+	  		  	console.log(broadcastersList);
+	  		  	console.log("==============")
+	  			}
 
 	});
 
