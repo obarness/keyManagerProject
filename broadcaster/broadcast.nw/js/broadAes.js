@@ -22,8 +22,8 @@ function broadcastAesKey(aesKey, aesSeq, channelId){
 			//we're trying to send an older key, skip this.
 			if((configs.lastKeySent > aesSeq+1 ) && aesSeq!=0){
 
-				console.log("key trying to send:" + aesSeq);
-				console.log("last key sent:" + configs.lastKeySent);
+				log("key trying to send:" + aesSeq);
+				log("last key sent:" + configs.lastKeySent);
 				return;
 			}
 			else
@@ -84,7 +84,7 @@ function broadcastAesKey(aesKey, aesSeq, channelId){
 				  		
 					});
 
-					console.log("broadcasting AES key to " + BROADCAST_ADDRESSES[i] + ":" + port);
+					log("broadcasting AES key to " + BROADCAST_ADDRESSES[i] + ":" + port);
 					client.send(buf,0,buf.length ,port, BROADCAST_ADDRESSES[i], (err) => {
 			  			
 					});

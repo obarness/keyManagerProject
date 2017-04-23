@@ -19,13 +19,13 @@ if(SERVER_ADDRESS == "error"){
 
 //command below ignores our unsigned https certificate.
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
-console.log('requesting server at ' + SERVER_ADDRESS +':'+SERVER_PORT +' to setup encryption for channel #' +channelId );
-console.log('requesting public key from server at: ' + SERVER_ADDRESS +':'+SERVER_PORT);
+log('Requesting server at ' + SERVER_ADDRESS +':'+SERVER_PORT +' to setup encryption for channel #' +channelId );
+log('Requesting public key from server at: ' + SERVER_ADDRESS +':'+SERVER_PORT);
 https.get('https://'+SERVER_ADDRESS+':'+SERVER_PORT+'/Masterkey_'+channelId, (res) => {
 
   res.on('data', (d) => {
         var pubkeyPath = path.join(__dirname + "/js/companies/"+company+"/pubkey_" + channelId);
-        console.log('saved public key at: ' + pubkeyPath);
+        log('Saved public key at: ' + pubkeyPath);
       	fs.writeFile(pubkeyPath, d, function(err) {
           if(err) {
             return console.log(err);
@@ -40,7 +40,7 @@ https.get('https://'+SERVER_ADDRESS+':'+SERVER_PORT+'/revoke_'+channelId, (res) 
 
   res.on('data', (d) => {
         var revokePath = path.join(__dirname + "/js/companies/"+company+"/revoke_" + channelId);
-        console.log('saved revoke file at: ' + revokePath);
+        log('Saved revoke file at: ' + revokePath);
         fs.writeFile(revokePath, d, function(err) {
           if(err) {
             return console.log(err);
@@ -60,7 +60,7 @@ function getServerAddressByName(name){
 
     for(var i =0; i<SERVER_NAMES.length;i++){
       if(SERVER_NAMES[i]== name){
-        console.log("provider's name is " + name + ", matching server address is "+ SERVER_ADDRESSES[i]);
+        log("Provider's name is " + name + ", matching server address is "+ SERVER_ADDRESSES[i]);
           return SERVER_ADDRESSES[i];
 
         }

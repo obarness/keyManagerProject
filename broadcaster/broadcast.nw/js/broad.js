@@ -65,7 +65,7 @@ function setup(){
     //server
     socket.on('listening', function () {
         var address = socket.address();
-        console.log('broadcasting will be done from port '+ socket.address().port);
+        log('broadcasting will be done from port '+ socket.address().port);
         if(configs.BROADCAST)
            socket.setBroadcast(true);
 
@@ -74,7 +74,7 @@ function setup(){
 
       //server
     socket2.on('listening', function () {
-     console.log("encrypted video messages will be sent to " + socket2.address().port);
+     log("encrypted video messages will be sent to " + socket2.address().port);
 
     });
 
@@ -183,7 +183,7 @@ function StartVideo(address, filePath){
       .outputOptions('-f rtp_mpegts')
       .output('rtp://'+address+':'+ffmpegOutPort)
       .on('error', function(err) {
-       console.log('an error happened: ' + err.message);
+       log('an error happened: ' + err.message);
       })
       .on('start', function(commandLine) {
         console.log('Spawned Ffmpeg with command: ' + commandLine);})
@@ -199,7 +199,7 @@ function changeKey(keysList,channelId){
   keysList = keysList.next;
   keysList.key = crypto.randomBytes(16);
 
-  console.log('changing AES key, key id:' + keysList.id +', key is '+ keysList.key.toString('hex'));
+  log('changing AES key, key id:' + keysList.id +', key is '+ keysList.key.toString('hex'));
   broadcastAesKey(keysList.key,keysList.id,channelId);
   return keysList;
 
@@ -256,7 +256,7 @@ function updateRevokeString(channelId){
         https.get('https://'+configs.SERVER_ADDRESSES[i]+':'+configs.SERVER_PORT+'/revoke_'+channelId, (res) => {
           res.on('data', (d) => {
                 var revokePath = path.join(__dirname + "/js/companies/"+company+"/revoke_" + channelId);
-                console.log('saved new revoke file at: ' + revokePath);
+                log('saved new revoke file at: ' + revokePath);
                 fs.writeFile(revokePath, d, function(err) {
                   if(err) {
                     return console.log(err);
