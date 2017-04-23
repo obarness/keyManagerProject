@@ -89,7 +89,7 @@
                 "userid": userId}),
                 contentType: 'application/json',
                 success: function(data){
-                $('#revokedList').text(data.revokeString);
+                $('#revokedList').text(data.revokeString.replace('_',' '));
                 }
                });    
 
@@ -103,8 +103,16 @@
                 dataType: 'json',
 
                 success: function(data){
-                  console.log(data) 
-                $('#panelUsers').text(data);
+                  console.log(data)
+                  var dat = "";
+                  data.forEach(function(element) {
+                  dat += '<tr>';  
+                  dat += '<td>' + element['userId'] + '</td>';
+                  dat += '<td>' + element['channelId'] + '</td>';
+                  dat += '<td>' + element['userIP'] + '</td>';
+                  dat += '</tr>';
+                   });
+                $('#panelUsers').html(dat);
                 }
                });   
             }
@@ -116,8 +124,16 @@
                 dataType: 'json',
 
                 success: function(data){
-                  console.log(data) 
-                $('#panelbroadcaster').text(data);
+ 
+                  var dat = "";
+                  data.forEach(function(element) {
+                  dat += '<tr>';  
+                  dat += '<td>' + element['channelId'] + '</td>';
+                  dat += '<td>' + element['channelIP'] + '</td>';
+                  dat += '</tr>';
+                   });
+                  
+                $('#panelbroadcaster').html(dat);
                 }
                });   
             }
@@ -141,9 +157,21 @@
   <div class="panel-heading">
     <h3 class="panel-title">User List:</h3>
   </div>
-  <div class="panel-body" id="panelUsers">
+  <div class="panel-body">
     Panel content
   </div>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>User Id</th>
+        <th>Channel Id</th>
+        <th>User IP</th>
+      </tr>
+    </thead>
+    <tbody id="panelUsers">
+          </tbody>
+          </table>
+
 </div>
 </div>
 
@@ -155,9 +183,21 @@
   <div class="panel-heading">
     <h3 class="panel-title">Broadcaster List:</h3>
   </div>
-  <div class="panel-body" id="panelbroadcaster">
+  <div class="panel-body" >
     Panel content
   </div>
+
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Channel Id</th>
+        <th>Channel IP</th>
+      </tr>
+    </thead>
+    <tbody id="panelbroadcaster">
+          </tbody>
+          </table>
+
 </div>
 
 

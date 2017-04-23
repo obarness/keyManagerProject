@@ -23,9 +23,9 @@
 	}
 */
 	var broadcastersList =[];
-	broadcastersList.push("broadcaster ip        channel id");
+	
 	var usersList = [];
-	usersList.push("user id     user ip           channel id");
+	
 
 	// your express configuration here
 	var SERVER_PORT = configs.SERVER_PORT;
@@ -77,7 +77,7 @@
 	  	console.log("public key sent");
 	  	console.log("==============")
 
-	  	broadcastersList.push({'channelId':channelId,'channelIP':req.ip});
+	  	broadcastersList.push({channelId:channelId,channelIP:req.ip});
 	  		  	console.log(broadcastersList);
 	  		  	console.log("==============");
 	  			
@@ -100,7 +100,7 @@
 		console.log("proccessing request for private key. user id:"+userId +", channel id: " +channelId);
 		generatePrivateKey(userId,channelId,res);
 
-		usersList.push(userId +'       '+  req.ip+'      '+channelId);
+		usersList.push({channelId:channelId, userId:userId, userIP:req.ip});
 		
 
 	});
