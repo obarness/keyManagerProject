@@ -1,5 +1,4 @@
 function setup(){
- // setupAes();
   var ffmpeg = require('fluent-ffmpeg');
   var fs = require('fs');
   var dgram = require('dgram');
@@ -25,126 +24,146 @@ function setup(){
   keysList.key = crypto.randomBytes(16);
   var aesKey =  keysList.key;
   var aesSeq = keysList.id;
+
+  //no encryption
+  if(configs.NO_ENCRYPTION){
+    if(configs.BROADCAST)
+      no_encryption(configs.NO_ENCRYPTION_BROADCAST_ADDRESS);
+    else
+      no_encryption(configs.NO_ENCRYPTION_USER_ADDRESS);
+
+  }
+
+  // some/full encryption
+  else{
   
-  socket.on('close', function () {
-      console.log("socket 1 closing");
+    socket.on('close', function () {
+        console.log("socket 1 closing");
+       
+
+    });
+
+    socket.on('error', function (err) {
+        console.log("socket 1 error: "+ err);
+       
+      
+    });
+
+    socket2.on('close', function () {
+        console.log("socket 2 closing");
+       
      
+    });
 
-  });
-
-  socket.on('error', function (err) {
-      console.log("socket 1 error: "+ err);
-     
-    
-  });
-
-  socket2.on('close', function () {
-      console.log("socket 2 closing");
-     
-   
-  });
-
- socket2.on('error', function (err) {
-      console.log("socket 2 error: "+ err);
-     
-    //alert("this socket is sending the encrypted video"  );
-  });
-
-
-  //server
-  socket.on('listening', function () {
-      var address = socket.address();
-      console.log('broadcasting will be done from port '+ socket.address().port);
-      socket.setBroadcast(true);
-     // alert("sock 1 listening");
-  });
+   socket2.on('error', function (err) {
+        console.log("socket 2 error: "+ err);
+       
+      //alert("this socket is sending the encrypted video"  );
+    });
 
 
     //server
-  socket2.on('listening', function () {
-   console.log("encrypted video messages will be sent to " + socket2.address().port);
+    socket.on('listening', function () {
+        var address = socket.address();
+        console.log('broadcasting will be done from port '+ socket.address().port);
+        if(configs.BROADCAST)
+           socket.setBroadcast(true);
 
-  });
+    });
 
 
-  var timeStamp = Math.floor(Date.now());
-  var lastKeySent=0;
+      //server
+    socket2.on('listening', function () {
+     console.log("encrypted video messages will be sent to " + socket2.address().port);
 
-  //in miliseconds
- 
-  //we get a video message from ffmpeg.
-  //we're going to encrypt it, and broadcast the video!
-  socket2.on('message', function(msg, rinfo){
-//alert("message on socket 2 " +  msg.toString());
+    });
 
-  var newTimeStamp = (Math.floor(Date.now()));
 
-   //we dont want to broadcast video with the new key immediately.
-   //we want to give some time for the clients to decrypt the key before we start using it.
-   //we will only start using the new key, after we've already sent it's following key.
-   //for e.g, if we created key.id = 1, we'll only start using it after we've sent key.id=2 to all clients.
-  
-   if(newTimeStamp > gap + timeStamp){
-      aesKey = keysList.key;
-      aesSeq = keysList.id;
-      timeStamp = newTimeStamp;
-      lastKeySent = timeStamp;
-      keysList = changeKey(keysList,channelId);
-    //  alert("using aes id:" + keysList.id);
+    var timeStamp = Math.floor(Date.now());
+    var lastKeySent=0;
 
-   }
+    //in miliseconds
    
+    //we get a video message from ffmpeg.
+    //we're going to encrypt it, and broadcast the video!
+    socket2.on('message', function(msg, rinfo){
+    //alert("message on socket 2 " +  msg.toString());
 
-   else if(newTimeStamp > lastKeySent + configs.SEND_KEY_INTERVAL){
-   
-       broadcastAesKey(aesKey,aesSeq,channelId); 
-       lastKeySent = newTimeStamp;
-   }
+    var newTimeStamp = (Math.floor(Date.now()));
 
-      var rtpPacket = new RtpPacket(msg);
-      rtpPacket.setAesSeq(aesSeq);
-    // alert("seq number? = " + rtpPacket.getAesSeq());
+     //we dont want to broadcast video with the new key immediately.
+     //we want to give some time for the clients to decrypt the key before we start using it.
+     //we will only start using the new key, after we've already sent it's following key.
+     //for e.g, if we created key.id = 1, we'll only start using it after we've sent key.id=2 to all clients.
+    
+     if(newTimeStamp > gap + timeStamp){
+        aesKey = keysList.key;
+        aesSeq = keysList.id;
+        timeStamp = newTimeStamp;
+        lastKeySent = timeStamp;
+        keysList = changeKey(keysList,channelId);
+      //  alert("using aes id:" + keysList.id);
 
-      //need to set RTP HEADERS!!!!!!
-      var encrypted;
-      var cipher = crypto.createCipher('aes-128-ctr', aesKey);
-      encrypted = Buffer.concat([cipher.update(rtpPacket.getPayload()), cipher.final()]); 
-      var encryptedpay = new Buffer(encrypted);
-      //update only payload of packet.
-      rtpPacket.setPayload(encryptedpay);
-      //send packet to client.
-      
-      //
-      for(var i=0; i<BROADCAST_ADDRESSES.length;i++){
-          if(configs.BROADCAST_SERVER[i]==1){
-              socket.send(rtpPacket.getBuffer(), 
-              0,
-              rtpPacket.getBuffer().length,
-              clientPort,
-              BROADCAST_ADDRESSES[i],
-              function(err){
-                if (err) console.log(err);
-              });   
+     }
+     
+
+     else if(newTimeStamp > lastKeySent + configs.SEND_KEY_INTERVAL){
+     
+         broadcastAesKey(aesKey,aesSeq,channelId); 
+         lastKeySent = newTimeStamp;
+     }
+
+        var rtpPacket = new RtpPacket(msg);
+        rtpPacket.setAesSeq(aesSeq);
+      // alert("seq number? = " + rtpPacket.getAesSeq());
+
+        //need to set RTP HEADERS!!!!!!
+        var encrypted;
+        var cipher = crypto.createCipher('aes-128-ctr', aesKey);
+        encrypted = Buffer.concat([cipher.update(rtpPacket.getPayload()), cipher.final()]); 
+        var encryptedpay = new Buffer(encrypted);
+        //update only payload of packet.
+        rtpPacket.setPayload(encryptedpay);
+        //send packet to client.
+        
+        //
+        for(var i=0; i<BROADCAST_ADDRESSES.length;i++){
+            if(configs.BROADCAST_SERVER[i]==1){
+                socket.send(rtpPacket.getBuffer(), 
+                0,
+                rtpPacket.getBuffer().length,
+                clientPort,
+                BROADCAST_ADDRESSES[i],
+                function(err){
+                  if (err) console.log(err);
+                });   
+          }
         }
-      }
-  });
- // alert("wait....");
-   socket.bind(9990,() => {
-    socket2.bind(ffmpegOutPort, () =>{
-      broadcastAesKey(aesKey,aesSeq,channelId); 
-      StartVideo(); 
+    });
+   // alert("wait....");
+     socket.bind(9990,() => {
+      socket2.bind(ffmpegOutPort, () =>{
+        broadcastAesKey(aesKey,aesSeq,channelId); 
+        var address = '127.0.0.1';
+        var filePath =  'SampleVideo.mp4';
+        StartVideo(address,filePath); 
 
-      });
-  });
-  
+        });
+    });
+    
+  }
 }
 
 
-function StartVideo(){
+function StartVideo(address, filePath){
   const ffmpeg = require('fluent-ffmpeg');
   const dialog = require('nw-dialog');
   var configs = require('./../../configs.js');
   var ffmpegOutPort = configs.ffmpegOutPort;
+
+  if(configs.NO_ENCRYPTION)
+    ffmpegOutPort = configs.VLC_PORT;
+
   //prompt file selection
   dialog.setContext(document); // work in client
 
@@ -154,15 +173,15 @@ function StartVideo(){
 
     //path should be chosen by a file dialog.
     //for some reason, dialog is failing, this is a temp workaround.
-    var path =  'SampleVideo.mp4';
+    
     //RTP creation with FFmpeg
-      var proc = ffmpeg('SampleVideo.mp4').native()
+      var proc = ffmpeg(filePath).native()
       .videoCodec('mpeg2video')
       .videoBitrate('1024k')
       .audioCodec('libmp3lame')
       .audioBitrate('128k')
       .outputOptions('-f rtp_mpegts')
-      .output('rtp://127.0.0.1:'+ffmpegOutPort)
+      .output('rtp://'+address+':'+ffmpegOutPort)
       .on('error', function(err) {
        console.log('an error happened: ' + err.message);
       })
@@ -265,5 +284,12 @@ function getServerNameByAddress(address){
     return "error";
 }
 
+function no_encryption(address){
+  var filePath =  'SampleVideo.mp4';
+  StartVideo(address,filePath );
 
+
+
+
+}
 
