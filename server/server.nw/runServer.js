@@ -79,8 +79,8 @@
 
 	  	broadcastersList.push({'channelId':channelId,'channelIP':req.ip});
 	  		  	console.log(broadcastersList);
-	  		  	console.log("==============")
-	  			}
+	  		  	console.log("==============");
+	  			
 
 	});
 
