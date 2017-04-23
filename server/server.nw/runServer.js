@@ -101,9 +101,6 @@
 		generatePrivateKey(userId,channelId,res);
 
 		usersList.push(userId +'       '+  req.ip+'      '+channelId);
-		console.log("==============")
-	  	console.log(usersList);
-	  	console.log("==============")
 		
 
 	});

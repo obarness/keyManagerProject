@@ -35,10 +35,10 @@ configs.ffmpegOutPort = 9996;
 
 
 //if sed to 0, and NO_ENCRYPTION set to 0, only AES encryption is applied.
-configs.FULL_ENCRYPTION = 1;
+configs.FULL_ENCRYPTION = 0;
 
 //video is sent directly to vlc port of  configs.NO_ENCRYPTION_USER_ADDRESS  or configs.NO_ENCRYPTION_BROADCAST_ADDRESS
-configs.NO_ENCRYPTION = 0;
+configs.NO_ENCRYPTION = 1;
 
 //whether to broadcast or sent directly to a specific user
 configs.BROADCAST = 1;
