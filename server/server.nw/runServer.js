@@ -289,7 +289,7 @@ function unrevokeUser(channelId,userId){
 		newRevokeString = preString + postString;
 	}
 
-	sendAjax("",newRevokeString);
+	
 	//write new string
 	fs.writeFileSync(revokePath, newRevokeString, function(err) {
 			        	if(err) {

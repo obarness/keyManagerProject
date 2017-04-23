@@ -61,7 +61,7 @@
             console.log("AJAX" +channelId + userId)
               $.ajax({
                 type:"post",
-                url:"https://localhost:1115/revo",
+                url:"/revo",
                 dataType: 'json',
                 data: JSON.stringify({"channelId": channelId,
                 "userid": userId}),
@@ -83,7 +83,7 @@
             console.log("AJAX" +channelId + userId) 
               $.ajax({
                 type:"post",
-                url:"https://localhost:1115/unrevoke",
+                url:"/unrevoke",
                 dataType: 'json',
                 data: JSON.stringify({"channelId": channelId,
                 "userid": userId}),
@@ -99,7 +99,7 @@
             function ajax_call_users(){
               $.ajax({
                 type:"get",
-                url:"https://localhost:1115/ajaxuser",
+                url:"/ajaxuser",
 
                 success: function(data){
                   console.log(data) 
@@ -111,7 +111,7 @@
             function ajax_call_broadcasters(){
               $.ajax({
                 type:"get",
-                url:"https://localhost:1115/ajaxbroad",
+                url:"/ajaxbroad",
 
                 success: function(data){
                   console.log(data) 
