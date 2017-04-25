@@ -12,7 +12,6 @@ configs.SERVER_NAMES = 		['HOT','COLD','YES', 'NO'];
 
 configs.BROADCAST_SERVER = 		[1,0,0,0];
 
-
 //number of keys broadcaster and client keeps.
 configs.NUM_OF_AES_KEYS = 10;
 
@@ -22,10 +21,10 @@ configs.SERVER_PORT = 1115;
 configs.VLC_PORT=6000;
 
 //how often we change aes key. (in miliseconds. (1000 ms = 1 second).)
-configs.CHANGE_KEY_INTERVAL = 4000; 
+configs.CHANGE_KEY_INTERVAL = 8000; 
 
 //how often aes key is being sent, in miliseconds.
-configs.SEND_KEY_INTERVAL = 1000;
+configs.SEND_KEY_INTERVAL = 2000;
 
 //port which client uses in order to send decrypted packets.
 configs.send_Dec_port = 9498;

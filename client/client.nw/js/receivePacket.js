@@ -53,7 +53,7 @@ function receive(channelId){
 	        	aesKey = getAesKeyById(keysList, keyId);
 	        }
 	        if(aesKey.key!=null){
-	        //	log('forwarding decrypted video to vlc');
+	      
 	        
 				var decrypted;
 				var decipher = crypto.createDecipher('aes-128-ctr', aesKey.key),
@@ -104,7 +104,7 @@ function receive(channelId){
 
 				//either we don't know the seq of key yet, or the key was already obtained.
 				if(keyId==-1 || getAesKeyById(keysList,keyId).key != null){
-					log('we already have this key, no need to decrypt');
+					
 				}
 				else{	
 					log('received a decrypted AES key');

@@ -3,7 +3,7 @@ var configs = require('./../../configs.js');
 
 
 
-function broadcastAesKey(aesKey, aesSeq, channelId,lastKeySent){
+function broadcastAesKey(aesKey, aesSeq, channelId,lastKeyIdSent){
 			aesKey = aesKey.toString('hex');
 			const dgram = require('dgram');
 			const message = new Buffer('Some bytes');
@@ -19,14 +19,18 @@ function broadcastAesKey(aesKey, aesSeq, channelId,lastKeySent){
 			var BROADCAST_ADDRESSES = configs.BROADCAST_ADDRESSES;
 			
 			//we're trying to send an older key, skip this.
-			if((configs.lastKeySent > aesSeq+1 ) && aesSeq!=0){
+			if((lastKeyIdSent[0] > aesSeq+1 ) && aesSeq!=0){
 
-				log("key trying to send:" + aesSeq);
-				log("last key sent:" + configs.lastKeySent);
 				return;
 			}
-			else
-				configs.lastKeySent = aesSeq;
+			else{
+				lastKeyIdSent[0] = aesSeq;
+			}
+			
+
+
+			
+
 
 			
 
@@ -39,12 +43,12 @@ function broadcastAesKey(aesKey, aesSeq, channelId,lastKeySent){
 					fs.writeFileSync(aesKeyPath, aesKey, function(err) {
 			        	if(err) {
 			        		throw err;
-			           	return  console.log(err);
+			           	return  log(err);
 			        	}
 		        	});
 					
 					//encrypt the file
-					
+					log(channelId);
 					var pubkey = path.join(__dirname + "/js/companies/"+ configs.SERVER_NAMES[i] + "/pubkey_"+channelId);
 					var revoke_path = path.join(__dirname + "/js/companies/"+ configs.SERVER_NAMES[i] + "/revoke_"+channelId)
 
