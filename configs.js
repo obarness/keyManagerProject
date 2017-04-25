@@ -3,7 +3,7 @@ var configs = {};
 
 
 //array of addresses to send video to.
-configs.BROADCAST_ADDRESSES = ['192.168.1.255','192.268.1.255','192.268.1.255','192.268.1.255'];
+configs.BROADCAST_ADDRESSES = ['127.0.0.255','192.268.1.255','192.268.1.255','192.268.1.255'];
 
 //server which provides public and private keys.
 configs.SERVER_ADDRESSES = ['127.0.0.1','10.0.2.15','10.0.2.15','10.0.2.15'];
@@ -38,7 +38,7 @@ configs.ffmpegOutPort = 9996;
 configs.FULL_ENCRYPTION = 1;
 
 //video is sent directly to vlc port of  configs.NO_ENCRYPTION_USER_ADDRESS  or configs.NO_ENCRYPTION_BROADCAST_ADDRESS
-configs.NO_ENCRYPTION = 1;
+configs.NO_ENCRYPTION = 0;
 
 //whether to broadcast or sent directly to a specific user
 configs.BROADCAST = 1;

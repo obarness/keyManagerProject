@@ -3,7 +3,7 @@ var configs = require('./../../configs.js');
 
 
 
-function broadcastAesKey(aesKey, aesSeq, channelId){
+function broadcastAesKey(aesKey, aesSeq, channelId,lastKeySent){
 			aesKey = aesKey.toString('hex');
 			const dgram = require('dgram');
 			const message = new Buffer('Some bytes');
@@ -16,9 +16,8 @@ function broadcastAesKey(aesKey, aesSeq, channelId){
 			__dirname = path.resolve(path.dirname(''));
 			var aesKeyPath = path.join(__dirname + "/js/aeskey/key");
 			var configs = require('./../../configs.js');
-			
 			var BROADCAST_ADDRESSES = configs.BROADCAST_ADDRESSES;
-
+			
 			//we're trying to send an older key, skip this.
 			if((configs.lastKeySent > aesSeq+1 ) && aesSeq!=0){
 

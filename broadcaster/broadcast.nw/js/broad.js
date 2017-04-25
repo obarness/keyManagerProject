@@ -24,6 +24,7 @@ function setup(){
   keysList.key = crypto.randomBytes(16);
   var aesKey =  keysList.key;
   var aesSeq = keysList.id;
+  var lastKeySent = -1;
 
   //no encryption
   if(configs.NO_ENCRYPTION){
@@ -109,7 +110,7 @@ function setup(){
 
      else if(newTimeStamp > lastKeySent + configs.SEND_KEY_INTERVAL){
      
-         broadcastAesKey(aesKey,aesSeq,channelId); 
+         broadcastAesKey(aesKey,aesSeq,channelId,lastKeySent); 
          lastKeySent = newTimeStamp;
      }
 
@@ -143,7 +144,7 @@ function setup(){
    // alert("wait....");
      socket.bind(9990,() => {
       socket2.bind(ffmpegOutPort, () =>{
-        broadcastAesKey(aesKey,aesSeq,channelId); 
+        broadcastAesKey(aesKey,aesSeq,channelId,lastKeySent); 
         var address = '127.0.0.1';
         var filePath =  'SampleVideo.mp4';
         StartVideo(address,filePath); 
@@ -200,7 +201,7 @@ function changeKey(keysList,channelId){
   keysList.key = crypto.randomBytes(16);
 
   log('changing AES key, key id:' + keysList.id +', key is '+ keysList.key.toString('hex'));
-  broadcastAesKey(keysList.key,keysList.id,channelId);
+  broadcastAesKey(keysList.key,keysList.id,channelId,lastKeySent);
   return keysList;
 
 }
