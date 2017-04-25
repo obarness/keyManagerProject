@@ -3,10 +3,10 @@ var configs = {};
 
 
 //array of addresses to send video to.
-configs.BROADCAST_ADDRESSES = ['127.0.0.255','192.268.1.255','192.268.1.255','192.268.1.255'];
+configs.BROADCAST_ADDRESSES = ['192.168.1.255','192.268.1.255','192.268.1.255','192.268.1.255'];
 
 //server which provides public and private keys.
-configs.SERVER_ADDRESSES = ['127.0.0.1','10.0.2.15','10.0.2.15','10.0.2.15'];
+configs.SERVER_ADDRESSES = ['192.168.1.13','10.0.2.15','10.0.2.15','10.0.2.15'];
 
 configs.SERVER_NAMES = 		['HOT','COLD','YES', 'NO'];
 
@@ -34,7 +34,7 @@ configs.ffmpegOutPort = 9996;
 
 
 //if sed to 0, and NO_ENCRYPTION set to 0, only AES encryption is applied.
-configs.FULL_ENCRYPTION = 1;
+configs.FULL_ENCRYPTION = 0;
 
 //video is sent directly to vlc port of  configs.NO_ENCRYPTION_USER_ADDRESS  or configs.NO_ENCRYPTION_BROADCAST_ADDRESS
 configs.NO_ENCRYPTION = 0;
@@ -43,9 +43,9 @@ configs.NO_ENCRYPTION = 0;
 configs.BROADCAST = 1;
 
 //in case we are not broadcasting.
-configs.NO_ENCRYPTION_USER_ADDRESS = '127.0.0.1';
+configs.NO_ENCRYPTION_USER_ADDRESS = '192.168.1.13';
 
-configs.NO_ENCRYPTION_BROADCAST_ADDRESS = '127.0.0.255';
+configs.NO_ENCRYPTION_BROADCAST_ADDRESS = '192.168.1.255';
 
 
 

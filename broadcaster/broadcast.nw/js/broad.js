@@ -29,9 +29,9 @@ function setup(){
   //no encryption
   if(configs.NO_ENCRYPTION){
     if(configs.BROADCAST)
-      no_encryption(configs.NO_ENCRYPTION_BROADCAST_ADDRESS);
+        no_encryption(configs.NO_ENCRYPTION_BROADCAST_ADDRESS);
     else
-      no_encryption(configs.NO_ENCRYPTION_USER_ADDRESS);
+        no_encryption(configs.NO_ENCRYPTION_USER_ADDRESS);
 
   }
 
@@ -148,6 +148,7 @@ function setup(){
         broadcastAesKey(aesKey,aesSeq,channelId,lastKeyIdSent); 
         var address = '127.0.0.1';
         var filePath =  'SampleVideo.mp4';
+        //var filePath = 'CGIHDCHAPPiE.mp4';
         StartVideo(address,filePath); 
 
         });
@@ -169,7 +170,8 @@ function StartVideo(address, filePath){
   //prompt file selection
   dialog.setContext(document); // work in client
 
-
+  var vidBitare = '1024k';
+  //var vidBitare = '2048k';
 
 //  dialog.openFileDialog('.mp4',function(path){
 
@@ -179,7 +181,7 @@ function StartVideo(address, filePath){
     //RTP creation with FFmpeg
       var proc = ffmpeg(filePath).native()
       .videoCodec('mpeg2video')
-      .videoBitrate('1024k')
+      .videoBitrate(vidBitare)
       .audioCodec('libmp3lame')
       .audioBitrate('128k')
       .outputOptions('-f rtp_mpegts')
@@ -287,7 +289,8 @@ function getServerNameByAddress(address){
 }
 
 function no_encryption(address){
-  var filePath =  'SampleVideo.mp4';
+  var filePath = 'CGIHDCHAPPiE.mp4';
+ // var filePath =  'SampleVideo.mp4';
   StartVideo(address,filePath );
 
 
