@@ -212,7 +212,16 @@
 	}
 
 
+	function revokeData(revoke_string){
+		revoke_string = revoke_string.substr(1)
+		var printString = revoke_string.toString().replace('_',' ');
+		while(printString != revoke_string.toString()){
+			printString = revoke_string.toString();
+			revoke_string = revoke_string.toString().replace('_',' ');
+		}
+	return printString;
 
+	}
 
 
 	function revokeUser(channelId,userId){
@@ -234,14 +243,7 @@
 	
 	//check if user is already revoked
 	if(revoke_string.toString().indexOf('_'+userId+'_') != -1){
-		console.log("already revoked!");
-		revoke_string = revoke_string.substr(1)
-		var printString = revoke_string.toString().replace('_',' ');
-		while(printString != revoke_string.toString()){
-			printString = revoke_string.toString();
-			revoke_string = revoke_string.toString().replace('_',' ');
-		}
-	return printString;
+		return revokeData(revoke_string.toString());
 	}
 	
 
@@ -256,13 +258,7 @@
 			           	return  console.log(err);
 			        	}
 		        	});
-	newRevokeString = newRevokeString.substr(1)
-	var printString = newRevokeString.toString().replace('_',' ');
-		while(printString != newRevokeString.toString()){
-			printString = newRevokeString.toString();
-			newRevokeString = newRevokeString.toString().replace('_',' ');
-		}
-	return printString
+	return revokeData(newRevokeString);
 }
 
 
@@ -288,14 +284,7 @@ function unrevokeUser(channelId,userId){
 	var index = revoke_string.indexOf('_'+userId+'_');
 	
 	if(index==-1){
-		revoke_string = revoke_string.substr(1)
-		var printString = revoke_string.toString().replace('_',' ');
-		while(printString != revoke_string.toString()){
-			printString = revoke_string.toString();
-			revoke_string = revoke_string.toString().replace('_',' ');
-		}
-	return printString;
-
+		return revokeData(revoke_string);
 
 	}
 
@@ -314,12 +303,6 @@ function unrevokeUser(channelId,userId){
 			        	}
 		        	});
 
-	newRevokeString = newRevokeString.substr(1)
-	var printString = newRevokeString.toString().replace('_',' ');
-		while(printString != newRevokeString.toString()){
-			printString = newRevokeString.toString();
-			newRevokeString = newRevokeString.toString().replace('_',' ');
-		}
-	return printString
+	return revokeData(newRevokeString);
 }
 
