@@ -116,7 +116,7 @@
 		console.log("revoke user: " + userId + " in channel: " + channelId);
 		revokeString = revokeUser(channelId,userId);
 		res.set({'Content-Type': 'text/plain'});
-		res.end(JSON.stringify({'revokeString': revokeString}));
+		res.end(JSON.stringify(revokeString));
 		
 
 	});
@@ -131,7 +131,7 @@
 		console.log("Unrevoke user: " + userId + " in channel: " + channelId);
 		revokeString = unrevokeUser(channelId,userId);
 		res.set({'Content-Type': 'text/plain'});
-		res.end(JSON.stringify({'revokeString': revokeString}));
+		res.end(JSON.stringify(revokeString));
 		
 
 	});
@@ -243,7 +243,8 @@
 	
 	//check if user is already revoked
 	if(revoke_string.toString().indexOf('_'+userId+'_') != -1){
-		return revokeData(revoke_string.toString());
+			var newString = revokeData(revoke_string.toString());
+	return {'revokeString': newString,'channelId':channelId}
 	}
 	
 
@@ -258,7 +259,8 @@
 			           	return  console.log(err);
 			        	}
 		        	});
-	return revokeData(newRevokeString);
+	var newString = revokeData(newRevokeString);
+	return {'revokeString': newString,'channelId':channelId}
 }
 
 
@@ -284,7 +286,9 @@ function unrevokeUser(channelId,userId){
 	var index = revoke_string.indexOf('_'+userId+'_');
 	
 	if(index==-1){
-		return revokeData(revoke_string);
+
+		var newString = revokeData(newRevokeString);
+		return {'revokeString': newString,'channelId':channelId}
 
 	}
 
@@ -303,6 +307,10 @@ function unrevokeUser(channelId,userId){
 			        	}
 		        	});
 
-	return revokeData(newRevokeString);
+	
+	var newString = revokeData(newRevokeString);
+	return {'revokeString': newString,'channelId':channelId}
+
+	
 }
 

@@ -3,7 +3,7 @@
 <head>
 
   <title>Server</title>
-      <script src="/server.js"></script>
+      
   <script src="jsboot/jquery-3.2.0.min.js"></script>
   <link href="css/bootstrap.css" rel="stylesheet" />
   <link href="css/bootstrap-theme.css" rel="stylesheet"/>
@@ -53,7 +53,7 @@
 
     <script type="text/javascript">
 
-        
+        var channelsrev = new Object();
           $('#revoke').click(function() {
 
             var channelId = $('#revchannelId').val(); 
@@ -67,15 +67,23 @@
                 "userid": userId}),
                 contentType: 'application/json',
                 success: function(data){
-                  // var data = JSON.stringify(data)
-                  //console.log("AJAX" +data['revokeString']) 
-                  $('#revokedList').text(data.revokeString);
+
+                    
+                	channelsrev[data.channelId] = "<div class=\"alert alert-info\" role=\"alert\">" + "Channel Id: " + data.channelId + " Revoked Users: " + data.revokeString + "</div>"; 
+
+                	var finalstring = "";
+                	for (var key in channelsrev) {
+                		finalstring += channelsrev[key];
+                	}	
+           
+                	// console.log(finalstring);
+                  $('#revokedList').html(finalstring);
                 
                  }
                });
              });
 
-
+          
          $('#unrevoke').click(function() {
 
             var channelId = $('#unchannelId').val(); 
@@ -89,7 +97,16 @@
                 "userid": userId}),
                 contentType: 'application/json',
                 success: function(data){
-                $('#revokedList').text(data.revokeString);
+                	
+                	channelsrev[data.channelId] = "<div class=\"alert alert-info\" role=\"alert\">" + "Channel Id: " + data.channelId + " Revoked Users: " + data.revokeString + "</div>"; 
+
+                	var finalstring ="";
+                	for (var key in channelsrev) {
+                		finalstring += channelsrev[key];
+                	}	
+           
+                	
+                $('#revokedList').html(finalstring);
                 }
                });    
 
@@ -144,7 +161,7 @@
 
 <br><br>
       <p>Revoked Users:</p>
-      <div class="alert alert-info" role="alert" id="revokedList">...</div>
+      <div id="revokedList"></div>
       
 
       </div>
