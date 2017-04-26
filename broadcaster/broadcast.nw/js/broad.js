@@ -151,7 +151,7 @@ function setup(){
         broadcastAesKey(aesKey,aesSeq,channelId,lastKeyIdSent); 
         var address = '127.0.0.1';
         var filePath =  'SampleVideo.mp4';
-        //var filePath = 'CGIHDCHAPPiE.mp4';
+       // var filePath = 'CGIHDCHAPPiE.mp4';
         StartVideo(address,filePath); 
 
         });
@@ -267,7 +267,7 @@ function updateRevokeString(channelId){
         https.get('https://'+configs.SERVER_ADDRESSES[i]+':'+configs.SERVER_PORT+'/revoke_'+channelId, (res) => {
           res.on('data', (d) => {
                 var revokePath = path.join(__dirname + "/js/companies/"+company+"/revoke_" + channelId);
-                log('saved new revoke file at: ' + revokePath);
+                log('revocation data updated');
                 fs.writeFile(revokePath, d, function(err) {
                   if(err) {
                     return console.log(err);

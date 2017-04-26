@@ -71,7 +71,7 @@ function receive(channelId){
 			}
 			else{
 
-				log("we dont have the key!");
+				
 			}
 		});
 
@@ -120,7 +120,9 @@ function receive(channelId){
 					wstream.write(aesKey);
 					wstream.end(    function(){
 						setAesKeyById(keysList, keyId, decrypt(channelId));
-						keyId = -1;
+						
+						if(getAesKeyById(keyId)!= null)
+							keyId = -1;
 					});
 				
 				}
@@ -147,11 +149,15 @@ function receive(channelId){
         
         AesSocket.bind(Aes_Socket_port);
 
-
         get_video_Socket.on('close', function (){
-        	log("get_video_Socket is closing")
+        	log("get_video_Socke is closing")
         });
         get_video_Socket.on('error', function (){
+        	log(`====error====:\n${err.stack}`);
+        });
+
+       
+        send_Dec_Socket.on('error', function (){
         	log(`====error====:\n${err.stack}`);
         });
 
@@ -220,18 +226,19 @@ function decrypt(channelId){
 				var exec = require('child_process').execSync;
 				var userId = document.forms["playVideo"]["userId"].value; 
 				function puts(error, stdout, stderr) { sys.puts(stdout) }
-				
+
 				exec("cpabe-dec -p " + pubkey + " -c " + private + " -i " + aesKeyPath+".cpabe" + " -o "+  aesKeyPath  +" -a "+userId);
 			}
 			
 
 			var aesKey = fs.readFileSync(aesKeyPath, (err, data) => {
-		  		if (err) throw err;
+		  		if (err) return;
 
 				});	
 
 			var key = new Buffer(aesKey.toString(),'hex'); 
 			log('our new AES key is:' + aesKey.toString());
+			fs.unlink(aesKeyPath);
         	return key;
 
 }

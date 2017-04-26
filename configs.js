@@ -5,7 +5,7 @@ var configs = {};
 configs.BROADCAST_ADDRESSES = ['192.168.1.255','192.268.1.255','192.268.1.255','192.268.1.255'];
 
 //server which provides public and private keys.
-configs.SERVER_ADDRESSES = ['192.168.1.71','10.0.2.15','10.0.2.15','10.0.2.15'];
+configs.SERVER_ADDRESSES = ['192.168.1.72','10.0.2.15','10.0.2.15','10.0.2.15'];
 
 configs.SERVER_NAMES = 		['HOT','COLD','YES', 'NO'];
 
@@ -20,10 +20,10 @@ configs.SERVER_PORT = 1115;
 configs.VLC_PORT=6000;
 
 //how often we change aes key. (in miliseconds. (1000 ms = 1 second).)
-configs.CHANGE_KEY_INTERVAL = 1000; 
+configs.CHANGE_KEY_INTERVAL = 8000; 
 
 //how often aes key is being sent, in miliseconds.
-configs.SEND_KEY_INTERVAL = 500;
+configs.SEND_KEY_INTERVAL = 2000;
 
 //port which client uses in order to send decrypted packets.
 configs.send_Dec_port = 9412;

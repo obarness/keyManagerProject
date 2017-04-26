@@ -23,7 +23,7 @@ function broadcastAesKey(aesKey, aesSeq, channelId,lastKeyIdSent){
 				return;
 			}
 			else{
-				lastKeyIdSent[0] = aesSeq-1;
+				lastKeyIdSent[0] = aesSeq;
 
 
 			}
