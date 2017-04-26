@@ -1,7 +1,6 @@
 var configs = {};
 
 
-
 //array of addresses to send video to.
 configs.BROADCAST_ADDRESSES = ['192.168.1.255','192.268.1.255','192.268.1.255','192.268.1.255'];
 
@@ -21,13 +20,13 @@ configs.SERVER_PORT = 1115;
 configs.VLC_PORT=6000;
 
 //how often we change aes key. (in miliseconds. (1000 ms = 1 second).)
-configs.CHANGE_KEY_INTERVAL = 8000; 
+configs.CHANGE_KEY_INTERVAL = 1000; 
 
 //how often aes key is being sent, in miliseconds.
-configs.SEND_KEY_INTERVAL = 2000;
+configs.SEND_KEY_INTERVAL = 500;
 
 //port which client uses in order to send decrypted packets.
-configs.send_Dec_port = 9498;
+configs.send_Dec_port = 9412;
 
 //broadcaster sends ffmpeg's output to this port, than encrypts the packets.
 configs.ffmpegOutPort = 9996;
@@ -44,9 +43,6 @@ configs.BROADCAST = 1;
 
 //in case we are not broadcasting.
 configs.NO_ENCRYPTION_USER_ADDRESS = '192.168.1.13';
-
-configs.NO_ENCRYPTION_BROADCAST_ADDRESS = '192.168.1.255';
-
 
 
 

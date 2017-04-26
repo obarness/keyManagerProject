@@ -17,7 +17,7 @@ if(configs.FULL_ENCRYPTION){
         
         //command below ignores our unsigned https certificate.
         process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
-        console.log('requesting private key for channel: '+ channelId  + ' from server at:' + SERVER_ADDRESS + ':' + SERVER_PORT);
+        log('requesting private key for channel: '+ channelId  + ' from server at:' + SERVER_ADDRESS + ':' + SERVER_PORT);
         https.get('https://'+SERVER_ADDRESS+':'+SERVER_PORT+'/PrivateKey_'+channelId+'_'+userId, (res) => {
 
             res.on('data', (d) => {
@@ -28,7 +28,7 @@ if(configs.FULL_ENCRYPTION){
               if(err) {
                  return  alert(err);
               }
-              else console.log('private key saved');
+              else log('private key saved');
            //   alert("The file was saved!");
               }); 
 
@@ -56,7 +56,7 @@ function getPublicKey(channelId){
   var SERVER_ADDRESS = configs.SERVER_ADDRESSES[0];
 
   //command below ignores our unsigned https certificate.
-  console.log('requesting public key for channel: '+ channelId  + ' from server at:' + SERVER_ADDRESS + ':' + SERVER_PORT);
+  log('requesting public key for channel: '+ channelId  + ' from server at:' + SERVER_ADDRESS + ':' + SERVER_PORT);
   process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
   https.get('https://'+SERVER_ADDRESS+':'+SERVER_PORT+'/PublicKey_'+channelId, (res) => {
 
@@ -67,6 +67,8 @@ function getPublicKey(channelId){
         if(err) {
            return  alert(err);
         }
+        else
+          log('public key saved');
     //    alert("The file was saved!");
         }); 
 
@@ -75,7 +77,6 @@ function getPublicKey(channelId){
     });
   //we got our keys.
   // ready to play video.
-  console.log('public key saved');
   start(channelId);
 }
 

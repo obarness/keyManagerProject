@@ -15,7 +15,7 @@ function initializeChannel(){
       var company =   document.forms["initializeYourChannel"]["company"].value;
       var SERVER_ADDRESS = getServerAddressByName(company);
       if(SERVER_ADDRESS == "error"){
-        alert("illegal company name");
+        alert("illegal company name, channel won't be initialized");
           return;
       }
 
@@ -27,10 +27,10 @@ function initializeChannel(){
 
         res.on('data', (d) => {
               var pubkeyPath = path.join(__dirname + "/js/companies/"+company+"/pubkey_" + channelId);
-              log('Saved public key at: ' + pubkeyPath);
+              log('public key saved');
             	fs.writeFile(pubkeyPath, d, function(err) {
                 if(err) {
-                  return console.log(err);
+                  return log(err);
                 }
 
               
@@ -42,10 +42,10 @@ function initializeChannel(){
 
         res.on('data', (d) => {
               var revokePath = path.join(__dirname + "/js/companies/"+company+"/revoke_" + channelId);
-              log('Saved revoke file at: ' + revokePath);
+              log('Revocation data saved');
               fs.writeFile(revokePath, d, function(err) {
                 if(err) {
-                  return console.log(err);
+                  return log(err);
                 }
 
               

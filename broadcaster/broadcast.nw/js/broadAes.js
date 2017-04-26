@@ -20,11 +20,12 @@ function broadcastAesKey(aesKey, aesSeq, channelId,lastKeyIdSent){
 			
 			//we're trying to send an older key, skip this.
 			if((lastKeyIdSent[0] > aesSeq+1 ) && aesSeq!=0){
-
 				return;
 			}
 			else{
-				lastKeyIdSent[0] = aesSeq;
+				lastKeyIdSent[0] = aesSeq-1;
+
+
 			}
 			
 
@@ -48,14 +49,15 @@ function broadcastAesKey(aesKey, aesSeq, channelId,lastKeyIdSent){
 		        	});
 					
 					//encrypt the file
-					log(channelId);
+					
 					var pubkey = path.join(__dirname + "/js/companies/"+ configs.SERVER_NAMES[i] + "/pubkey_"+channelId);
 					var revoke_path = path.join(__dirname + "/js/companies/"+ configs.SERVER_NAMES[i] + "/revoke_"+channelId)
+					if(configs.FULL_ENCRYPTION){
+						var revoke_string = fs.readFileSync(revoke_path, (err, data) => {
+					  		if (err) throw err;
 
-					var revoke_string = fs.readFileSync(revoke_path, (err, data) => {
-				  		if (err) throw err;
-
-					});	
+						});	
+					}
 					
 
 					var sys = require('sys')
@@ -87,7 +89,7 @@ function broadcastAesKey(aesKey, aesSeq, channelId,lastKeyIdSent){
 				  		
 					});
 
-					log("broadcasting AES key to " + BROADCAST_ADDRESSES[i] + ":" + port);
+					
 					client.send(buf,0,buf.length ,port, BROADCAST_ADDRESSES[i], (err) => {
 			  			
 					});

@@ -71,12 +71,12 @@ function receive(channelId){
 			}
 			else{
 
-			
+				log("we dont have the key!");
 			}
 		});
 
 		get_video_Socket.on('listening', function(){
-		log("awaiting decrypted video messages on:" + get_video_port);
+			log("awaiting decrypted video messages on:" + get_video_port);
 
 		});
 
@@ -93,7 +93,7 @@ function receive(channelId){
 
 		AesSocket.on('error', (err) => {
   			log(`====error====:\n${err.stack}`);
-  			server.close();
+  			AesSocket.close();
 			});
 
 		AesSocket.on('message', function (msg, info){
@@ -223,7 +223,7 @@ function decrypt(channelId){
 				});	
 
 			var key = new Buffer(aesKey.toString(),'hex'); 
-			log('our key is:' + aesKey.toString());
+			log('our new AES key is:' + aesKey.toString());
         	return key;
 
 }

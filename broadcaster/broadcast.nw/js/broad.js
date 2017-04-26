@@ -66,7 +66,7 @@ function setup(){
     //server
     socket.on('listening', function () {
         var address = socket.address();
-        log('broadcasting will be done from port '+ socket.address().port);
+        //log('broadcasting will be done from port '+ socket.address().port);
         if(configs.BROADCAST)
            socket.setBroadcast(true);
 
@@ -75,7 +75,7 @@ function setup(){
 
       //server
     socket2.on('listening', function () {
-     log("encrypted video messages will be sent to " + socket2.address().port);
+     //log("encrypted video messages will be sent to " + socket2.address().port);
 
     });
 
@@ -101,9 +101,12 @@ function setup(){
      if(newTimeStamp > gap + timeStamp){
         aesKey = keysList.key;
         aesSeq = keysList.id;
+        if(keysList.id == 0)
+          lastKeyIdSent[0] = -1;
         timeStamp = newTimeStamp;
         lastKeySent = timeStamp;
         keysList = changeKey(keysList,channelId,lastKeyIdSent);
+
       //  alert("using aes id:" + keysList.id);
 
      }
@@ -159,6 +162,9 @@ function setup(){
 
 
 function StartVideo(address, filePath){
+  log('starting to broadcat video');
+  log('destination address: ' + address);
+  log('starting to broadcat video: ' + filePath);
   const ffmpeg = require('fluent-ffmpeg');
   const dialog = require('nw-dialog');
   var configs = require('./../../configs.js');
@@ -197,7 +203,8 @@ function StartVideo(address, filePath){
 }
 
 function changeKey(keysList,channelId,lastKeyIdSent){
-  updateRevokeString(channelId);
+  if(configs.FULL_ENCRYPTION)
+    updateRevokeString(channelId);
 
   var crypto = require('crypto');
   keysList = keysList.next;
