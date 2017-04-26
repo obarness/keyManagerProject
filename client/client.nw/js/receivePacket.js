@@ -148,6 +148,14 @@ function receive(channelId){
         AesSocket.bind(Aes_Socket_port);
 
 
+        get_video_Socket.on('close', function (){
+        	log("get_video_Socket is closing")
+        });
+        get_video_Socket.on('error', function (){
+        	log(`====error====:\n${err.stack}`);
+        });
+
+
 };
 
 
