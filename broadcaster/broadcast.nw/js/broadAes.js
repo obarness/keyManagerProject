@@ -41,6 +41,7 @@ function broadcastAesKey(aesKey, aesSeq, channelId,lastKeyIdSent){
 			for(var i=0; i<BROADCAST_ADDRESSES.length;i++){
       			if(configs.BROADCAST_SERVER[i]==1){
 			
+				var aesKeyPath = path.join(__dirname + "/js/companies/" + configs.SERVER_NAMES[i]+'/aeskey/key');
 					fs.writeFileSync(aesKeyPath, aesKey, function(err) {
 			        	if(err) {
 			        		throw err;
@@ -79,6 +80,7 @@ function broadcastAesKey(aesKey, aesSeq, channelId,lastKeyIdSent){
 								if (err) throw err;
 								});	
 					}
+					
 
 
 
