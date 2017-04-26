@@ -2,14 +2,22 @@ var configs = {};
 
 
 //array of addresses to send video to.
-configs.BROADCAST_ADDRESSES = ['192.168.1.255','192.268.1.255','192.268.1.255','192.268.1.255'];
+configs.BROADCAST_ADDRESSES = ['127.0.0.1','127.0.0.1','192.268.1.255','192.268.1.255'];
 
-//server which provides public and private keys.
-configs.SERVER_ADDRESSES = ['192.168.1.72','10.0.2.15','10.0.2.15','10.0.2.15'];
+//server which provides public and private keys for broadcaster.
+configs.SERVER_ADDRESSES = ['127.0.0.1','127.0.0.1','192.168.1.13','192.168.1.13'];
+
+//server which user gets the keys from
+configs.USER_SERVER_ADDRESSES = '127.0.0.1';
+
+//server which user gets the keys from
+configs.USER_SERVER_ID = '1';
 
 configs.SERVER_NAMES = 		['HOT','COLD','YES', 'NO'];
 
-configs.BROADCAST_SERVER = 		[1,0,0,0];
+configs.BROADCAST_SERVER = 		[1,1,0,0];
+
+configs.SERVER_ID = 		[1,2,3,4];
 
 //number of keys broadcaster and client keeps.
 configs.NUM_OF_AES_KEYS = 10;

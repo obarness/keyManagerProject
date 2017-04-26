@@ -10,7 +10,7 @@ if(configs.FULL_ENCRYPTION){
         __dirname = path.resolve(path.dirname(''));
          var configs = require('./../../configs.js');
         var SERVER_PORT = configs.SERVER_PORT;
-        var SERVER_ADDRESS = configs.SERVER_ADDRESSES[0];
+        var SERVER_ADDRESS = configs.USER_SERVER_ADDRESSES
 
         var channelId = document.forms["playVideo"]["channelId"].value;  
         var userId = document.forms["playVideo"]["userId"].value; 
@@ -24,7 +24,7 @@ if(configs.FULL_ENCRYPTION){
               var privatePath = path.join(__dirname + "/js/privateKey/private_"+channelId);
               
 
-            	fs.writeFile(privatePath, d, function(err) {
+              fs.writeFile(privatePath, d, function(err) {
               if(err) {
                  return  alert(err);
               }
@@ -34,7 +34,7 @@ if(configs.FULL_ENCRYPTION){
 
              // process.stdout.write(d);
             });
-        	});
+          });
         
         
         getPublicKey(channelId);

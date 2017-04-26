@@ -17,7 +17,7 @@ function setup(){
   var channelId = document.forms["broadcastVideo"]["channelId"].value;
   var keysToKeep = configs.NUM_OF_AES_KEYS;
   var gap = configs.CHANGE_KEY_INTERVAL; 
-  var clientPort = database.getVideoPortById(channelId);
+  
   var keysList =  new createKeysList(null,keysToKeep,0);
 
   //our initial key.
@@ -89,7 +89,7 @@ function setup(){
     //we get a video message from ffmpeg.
     //we're going to encrypt it, and broadcast the video!
     socket2.on('message', function(msg, rinfo){
-    //alert("message on socket 2 " +  msg.toString());
+    
 
     var newTimeStamp = (Math.floor(Date.now()));
 
@@ -137,7 +137,7 @@ function setup(){
                 socket.send(rtpPacket.getBuffer(), 
                 0,
                 rtpPacket.getBuffer().length,
-                clientPort,
+                database.getVideoPortById(channelId,configs.SERVER_ID[i]),
                 BROADCAST_ADDRESSES[i],
                 function(err){
                   if (err) log(err);
@@ -146,12 +146,12 @@ function setup(){
         }
     });
    // alert("wait....");
-     socket.bind(9990,() => {
+     socket.bind(9992,() => {
       socket2.bind(ffmpegOutPort, () =>{
         broadcastAesKey(aesKey,aesSeq,channelId,lastKeyIdSent); 
         var address = '127.0.0.1';
         var filePath =  'SampleVideo.mp4';
-       // var filePath = 'CGIHDCHAPPiE.mp4';
+        //var filePath = 'CGIHDCHAPPiE.mp4';
         StartVideo(address,filePath); 
 
         });

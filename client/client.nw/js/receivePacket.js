@@ -25,7 +25,7 @@ function receive(channelId){
 		var Buffer = require('buffer').Buffer;
 		var keysToKeep = configs.NUM_OF_AES_KEYS;
 		var keysList =  new createKeysList(null,keysToKeep,0);
-		var get_video_port = database.getVideoPortById(channelId);
+		var get_video_port = database.getVideoPortById(channelId,configs.USER_SERVER_ID);
 		var send_Dec_port = configs.send_Dec_port;
 		var VLC_PORT = configs.VLC_PORT;
 		var host = '127.0.0.1';
@@ -87,7 +87,7 @@ function receive(channelId){
 */
 		var dgram3 = require('dgram');
 		var AesSocket = dgram3.createSocket('udp4');
-		var Aes_Socket_port = database.getKeyPortById(channelId);
+		var Aes_Socket_port = database.getKeyPortById(channelId,configs.USER_SERVER_ID);
 		var keyId = -1;
 
 

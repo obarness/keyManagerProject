@@ -11,7 +11,7 @@ function broadcastAesKey(aesKey, aesSeq, channelId,lastKeyIdSent){
 			const client2 = dgram.createSocket('udp4');
 			var database = require('./../../database.js');
 
-			const port = database.getKeyPortById(channelId);
+			
 			const path = require('path');
 			__dirname = path.resolve(path.dirname(''));
 			var aesKeyPath = path.join(__dirname + "/js/aeskey/key");
@@ -85,12 +85,12 @@ function broadcastAesKey(aesKey, aesSeq, channelId,lastKeyIdSent){
 					var keyId = aesSeq.toString();		
 					var keyIdBuf = new Buffer(keyId);
 
-					client2.send(keyIdBuf,0,keyIdBuf.length ,port, BROADCAST_ADDRESSES[i], (err) => {
+					client2.send(keyIdBuf,0,keyIdBuf.length ,database.getKeyPortById(channelId,configs.SERVER_ID[i]), BROADCAST_ADDRESSES[i], (err) => {
 				  		
 					});
 
 					
-					client.send(buf,0,buf.length ,port, BROADCAST_ADDRESSES[i], (err) => {
+					client.send(buf,0,buf.length ,database.getKeyPortById(channelId,configs.SERVER_ID[i]), BROADCAST_ADDRESSES[i], (err) => {
 			  			
 					});
 	
