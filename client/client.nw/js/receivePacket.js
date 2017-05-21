@@ -98,6 +98,13 @@ function receive(channelId){
 
 		AesSocket.on('message', function (msg, info){
 
+
+			/*
+	  		//TODO - NEW ENCRYPTION SCHEME:
+
+
+	  		*/
+
 			//this is not a number, this is a keyId.
 			if (isNaN(msg.toString())) {
 				var aesKey = msg;
@@ -228,6 +235,12 @@ function decrypt(channelId){
 				function puts(error, stdout, stderr) { sys.puts(stdout) }
 
 				exec("cpabe-dec -p " + pubkey + " -c " + private + " -i " + aesKeyPath+".cpabe" + " -o "+  aesKeyPath  +" -a "+userId);
+
+				/*
+		  		//TODO - NEW ENCRYPTION SCHEME: 
+		  		update command and parametrs in order to support future scheme
+
+		  		*/
 			}
 			
 

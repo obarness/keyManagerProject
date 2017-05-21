@@ -21,7 +21,9 @@
 		}
 
 	}
-*/
+	*/
+
+
 	var broadcastersList =[];
 	
 	var usersList = [];
@@ -88,6 +90,16 @@
 		var channelId = req.originalUrl.substr('/revoke_'.length);
 		console.log("broadcaster has requested revoke file for channel:" + channelId);
 		getRevokeFIle(req,res,channelId);
+
+
+		/*
+  		//TODO - NEW ENCRYPTION SCHEME: 
+  		this function is triggered when a broadcaster asks for revocation data.
+  		in the future scheme, revocation data isn't used to encrypt. 
+  		this function and the functions it calls/uses should be modified in order to support the creation
+  		and distribution of a SUM (state update message). 
+  		in general - this is where we need to support the new scheme's function "Revoke(msk,S) which outputs new PP and the SUM" 
+  		*/
 		
 
 	});
@@ -180,6 +192,10 @@
 		var exec = require('child_process').execSync;
 		function puts(error, stdout, stderr) { sys.puts(stdout) }
 		exec("cpabe-keygen "+ "-o " + keyName + " -p " + pubkey + " -m " + masterkey + " -a " + userId);
+
+		//TODO - NEW ENCRYPTION SCHEME: alternate the command parameters above ("cpabe-keygen") to fir the future scheme.
+
+
 		console.log("private key created. user id:"+userId +", channel id: " +channelId);
 		console.log("sending private key. user id:"+userId +", channel id: " +channelId);
 		response.sendFile(keyName);
@@ -194,6 +210,9 @@
 		var exec = require('child_process').execSync;
 		function puts(error, stdout, stderr) { sys.puts(stdout) }
 		exec("cpabe-setup "+ "-p " + pubkey+ " -m " + masterkey, puts);
+
+		//TODO - NEW ENCRYPTION SCHEME: alternate the command parameters above ("cpabe-keygen") to fir the future scheme.
+
 		console.log("elements for channel "+channelId + "initialized");
 	}
 

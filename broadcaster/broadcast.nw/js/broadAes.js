@@ -69,6 +69,10 @@ function broadcastAesKey(aesKey, aesSeq, channelId,lastKeyIdSent){
 
 					if(configs.FULL_ENCRYPTION){
 						exec("cpabe-enc "+ "-p " + pubkey  + " -i " + aesKeyPath +" -a " + revoke_string);
+
+						//TODO - NEW ENCRYPTION SCHEME: alternate the command parameters above ("cpabe-keygen") for the future scheme.
+
+
 						buf = fs.readFileSync(aesKeyPath+'.cpabe', (err, data) => {
 				  		if (err) throw err;
 						});	
