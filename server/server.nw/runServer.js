@@ -95,10 +95,10 @@
 		/*
   		//TODO - NEW ENCRYPTION SCHEME: 
   		this function is triggered when a broadcaster asks for revocation data.
-  		in the future scheme, revocation data isn't used to encrypt. 
+  		in the new scheme, revocation data isn't used to encrypt. 
   		this function and the functions it calls/uses should be modified in order to support the creation
   		and distribution of a SUM (state update message). 
-  		in general - this is where we need to support the new scheme's function "Revoke(msk,S) which outputs new PP and the SUM" 
+  		in general - this is where we need to support the new scheme's function [Revoke(msk,S)] which outputs new PP and the SUM,.
   		*/
 		
 
@@ -118,6 +118,7 @@
 	});
 
 
+	//HTML will trigger this in order to receive revocation data.
 	app.post('/revo', function(req,res) {
 		
 		

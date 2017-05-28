@@ -258,12 +258,12 @@ function updateRevokeString(channelId){
   //TODO - NEW ENCRYPTION SCHEME: 
   in order to use the permanant revocation scheme we need to alternate the behavior.
   1. instead of asking for revocation data, we will ask for the SUM (state update message)from the key manager (server).
-  2. We should agree with the server upon a default some, for e.g ("do nothing") that means the state hasn't been changed.
+  2. We should agree with the server upon a default SUM, for e.g ("do nothing") that means the state hasn't been changed.
      steps below should only be done if state has been changed
   3. once we obtained the SUM, we need to broadcast the SUM to all users (more than once, using UDP).
   4. the SUM can (and should) be sent to the same port as the AES KEY socket, 
-     we need to keep an identifier for the type of message we are sending.
-  5. We also need to ask from new PP from the server (public parameters/ [ublic key]).
+     we need to keep an identifier for the type of message we are sending (aes key vs SUM).
+  5. We also need to ask from new PP from the server (public parameters/ public key).
   6. It is yet to be decided how users (clients) should obtain the new PP (either by https from server, or UDP from broadcaster).
   
   ****NOTE*** 

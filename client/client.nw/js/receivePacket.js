@@ -101,9 +101,11 @@ function receive(channelId){
 
 			/*
 	  		//TODO - NEW ENCRYPTION SCHEME:
-
-
+	  		we need to classify the message to see if it is a SUM.
+	  		if it is - we should update the state of our private key, and acquire the new PP/public key.
 	  		*/
+
+
 
 			//this is not a number, this is a keyId.
 			if (isNaN(msg.toString())) {
@@ -238,8 +240,7 @@ function decrypt(channelId){
 
 				/*
 		  		//TODO - NEW ENCRYPTION SCHEME: 
-		  		update command and parametrs in order to support future scheme
-
+		  		update command and parametrs in order to support new scheme
 		  		*/
 			}
 			
